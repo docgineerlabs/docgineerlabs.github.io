@@ -110,7 +110,7 @@
     <header id="main-header" class="fixed top-0 z-40 w-full transition-all duration-300 ease-in-out border-b border-transparent">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 md:h-20">
-                <div class="flex-shrink-0"><a href="#" id="logo" class="text-2xl font-bold tracking-tighter text-white">Docgineer<span id="logo-span" class="text-lime-400">Labs</span></a></div>
+                <div class="flex-shrink-0"><a href="#" id="logo"><img src="logo-transparent.png" alt="Docgineer Labs" class="h-10 w-auto logo-transparent"><img src="logo-solid.png" alt="Docgineer Labs" class="h-10 w-auto logo-solid hidden"></a></div>
                 <div class="flex items-center space-x-2 sm:space-x-4">
                     <button class="icon-btn p-2 rounded-full text-white hover:bg-white/20 transition-colors"><span class="sr-only">Search</span><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></button>
                     <button id="user-toggle" class="icon-btn p-2 rounded-full text-white hover:bg-white/20 transition-colors"><span class="sr-only">User Account</span><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg></button>
@@ -232,33 +232,30 @@
             const header = document.getElementById('main-header');
             const heroSection = document.getElementById('hero-section');
             const logo = document.getElementById('logo');
-            const logoSpan = document.getElementById('logo-span');
             const iconBtns = document.querySelectorAll('.icon-btn');
+            const logoTransparent = document.querySelector('.logo-transparent');
+            const logoSolid = document.querySelector('.logo-solid');
 
             // --- Header Style Functions ---
             const applySolidHeader = () => {
-                header.classList.add('backdrop-blur-sm', 'bg-white/80', 'border-gray-200');
-                logo.classList.remove('text-white');
-                logo.classList.add('text-black');
-                logoSpan.classList.remove('text-lime-400');
-                logoSpan.classList.add('text-lime-600');
-                iconBtns.forEach(btn => {
-                    btn.classList.remove('text-white', 'hover:bg-white/20');
-                    btn.classList.add('text-gray-500', 'hover:text-black', 'hover:bg-gray-100');
-                });
-            };
+    header.classList.add('backdrop-blur-sm', 'bg-white/80', 'border-gray-200');
+    logoTransparent.classList.add('hidden');
+    logoSolid.classList.remove('hidden');
+    iconBtns.forEach(btn => {
+        btn.classList.remove('text-white', 'hover:bg-white/20');
+        btn.classList.add('text-gray-500', 'hover:text-black', 'hover:bg-gray-100');
+    });
+};
 
             const applyTransparentHeader = () => {
-                header.classList.remove('backdrop-blur-sm', 'bg-white/80', 'border-gray-200');
-                logo.classList.add('text-white');
-                logo.classList.remove('text-black');
-                logoSpan.classList.add('text-lime-400');
-                logoSpan.classList.remove('text-lime-600');
-                iconBtns.forEach(btn => {
-                    btn.classList.add('text-white', 'hover:bg-white/20');
-                    btn.classList.remove('text-gray-500', 'hover:text-black', 'hover:bg-gray-100');
-                });
-            };
+    header.classList.remove('backdrop-blur-sm', 'bg-white/80', 'border-gray-200');
+    logoTransparent.classList.remove('hidden');
+    logoSolid.classList.add('hidden');
+    iconBtns.forEach(btn => {
+        btn.classList.add('text-white', 'hover:bg-white/20');
+        btn.classList.remove('text-gray-500', 'hover:text-black', 'hover:bg-gray-100');
+    });
+};
             
             const handleScroll = () => {
                 if (document.body.classList.contains('menu-open')) return;
