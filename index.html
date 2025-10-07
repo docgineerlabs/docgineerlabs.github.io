@@ -128,12 +128,20 @@
 
     <div id="page-content-wrapper" class="relative">
         <main>
-            <div id="hero-section" class="relative h-[60vh] md:h-[80vh] w-full flex items-center justify-center text-center px-4">
-                <img src="https://placehold.co/1920x1080/0a0a0a/0a0a0a" alt="A person using advanced biomechatronic leg equipment" class="absolute inset-0 w-full h-full object-cover z-0">
-                <div class="absolute inset-0 bg-black/60 z-10"></div>
-                <div class="relative z-20"><h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white">Imagine what we can become.</h1></div>
-            </div>
+            <div id="hero-section" class="relative h-[60vh] md:h-[80vh] w-full flex items-center justify-center text-center px-4 overflow-hidden">
+    
+    <video autoplay loop muted playsinline class="absolute z-0 w-auto min-w-full min-h-full max-w-none">
+        <source src="hero-video.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
 
+    <div class="absolute inset-0 bg-black/60 z-10"></div>
+
+    <div class="relative z-20">
+        <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-white">Imagine what we can become.</h1>
+    </div>
+
+</div>
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-16">
                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-x-12">
                     <aside class="lg:col-span-1 mb-12 lg:mb-0">
