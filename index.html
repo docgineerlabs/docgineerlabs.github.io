@@ -90,7 +90,7 @@
 
     <div id="login-panel" class="panel fixed inset-y-0 right-0 w-96 bg-white text-black p-6 pt-24 transform translate-x-full shadow-2xl flex flex-col overflow-y-auto z-30">
         <div id="login-content" class="flex-grow mt-16"></div>
-            <div class="flex items-center space-x-6 mb-8"></div>
+            <div class="flex items-center space-x-6 mb-8">
                 <button id="login-tab" class="tab-btn text-lg font-bold pb-2 text-gray-500 active">Login</button>
                 <button id="register-tab" class="tab-btn text-lg font-bold pb-2 text-gray-500">Register</button>
             </div>
@@ -280,6 +280,7 @@
             const pageContentWrapper = document.getElementById('page-content-wrapper');
             const mobileMenu = document.getElementById('mobile-menu');
             const loginPanel = document.getElementById('login-panel');
+            const loginClose = document.getElementById('login-close');
             
             const menuOpenIcon = document.getElementById('menu-open-icon');
             const menuCloseIcon = document.getElementById('menu-close-icon');
@@ -374,6 +375,10 @@
                 toggleLoginPanel();
             });
     
+            loginClose.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleLoginPanel();
+            });
     
             pageContentWrapper.addEventListener('click', () => {
                 if (document.body.classList.contains('menu-open')) {
