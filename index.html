@@ -37,9 +37,6 @@
         body.menu-open #mobile-menu {
             transform: translateX(0);
         }
-        body.menu-open {
-            overflow: hidden;
-        }
 
         /* CSS FOR USER PANEL PUSH EFFECT */
         body.login-open #page-content-wrapper {
@@ -47,9 +44,6 @@
         }
         body.login-open #login-panel {
             transform: translateX(0);
-        }
-        body.login-open {
-            overflow: hidden;
         }
     </style>
 </head>
@@ -325,7 +319,6 @@
             };
             
             const handleScroll = () => {
-                if (document.body.classList.contains('menu-open') || document.body.classList.contains('login-open')) return;
                 const scrollPosition = window.scrollY;
                 const triggerPoint = heroSection.offsetHeight - header.offsetHeight;
                 if (scrollPosition > triggerPoint) {
