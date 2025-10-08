@@ -280,7 +280,6 @@
             const pageContentWrapper = document.getElementById('page-content-wrapper');
             const mobileMenu = document.getElementById('mobile-menu');
             const loginPanel = document.getElementById('login-panel');
-            const loginClose = document.getElementById('login-close');
             
             const menuOpenIcon = document.getElementById('menu-open-icon');
             const menuCloseIcon = document.getElementById('menu-close-icon');
@@ -371,11 +370,6 @@
             });
     
             userToggle.addEventListener('click', (e) => {
-                e.stopPropagation();
-                toggleLoginPanel();
-            });
-    
-            loginClose.addEventListener('click', (e) => {
                 e.stopPropagation();
                 toggleLoginPanel();
             });
