@@ -51,10 +51,25 @@
         body.login-open {
             overflow: hidden;
         }
+        /* CSS FOR SEARCH PANEL PUSH EFFECT */
+body.search-open #page-content-wrapper {
+    transform: translateX(-384px);
+}
+body.search-open #search-panel {
+    transform: translateX(0);
+}
+body.search-open {
+    overflow: hidden;
+}
     </style>
 </head>
 <body class="antialiased">
-    
+    <div id="search-panel" class="panel fixed inset-y-0 right-0 w-96 bg-white text-black p-6 pt-24 transform translate-x-full shadow-2xl z-30">
+    <div class="mt-16">
+        <h3 class="text-lg font-bold mb-4 text-gray-800">Search</h3>
+        <input type="search" placeholder="Find People, Projects, etc." class="w-full bg-transparent text-black text-xl p-3 border-b-2 border-gray-300 focus:border-black outline-none">
+    </div>
+</div>
      <div id="mobile-menu" class="panel fixed inset-y-0 right-0 w-72 bg-gray-100 text-black p-4 pt-[110px] transform translate-x-full shadow-2xl z-30 overflow-y-auto">
     <nav class="space-y-2">
         <div class="block px-4 py-2 rounded-md text-lg font-bold text-pink-600">News + Updates</div>
@@ -118,7 +133,11 @@
             <div class="flex items-center justify-between h-16 md:h-20">
                 <div class="flex-shrink-0"><a href="#" id="logo"><img src="logo-transparent.png" alt="Docgineer Labs" class="h-14 md:h-[210px] w-auto logo-transparent"><img src="logo-solid.png" alt="Docgineer Labs" class="h-14 md:h-[210px] w-auto logo-solid hidden"></a></div>
                 <div class="flex items-center space-x-2 sm:space-x-4">
-                    <button class="icon-btn p-2 rounded-full text-white hover:bg-white/20 transition-colors"><span class="sr-only">Search</span><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></button>
+                    <button id="search-toggle" class="icon-btn p-2 rounded-full text-white hover:bg-white/20 transition-colors relative h-6 w-6">
+    <span class="sr-only">Search</span>
+    <svg id="search-open-icon" class="h-6 w-6 absolute top-0 left-0 transition-opacity duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+    <svg id="search-close-icon" class="h-6 w-6 absolute top-0 left-0 opacity-0 transition-opacity duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+</button>
                     <button id="user-toggle" class="icon-btn p-2 rounded-full text-white hover:bg-white/20 transition-colors relative h-6 w-6">
                         <span class="sr-only">User Account</span>
                         <svg id="user-open-icon" class="h-6 w-6 absolute top-0 left-0 transition-opacity duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
@@ -275,6 +294,10 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Get all the elements
+            const searchToggle = document.getElementById('search-toggle');
+const searchPanel = document.getElementById('search-panel');
+const searchOpenIcon = document.getElementById('search-open-icon');
+const searchCloseIcon = document.getElementById('search-close-icon');
             const menuToggle = document.getElementById('menu-toggle');
             const userToggle = document.getElementById('user-toggle');
             const pageContentWrapper = document.getElementById('page-content-wrapper');
@@ -373,15 +396,14 @@
                 e.stopPropagation();
                 toggleLoginPanel();
             });
-    
-            pageContentWrapper.addEventListener('click', () => {
-                if (document.body.classList.contains('menu-open')) {
-                    toggleMenu();
-                }
-                if (document.body.classList.contains('login-open')) {
-                    toggleLoginPanel();
-                }
-            });
+            searchToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleSearch();
+});
+           pageContentWrapper.addEventListener('click', () => {
+    closeAllPanels();
+    handleScroll();
+});
     
             // --- Submenu Toggle Logic ---
             submenuToggles.forEach(toggle => {
