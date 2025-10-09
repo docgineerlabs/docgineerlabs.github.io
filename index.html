@@ -292,154 +292,178 @@ body.search-open {
     </div>
     
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Get all the elements
-            const searchToggle = document.getElementById('search-toggle');
-const searchPanel = document.getElementById('search-panel');
-const searchOpenIcon = document.getElementById('search-open-icon');
-const searchCloseIcon = document.getElementById('search-close-icon');
-            const menuToggle = document.getElementById('menu-toggle');
-            const userToggle = document.getElementById('user-toggle');
-            const pageContentWrapper = document.getElementById('page-content-wrapper');
-            const mobileMenu = document.getElementById('mobile-menu');
-            const loginPanel = document.getElementById('login-panel');
-            
-            const menuOpenIcon = document.getElementById('menu-open-icon');
-            const menuCloseIcon = document.getElementById('menu-close-icon');
-            const userOpenIcon = document.getElementById('user-open-icon');
-            const userCloseIcon = document.getElementById('user-close-icon');
-    
-            const submenuToggles = document.querySelectorAll('.submenu-toggle');
-            const loginTab = document.getElementById('login-tab');
-            const registerTab = document.getElementById('register-tab');
-            const loginForm = document.getElementById('login-form');
-            const registerForm = document.getElementById('register-form');
-            const header = document.getElementById('main-header');
-            const heroSection = document.getElementById('hero-section');
-            const logoTransparent = document.querySelector('.logo-transparent');
-            const logoSolid = document.querySelector('.logo-solid');
-            const iconBtns = document.querySelectorAll('.icon-btn');
-    
-            // --- Header Style Functions ---
-            const applySolidHeader = () => {
-                header.classList.add('backdrop-blur-sm', 'bg-white/80', 'border-gray-200');
-                logoTransparent.classList.add('hidden');
-                logoSolid.classList.remove('hidden');
-                iconBtns.forEach(btn => {
-                    btn.classList.remove('text-white', 'hover:bg-white/20');
-                    btn.classList.add('text-gray-500', 'hover:text-black', 'hover:bg-gray-100');
-                });
-            };
-    
-            const applyTransparentHeader = () => {
-                header.classList.remove('backdrop-blur-sm', 'bg-white/80', 'border-gray-200');
-                logoTransparent.classList.remove('hidden');
-                logoSolid.classList.add('hidden');
-                iconBtns.forEach(btn => {
-                    btn.classList.add('text-white', 'hover:bg-white/20');
-                    btn.classList.remove('text-gray-500', 'hover:text-black', 'hover:bg-gray-100');
-                });
-            };
-            
-            const handleScroll = () => {
-                if (document.body.classList.contains('menu-open') || document.body.classList.contains('login-open')) return;
-                const scrollPosition = window.scrollY;
-                const triggerPoint = heroSection.offsetHeight - header.offsetHeight;
-                if (scrollPosition > triggerPoint) {
-                    applySolidHeader();
-                } else {
-                    applyTransparentHeader();
-                }
-            };
-    
-            // --- Push Menu Logic ---
-            const toggleMenu = () => {
-                if (document.body.classList.contains('login-open')) {
-                    toggleLoginPanel(); // Close login panel if it's open
-                }
-                document.body.classList.toggle('menu-open');
-                menuOpenIcon.classList.toggle('opacity-0');
-                menuCloseIcon.classList.toggle('opacity-0');
-                
-                if (document.body.classList.contains('menu-open')) {
-                    applySolidHeader();
-                } else {
-                    handleScroll();
-                }
-            };
-    
-            // --- User Panel (Push) Logic ---
-            const toggleLoginPanel = () => {
-                if (document.body.classList.contains('menu-open')) {
-                    toggleMenu(); // Close main menu if it's open
-                }
-                document.body.classList.toggle('login-open');
-                userOpenIcon.classList.toggle('opacity-0');
-                userCloseIcon.classList.toggle('opacity-0');
-    
-                if (document.body.classList.contains('login-open')) {
-                    applySolidHeader();
-                } else {
-                    if (!document.body.classList.contains('menu-open')) {
-                        handleScroll();
-                    }
-                }
-            };
-    
-            // --- Event Listeners ---
-            menuToggle.addEventListener('click', (e) => {
-                e.stopPropagation();
-                toggleMenu();
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get all the elements
+        const searchToggle = document.getElementById('search-toggle');
+        const searchPanel = document.getElementById('search-panel');
+        const searchOpenIcon = document.getElementById('search-open-icon');
+        const searchCloseIcon = document.getElementById('search-close-icon');
+        const menuToggle = document.getElementById('menu-toggle');
+        const userToggle = document.getElementById('user-toggle');
+        const pageContentWrapper = document.getElementById('page-content-wrapper');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const loginPanel = document.getElementById('login-panel');
+        const menuOpenIcon = document.getElementById('menu-open-icon');
+        const menuCloseIcon = document.getElementById('menu-close-icon');
+        const userOpenIcon = document.getElementById('user-open-icon');
+        const userCloseIcon = document.getElementById('user-close-icon');
+        const submenuToggles = document.querySelectorAll('.submenu-toggle');
+        const loginTab = document.getElementById('login-tab');
+        const registerTab = document.getElementById('register-tab');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const header = document.getElementById('main-header');
+        const heroSection = document.getElementById('hero-section');
+        const logoTransparent = document.querySelector('.logo-transparent');
+        const logoSolid = document.querySelector('.logo-solid');
+        const iconBtns = document.querySelectorAll('.icon-btn');
+
+        // --- Header Style Functions ---
+        const applySolidHeader = () => {
+            header.classList.add('backdrop-blur-sm', 'bg-white/80', 'border-gray-200');
+            logoTransparent.classList.add('hidden');
+            logoSolid.classList.remove('hidden');
+            iconBtns.forEach(btn => {
+                btn.classList.remove('text-white', 'hover:bg-white/20');
+                btn.classList.add('text-gray-500', 'hover:text-black', 'hover:bg-gray-100');
             });
-    
-            userToggle.addEventListener('click', (e) => {
-                e.stopPropagation();
-                toggleLoginPanel();
+        };
+
+        const applyTransparentHeader = () => {
+            header.classList.remove('backdrop-blur-sm', 'bg-white/80', 'border-gray-200');
+            logoTransparent.classList.remove('hidden');
+            logoSolid.classList.add('hidden');
+            iconBtns.forEach(btn => {
+                btn.classList.add('text-white', 'hover:bg-white/20');
+                btn.classList.remove('text-gray-500', 'hover:text-black', 'hover:bg-gray-100');
             });
-            searchToggle.addEventListener('click', (e) => {
-    e.stopPropagation();
-    toggleSearch();
-});
-           pageContentWrapper.addEventListener('click', () => {
-    closeAllPanels();
-    handleScroll();
-});
-    
-            // --- Submenu Toggle Logic ---
-            submenuToggles.forEach(toggle => {
-                toggle.addEventListener('click', () => {
-                    const submenu = toggle.nextElementSibling;
-                    const icon = toggle.querySelector('svg');
-                    if (submenu.style.maxHeight) {
-                        submenu.style.maxHeight = null;
-                        icon.style.transform = 'rotate(0deg)';
-                    } else {
-                        submenu.style.maxHeight = submenu.scrollHeight + "px";
-                        icon.style.transform = 'rotate(-180deg)';
-                    }
-                });
-            });
-    
-            // --- Login/Register Tab Logic ---
-            loginTab.addEventListener('click', () => {
-                loginTab.classList.add('active');
-                registerTab.classList.remove('active');
-                loginForm.classList.remove('hidden');
-                registerForm.classList.add('hidden');
-            });
-            
-            registerTab.addEventListener('click', () => {
-                registerTab.classList.add('active');
-                loginTab.classList.remove('active');
-                registerForm.classList.remove('hidden');
-                loginForm.classList.add('hidden');
-            });
-            
-            // --- Initial State ---
-            handleScroll();
-            window.addEventListener('scroll', handleScroll);
+        };
+        
+        const handleScroll = () => {
+            if (document.body.classList.contains('menu-open') || document.body.classList.contains('login-open') || document.body.classList.contains('search-open')) return;
+            const scrollPosition = window.scrollY;
+            const triggerPoint = heroSection.offsetHeight - header.offsetHeight;
+            if (scrollPosition > triggerPoint) {
+                applySolidHeader();
+            } else {
+                applyTransparentHeader();
+            }
+        };
+
+        // --- Panel Toggling Functions ---
+        const closeAllPanels = () => {
+            if (document.body.classList.contains('menu-open')) {
+                document.body.classList.remove('menu-open');
+                menuOpenIcon.classList.remove('opacity-0');
+                menuCloseIcon.classList.add('opacity-0');
+            }
+            if (document.body.classList.contains('login-open')) {
+                document.body.classList.remove('login-open');
+                userOpenIcon.classList.remove('opacity-0');
+                userCloseIcon.classList.add('opacity-0');
+            }
+            if (document.body.classList.contains('search-open')) {
+                document.body.classList.remove('search-open');
+                searchOpenIcon.classList.remove('opacity-0');
+                searchCloseIcon.classList.add('opacity-0');
+            }
+        };
+
+        const toggleSearch = () => {
+            const isOpening = !document.body.classList.contains('search-open');
+            closeAllPanels();
+            if (isOpening) {
+                document.body.classList.add('search-open');
+                searchOpenIcon.classList.add('opacity-0');
+                searchCloseIcon.classList.remove('opacity-0');
+                applySolidHeader();
+            } else {
+                handleScroll();
+            }
+        };
+
+        const toggleMenu = () => {
+            const isOpening = !document.body.classList.contains('menu-open');
+            closeAllPanels();
+            if (isOpening) {
+                document.body.classList.add('menu-open');
+                menuOpenIcon.classList.add('opacity-0');
+                menuCloseIcon.classList.remove('opacity-0');
+                applySolidHeader();
+            } else {
+                handleScroll();
+            }
+        };
+
+        const toggleLoginPanel = () => {
+            const isOpening = !document.body.classList.contains('login-open');
+            closeAllPanels();
+            if (isOpening) {
+                document.body.classList.add('login-open');
+                userOpenIcon.classList.add('opacity-0');
+                userCloseIcon.classList.remove('opacity-0');
+                applySolidHeader();
+            } else {
+                handleScroll();
+            }
+        };
+        
+        // --- Event Listeners ---
+        searchToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleSearch();
         });
-    </script>
+
+        menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleMenu();
+        });
+
+        userToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleLoginPanel();
+        });
+
+        pageContentWrapper.addEventListener('click', () => {
+            closeAllPanels();
+            handleScroll();
+        });
+
+        // --- Submenu Toggle Logic ---
+        submenuToggles.forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                const submenu = toggle.nextElementSibling;
+                const icon = toggle.querySelector('svg');
+                if (submenu.style.maxHeight) {
+                    submenu.style.maxHeight = null;
+                    icon.style.transform = 'rotate(0deg)';
+                } else {
+                    submenu.style.maxHeight = submenu.scrollHeight + "px";
+                    icon.style.transform = 'rotate(-180deg)';
+                }
+            });
+        });
+
+        // --- Login/Register Tab Logic ---
+        loginTab.addEventListener('click', () => {
+            loginTab.classList.add('active');
+            registerTab.classList.remove('active');
+            loginForm.classList.remove('hidden');
+            registerForm.classList.add('hidden');
+        });
+        
+        registerTab.addEventListener('click', () => {
+            registerTab.classList.add('active');
+            loginTab.classList.remove('active');
+            registerForm.classList.remove('hidden');
+            loginForm.classList.add('hidden');
+        });
+        
+        // --- Initial State ---
+        handleScroll();
+        window.addEventListener('scroll', handleScroll);
+    });
+</script>
 
 </body>
 </html>
