@@ -290,7 +290,38 @@ body.search-open {
             </div>
         </footer>
     </div>
-    
+    <script type="module">
+  // Import the functions you need from the SDKs
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics.js";
+  // ADDED: The Authentication functions we need
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyB1n-RkiDibKhlc9tOE-G-Hpz4zA8LuQGA",
+    authDomain: "docgineerlabs-b4830.firebaseapp.com",
+    projectId: "docgineerlabs-b4830",
+    storageBucket: "docgineerlabs-b4830.firebasestorage.app",
+    messagingSenderId: "338822276527",
+    appId: "1:338822276527:web:271e8761eaabcc79e8fb5a",
+    measurementId: "G-Z9NW8GFLLC"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  // ADDED: Initialize Authentication
+  const auth = getAuth(app);
+
+  // Make auth functions available to your other script
+  window.firebaseAuth = {
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    sendEmailVerification,
+    auth
+  };
+</script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Get all the elements
@@ -409,25 +440,10 @@ body.search-open {
         };
         
         // --- Event Listeners ---
-        searchToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toggleSearch();
-        });
-
-        menuToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toggleMenu();
-        });
-
-        userToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toggleLoginPanel();
-        });
-
-        pageContentWrapper.addEventListener('click', () => {
-            closeAllPanels();
-            handleScroll();
-        });
+        searchToggle.addEventListener('click', (e) => { e.stopPropagation(); toggleSearch(); });
+        menuToggle.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(); });
+        userToggle.addEventListener('click', (e) => { e.stopPropagation(); toggleLoginPanel(); });
+        pageContentWrapper.addEventListener('click', () => { closeAllPanels(); handleScroll(); });
 
         // --- Submenu Toggle Logic ---
         submenuToggles.forEach(toggle => {
@@ -457,6 +473,43 @@ body.search-open {
             loginTab.classList.remove('active');
             registerForm.classList.remove('hidden');
             loginForm.classList.add('hidden');
+        });
+
+        // --- NEW: FORM SUBMISSION LOGIC ---
+        registerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('reg-email').value;
+            const password = document.getElementById('reg-password').value;
+            const { createUserWithEmailAndPassword, sendEmailVerification, auth } = window.firebaseAuth;
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    sendEmailVerification(user); 
+                    alert('Registration successful! Please check your email to verify your account.');
+                    loginTab.click();
+                })
+                .catch((error) => {
+                    alert('Error: ' + error.message);
+                });
+        });
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const { signInWithEmailAndPassword, auth } = window.firebaseAuth;
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    alert('Login successful! Welcome back.');
+                    closeAllPanels();
+                    handleScroll();
+                })
+                .catch((error) => {
+                    alert('Error: ' + error.message);
+                });
         });
         
         // --- Initial State ---
