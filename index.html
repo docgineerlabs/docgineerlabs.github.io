@@ -64,10 +64,12 @@ body.search-open {
     </style>
 </head>
 <body class="antialiased">
-    <div id="search-panel" class="panel fixed inset-y-0 right-0 w-96 bg-white text-black p-6 pt-24 transform translate-x-full shadow-2xl z-30">
-    <div class="mt-16">
+    <div id="search-panel" class="panel fixed inset-y-0 right-0 w-96 bg-white text-black p-6 pt-24 transform translate-x-full shadow-2xl z-30 overflow-y-auto">
+    <div class="mt-16 w-full">
         <h3 class="text-lg font-bold mb-4 text-gray-800">Search</h3>
-        <input type="search" placeholder="Find People, Projects, etc." class="w-full bg-transparent text-black text-xl p-3 border-b-2 border-gray-300 focus:border-black outline-none">
+        <input type="search" id="search-input" placeholder="Find People, Projects, etc." class="w-full bg-transparent text-black text-xl p-3 border-b-2 border-gray-300 focus:border-black outline-none">
+
+        <div id="search-results" class="mt-4"></div>
     </div>
 </div>
      <div id="mobile-menu" class="panel fixed inset-y-0 right-0 w-72 bg-gray-100 text-black p-4 pt-[110px] transform translate-x-full shadow-2xl z-30 overflow-y-auto">
@@ -346,7 +348,22 @@ body.search-open {
         const logoTransparent = document.querySelector('.logo-transparent');
         const logoSolid = document.querySelector('.logo-solid');
         const iconBtns = document.querySelectorAll('.icon-btn');
-
+const searchableData = [
+    { title: 'News + Updates', url: '#', category: 'Navigation' },
+    { title: 'Research', url: '#', category: 'Navigation' },
+    { title: 'Projects', url: '#', category: 'Navigation' },
+    { title: 'Engineering Projects', url: '#', category: 'Projects' },
+    { title: 'Medical Projects', url: '#', category: 'Projects' },
+    { title: 'Biomedical Engineering Projects', url: '#', category: 'Projects' },
+    { title: 'Events', url: '#', category: 'Navigation' },
+    { title: 'People', url: '#', category: 'Navigation' },
+    { title: 'Members', url: '#', category: 'Navigation' },
+    { title: 'Engineers', url: '#', category: 'Members' },
+    { title: 'Doctors', url: '#', category: 'Members' },
+    { title: 'Submit your Idea', url: '#', category: 'Get Involved' },
+    { title: 'Support Docgineer Labs', url: '#', category: 'Get Involved' },
+    { title: 'Member Portal', url: '#', category: 'Get Involved' }
+];
         // --- Header Style Functions ---
         const applySolidHeader = () => {
             header.classList.add('backdrop-blur-sm', 'bg-white/80', 'border-gray-200');
@@ -509,7 +526,34 @@ body.search-open {
                     alert('Error: ' + error.message);
                 });
         });
-        
+     // --- NEW: SEARCH LOGIC ---
+const searchInput = document.getElementById('search-input');
+const searchResults = document.getElementById('search-results');
+
+searchInput.addEventListener('input', (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+
+    // Clear previous results
+    searchResults.innerHTML = '';
+
+    if (searchTerm.length > 0) {
+        const matchedItems = searchableData.filter(item => 
+            item.title.toLowerCase().includes(searchTerm)
+        );
+
+        if (matchedItems.length > 0) {
+            matchedItems.forEach(item => {
+                const resultItem = document.createElement('a');
+                resultItem.href = item.url;
+                resultItem.className = 'block p-3 text-gray-700 hover:bg-gray-100 rounded-md';
+                resultItem.textContent = item.title;
+                searchResults.appendChild(resultItem);
+            });
+        } else {
+            searchResults.innerHTML = '<p class="p-3 text-gray-500">No results found.</p>';
+        }
+    }
+});   
         // --- Initial State ---
         handleScroll();
         window.addEventListener('scroll', handleScroll);
