@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Style for the profile picture upload button */
+        .profile-pic-wrapper {
+            position: relative;
+        }
+        .profile-pic-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: 9999px; /* Make overlay circular */
+            pointer-events: none; /* Initially not clickable */
+        }
+        /* In edit mode, make the overlay visible and clickable */
+        main.edit-mode .profile-pic-wrapper {
+            cursor: pointer;
+        }
+        main.edit-mode .profile-pic-wrapper:hover .profile-pic-overlay {
+            opacity: 1;
+        }
+        main.edit-mode .profile-pic-overlay {
+            pointer-events: auto; /* Clickable in edit mode */
+        }
+        
+        /* Hide the default file input */
+        input[type="file"] {
+            display: none;
+        }
+
+        /* Hide edit-only controls by default */
+        .edit-control {
+            display: none !important;
+        }
+        /* Show edit controls when the main container is in edit-mode */
+        main.edit-mode .edit-control {
+            display: flex !important; /* Use flex for most controls */
+        }
+        main.edit-mode .edit-control-inline {
+            display: inline !important;
+        }
+        
+        /* Styles for slide-out menu */
+        #sideMenu.is-open {
+            transform: translateX(0);
+        }
+
+        #menuOverlay.is-open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* NEW, MORE ROBUST STYLES FOR HAMBURGER/CROSS ANIMATION */
+        #hamburgerBtn .line {
+            position: absolute;
+            left: 50%;
+            width: 24px; /* w-6 */
+            height: 2px; /* h-0.5 */
+            background-color: #4A5568; /* slate-600 */
+            border-radius: 9999px;
+            transition: all 0.3s ease-in-out;
+            transform-origin: center;
+        }
+        #hamburgerBtn .line-top {
+            transform: translate(-50%, -8px);
+        }
+        #hamburgerBtn .line-middle {
+            transform: translate(-50%, 0);
+        }
+        #hamburgerBtn .line-bottom {
+            transform: translate(-50%, 8px);
+        }
+        
+        body.menu-is-open #hamburgerBtn .line-top {
+            transform: translate(-50%, 0) rotate(45deg);
+        }
+        body.menu-is-open #hamburgerBtn .line-middle {
+            opacity: 0;
+        }
+        body.menu-is-open #hamburgerBtn .line-bottom {
+            transform: translate(-50%, 0) rotate(-45deg);
+        }
+
+        /* Pen icon for editable fields */
+        .edit-icon {
+            display: none;
+            margin-left: 8px; /* Add some space */
+            color: #64748b; /* slate-500 */
+        }
+        main.edit-mode .edit-icon {
+            display: inline-block;
+        }
+        
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+    <!-- Header Navigation -->
+    <nav class="bg-white shadow-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo/Title -->
+                <div class="flex-shrink-0">
+                    <h1 class="text-2xl font-bold text-slate-900">Docgineer Labs</h1>
+                </div>
+                <!-- Right side items -->
+                <div class="flex items-center space-x-4">
+                     <!-- Save Profile Button (Visible only in edit mode) -->
+                    <button id="saveProfileBtn" class="hidden bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors">Save Profile</button>
+                    <!-- Hamburger Menu -->
+                    <div class="relative z-60">
+                        <button id="hamburgerBtn" class="relative w-10 h-10 p-2 rounded-md hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500 transition-colors">
+                           <span class="line line-top"></span>
+                           <span class="line line-middle"></span>
+                           <span class="line line-bottom"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main id="mainContainer" class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div class="px-4 py-6 sm:px-0">
+            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
+
+                <!-- Profile Header Section -->
+                <div class="mb-12">
+                    <!-- Background Photo Container -->
+                    <div class="relative h-48 md:h-64 bg-slate-200 rounded-t-xl">
+                        <img id="backgroundImage" src="https://placehold.co/1200x400/a5b4fc/1e293b?text=Cover+Photo" class="w-full h-full object-cover rounded-t-xl">
+                        <button id="changeBackgroundBtn" class="edit-control absolute top-4 right-4 bg-white/90 text-slate-800 px-3 py-1.5 rounded-md text-sm font-semibold hover:bg-white shadow">Change Cover</button>
+                         <input type="file" id="backgroundPicInput" accept="image/*">
+                    </div>
+                    
+                    <!-- User Info Bar -->
+                    <div class="px-4">
+                        <div class="flex flex-row items-end -mt-10 md:-mt-12 relative">
+                             <!-- Profile Photo -->
+                            <div class="flex-shrink-0">
+                                <div id="profilePicContainer" class="profile-pic-wrapper h-32 w-32 md:h-40 md:w-40 border-4 border-white rounded-full bg-slate-200">
+                                    <img id="profileImage" class="h-full w-full rounded-full object-cover" src="https://placehold.co/200x200/e2e8f0/334155?text=Photo" alt="User profile picture">
+                                    <div class="profile-pic-overlay">
+                                        <span class="text-center text-xs font-semibold">Change</span>
+                                    </div>
+                                </div>
+                            </div>
+                             <input type="file" id="profilePicInput" accept="image/*">
+                            
+                            <!-- User Details -->
+                            <div class="ml-4 md:ml-6 text-left w-full">
+                                <div class="flex items-center">
+                                    <h2 id="userName" class="text-2xl md:text-3xl font-bold text-slate-900 focus:outline-none focus:bg-indigo-100 rounded px-2">User Name</h2>
+                                    <span class="edit-icon">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg>
+                                    </span>
+                                </div>
+                                <p class="text-slate-900 mt-1 flex items-center">Position: <span id="userPosition" class="font-medium focus:outline-none focus:bg-indigo-100 rounded px-1">Software Engineer</span>
+                                    <span class="edit-icon" id="positionEditIcon">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg>
+                                    </span>
+                                </p>
+                                <p class="text-slate-900 flex items-center">Branch: <span id="userBranch" class="font-medium focus:outline-none focus:bg-indigo-100 rounded px-1">Computer Science</span>
+                                    <span class="edit-icon">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg>
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About Section -->
+                <div class="mb-8">
+                    <div class="flex items-center border-b-2 border-slate-200 pb-2 mb-4">
+                        <h3 class="text-2xl font-bold text-slate-900">About</h3>
+                        <span class="edit-icon">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg>
+                        </span>
+                    </div>
+                    <div id="aboutContentView">
+                        <p class="text-slate-600 leading-relaxed">
+                            This is a placeholder for the user's 'About' section. Here, you can write a brief summary about your professional background, skills, interests, and career goals. This helps others get to know you better.
+                        </p>
+                    </div>
+                    <div id="aboutEditView" class="hidden">
+                        <textarea id="aboutTextarea" class="w-full h-32 p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" rows="4"></textarea>
+                    </div>
+                </div>
+
+                <!-- Qualifications Section -->
+                <div class="mb-8">
+                     <div class="flex items-center border-b-2 border-slate-200 pb-2 mb-4">
+                        <h3 class="text-2xl font-bold text-slate-900">Qualifications</h3>
+                        <span class="edit-icon">
+                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg>
+                        </span>
+                    </div>
+                    <div id="qualificationsContentView">
+                        <ul class="list-disc list-inside space-y-2 text-slate-600">
+                            <li>Bachelor of Technology in Computer Science</li>
+                            <li>Certified Cloud Practitioner</li>
+                            <li>Advanced Diploma in Project Management</li>
+                        </ul>
+                    </div>
+                     <div id="qualificationsEditView" class="hidden">
+                        <div id="qualificationsEditList" class="space-y-2"></div>
+                        <button id="addQualificationBtn" class="edit-control mt-2 text-sm font-medium text-indigo-600 hover:text-indigo-800">+ Add Qualification</button>
+                    </div>
+                </div>
+
+                <!-- Achievements & Projects Section -->
+                <div>
+                    <div class="flex items-center border-b-2 border-slate-200 pb-2 mb-4">
+                        <h3 class="text-2xl font-bold text-slate-900">Achievements & Projects</h3>
+                        <span class="edit-icon">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg>
+                        </span>
+                    </div>
+                    <div id="achievementsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Sample Achievement Item 1 -->
+                        <div class="bg-slate-50 rounded-lg overflow-hidden shadow relative group">
+                            <img src="https://placehold.co/600x400/a5b4fc/1e293b?text=Project+Alpha" alt="Project Alpha Screenshot" class="w-full h-48 object-cover">
+                            <div class="p-4">
+                                <p class="text-slate-700 font-semibold">Project Alpha</p>
+                                <p class="text-sm text-slate-500">Developed a full-stack web application for data visualization.</p>
+                            </div>
+                            <button class="edit-control absolute top-2 right-2 bg-red-500 text-white rounded-full h-6 w-6 items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" onclick="this.parentElement.remove()">×</button>
+                        </div>
+                        <!-- Add new achievement card -->
+                        <div id="addAchievementCard" class="edit-control bg-white border-2 border-dashed border-slate-300 rounded-lg items-center justify-center text-center p-6 hover:border-indigo-500 hover:bg-indigo-50 transition-colors cursor-pointer">
+                            <div>
+                                 <svg class="w-12 h-12 mx-auto text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4v16m8-8H4"></path></svg>
+                                <p class="text-slate-500 mt-2 font-medium">Add Photo or Video</p>
+                            </div>
+                        </div>
+                        <input type="file" id="achievementFileInput" accept="image/*,video/*">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Menu Overlay -->
+    <div id="menuOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+    <!-- Side Menu -->
+    <div id="sideMenu" class="fixed top-0 right-0 h-full w-72 bg-white shadow-lg z-50 transform translate-x-full transition-transform duration-300 ease-in-out">
+        <div class="flex justify-between items-center h-16 px-4 border-b border-slate-200">
+            <h3 class="font-bold text-lg text-slate-900">Menu</h3>
+            <button id="closeMenuBtn" class="p-2 rounded-md hover:bg-slate-200 text-slate-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+            <!-- Projects Menu Item -->
+            <div id="projectsMenuItem" class="cursor-pointer group">
+                <div class="flex justify-between items-center px-4 py-2 text-sm text-slate-900 hover:bg-slate-100 transition-colors">
+                    <div class="flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-900 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                        </svg>
+                        <span>Projects</span>
+                    </div>
+                    <svg id="projectArrow" class="w-4 h-4 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+                <div id="projectsSubMenu" class="hidden bg-slate-50">
+                    <a href="#" class="block pl-12 pr-4 py-2 text-sm text-slate-900 hover:bg-slate-100 transition-colors">Current Project</a>
+                    <a href="#" class="block pl-12 pr-4 py-2 text-sm text-slate-900 hover:bg-slate-100 transition-colors">Future Project</a>
+                </div>
+            </div>
+            <!-- Google Meet Menu Item -->
+            <a href="#" class="flex items-center px-4 py-2 text-sm text-slate-900 hover:bg-slate-100 transition-colors group" role="menuitem">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-900 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17 10.5V7c0-1.66-1.34-3-3-3H7c-1.66 0-3 1.34-3 3v10c0 1.66 1.34 3 3 3h7c1.66 0 3-1.34 3-3v-3.5l4 4v-11l-4 4z"/>
+                </svg>
+                <span>Google Meet</span>
+            </a>
+            <!-- Settings Menu Item -->
+             <div id="settingsMenuItem" class="cursor-pointer group">
+                <div class="flex justify-between items-center px-4 py-2 text-sm text-slate-900 hover:bg-slate-100 transition-colors">
+                    <div class="flex items-center">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-900 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                        <span>Settings</span>
+                    </div>
+                    <svg id="settingsArrow" class="w-4 h-4 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </div>
+                <div id="settingsSubMenu" class="hidden bg-slate-50">
+                    <label for="privateAccountToggle" class="flex items-center justify-between pl-12 pr-4 py-2 text-sm text-slate-900 hover:bg-slate-100 transition-colors group cursor-pointer">
+                        <div class="flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                            <span>Make my account Private</span>
+                        </div>
+                        <div class="relative inline-flex items-center">
+                            <input type="checkbox" id="privateAccountToggle" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                        </div>
+                    </label>
+                    <a href="#" id="editProfileSubMenuBtn" class="flex items-center pl-12 pr-4 py-2 text-sm text-slate-900 hover:bg-slate-100 transition-colors group">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-900 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z" />
+                        </svg>
+                        <span>Edit Your profile</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- THIS IS A SIMULATION ---
+    // In a real application, you would get this role from your server after the user logs in.
+    const currentUserRole = 'employee'; // <-- CHANGE TO 'ceo' to test CEO permissions
+
+    let isEditing = false;
+    
+    // --- Main Elements ---
+    const mainContainer = document.getElementById('mainContainer');
+    const saveProfileBtn = document.getElementById('saveProfileBtn');
+    
+    // --- Profile Elements ---
+    const profilePicContainer = document.getElementById('profilePicContainer');
+    const profilePicInput = document.getElementById('profilePicInput');
+    const profileImage = document.getElementById('profileImage');
+    const backgroundImage = document.getElementById('backgroundImage');
+    const backgroundPicInput = document.getElementById('backgroundPicInput');
+    const changeBackgroundBtn = document.getElementById('changeBackgroundBtn');
+    const positionEditIcon = document.getElementById('positionEditIcon');
+    
+    const editableElements = {
+        userName: document.getElementById('userName'),
+        userPosition: document.getElementById('userPosition'),
+        userBranch: document.getElementById('userBranch')
+    };
+
+    // --- About Elements ---
+    const aboutContentView = document.getElementById('aboutContentView');
+    const aboutEditView = document.getElementById('aboutEditView');
+    const aboutTextarea = document.getElementById('aboutTextarea');
+
+    // --- Qualifications Elements ---
+    const qualificationsContentView = document.getElementById('qualificationsContentView');
+    const qualificationsEditView = document.getElementById('qualificationsEditView');
+    const qualificationsEditList = document.getElementById('qualificationsEditList');
+    const addQualificationBtn = document.getElementById('addQualificationBtn');
+
+    // --- Achievements Elements ---
+    const addAchievementCard = document.getElementById('addAchievementCard');
+    const achievementFileInput = document.getElementById('achievementFileInput');
+    const achievementsGrid = document.getElementById('achievementsGrid');
+
+    // --- Hamburger Menu Elements ---
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const sideMenu = document.getElementById('sideMenu');
+    const menuOverlay = document.getElementById('menuOverlay');
+    const closeMenuBtn = document.getElementById('closeMenuBtn');
+    const projectsMenuItem = document.getElementById('projectsMenuItem');
+    const projectsSubMenu = document.getElementById('projectsSubMenu');
+    const projectArrow = document.getElementById('projectArrow');
+    const settingsMenuItem = document.getElementById('settingsMenuItem');
+    const settingsSubMenu = document.getElementById('settingsSubMenu');
+    const settingsArrow = document.getElementById('settingsArrow');
+    const editProfileSubMenuBtn = document.getElementById('editProfileSubMenuBtn');
+
+    // --- Enter Edit Mode ---
+    function handleEditProfile() {
+        if (isEditing) return;
+        isEditing = true;
+        mainContainer.classList.add('edit-mode');
+        saveProfileBtn.classList.remove('hidden');
+
+        // Make fields editable based on role
+        editableElements.userName.contentEditable = true;
+        editableElements.userBranch.contentEditable = true;
+
+        if (currentUserRole === 'ceo') {
+            editableElements.userPosition.contentEditable = true;
+            positionEditIcon.style.display = 'inline-block';
+        } else {
+            positionEditIcon.style.display = 'none';
+        }
+        
+        aboutTextarea.value = aboutContentView.querySelector('p').textContent.trim();
+        aboutContentView.classList.add('hidden');
+        aboutEditView.classList.remove('hidden');
+
+        qualificationsEditList.innerHTML = '';
+        qualificationsContentView.querySelectorAll('li').forEach(item => createQualificationInput(item.textContent));
+        qualificationsContentView.classList.add('hidden');
+        qualificationsEditView.classList.remove('hidden');
+    }
+
+    // --- Save Profile and Exit Edit Mode ---
+    function handleSaveProfile() {
+        if (!isEditing) return;
+        isEditing = false;
+        mainContainer.classList.remove('edit-mode');
+        saveProfileBtn.classList.add('hidden');
+
+        // Make all fields non-editable
+        for (const key in editableElements) {
+            editableElements[key].contentEditable = false;
+        }
+
+        aboutContentView.querySelector('p').textContent = aboutTextarea.value;
+        aboutContentView.classList.remove('hidden');
+        aboutEditView.classList.add('hidden');
+
+        const list = qualificationsContentView.querySelector('ul');
+        list.innerHTML = '';
+        qualificationsEditList.querySelectorAll('input').forEach(input => {
+            if (input.value.trim()) {
+                const li = document.createElement('li');
+                li.textContent = input.value;
+                list.appendChild(li);
+            }
+        });
+        qualificationsContentView.classList.remove('hidden');
+        qualificationsEditView.classList.add('hidden');
+    }
+
+
+    // --- Profile Picture Logic ---
+    profilePicContainer.addEventListener('click', () => {
+        if (isEditing) profilePicInput.click();
+    });
+    profilePicInput.addEventListener('change', event => {
+        if (event.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = e => profileImage.src = e.target.result;
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    });
+
+    // --- Background Picture Logic ---
+    changeBackgroundBtn.addEventListener('click', () => {
+        if(isEditing) backgroundPicInput.click();
+    });
+    backgroundPicInput.addEventListener('change', event => {
+         if (event.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = e => backgroundImage.src = e.target.result;
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    });
+
+    // --- Qualification Input Management ---
+    function createQualificationInput(value = '') {
+        const div = document.createElement('div');
+        div.className = 'flex items-center gap-2';
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = value;
+        input.className = 'w-full p-1 border border-slate-300 rounded-md';
+        const removeBtn = document.createElement('button');
+        removeBtn.textContent = '×';
+        removeBtn.className = 'text-red-500 font-bold';
+        removeBtn.onclick = () => div.remove();
+        div.appendChild(input);
+        div.appendChild(removeBtn);
+        qualificationsEditList.appendChild(div);
+    }
+    addQualificationBtn.addEventListener('click', () => createQualificationInput());
+
+    // --- Achievements Logic ---
+    addAchievementCard.addEventListener('click', () => achievementFileInput.click());
+    achievementFileInput.addEventListener('change', event => {
+        if (event.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                const caption = prompt('Enter a caption for this achievement:');
+                if (caption === null) return; // Don't add if user cancels prompt
+                const newItem = document.createElement('div');
+                newItem.className = 'bg-slate-50 rounded-lg overflow-hidden shadow relative group';
+                newItem.innerHTML = `
+                    <img src="${e.target.result}" alt="${caption || 'Achievement'}" class="w-full h-48 object-cover">
+                    <div class="p-4">
+                        <p class="text-slate-700 font-semibold">${caption || 'New Achievement'}</p>
+                        <p class="text-sm text-slate-500">Newly added item.</p>
+                    </div>
+                    <button class="edit-control absolute top-2 right-2 bg-red-500 text-white rounded-full h-6 w-6 items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" onclick="this.parentElement.remove()">×</button>
+                `;
+                achievementsGrid.insertBefore(newItem, addAchievementCard);
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    });
+    
+    // --- Side Menu Logic ---
+    function closeMenu() {
+        document.body.classList.remove('menu-is-open');
+        sideMenu.classList.remove('is-open');
+        menuOverlay.classList.remove('is-open');
+        // Reset projects submenu state on close
+        if (!projectsSubMenu.classList.contains('hidden')) {
+            projectsSubMenu.classList.add('hidden');
+            projectArrow.classList.remove('rotate-180');
+        }
+        // Reset settings submenu state on close
+        if (!settingsSubMenu.classList.contains('hidden')) {
+            settingsSubMenu.classList.add('hidden');
+            settingsArrow.classList.remove('rotate-180');
+        }
+    }
+
+    hamburgerBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        document.body.classList.toggle('menu-is-open');
+        sideMenu.classList.toggle('is-open');
+        menuOverlay.classList.toggle('is-open');
+    });
+
+    closeMenuBtn.addEventListener('click', closeMenu);
+    menuOverlay.addEventListener('click', closeMenu);
+
+    // Project Submenu
+    projectsMenuItem.addEventListener('click', (event) => {
+        event.stopPropagation();
+        projectsSubMenu.classList.toggle('hidden');
+        projectArrow.classList.toggle('rotate-180');
+    });
+
+    // Settings Submenu
+    settingsMenuItem.addEventListener('click', (event) => {
+        event.stopPropagation();
+        settingsSubMenu.classList.toggle('hidden');
+        settingsArrow.classList.toggle('rotate-180');
+    });
+
+    // Event Listeners
+    editProfileSubMenuBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        closeMenu();
+        handleEditProfile();
+    });
+
+    saveProfileBtn.addEventListener('click', handleSaveProfile);
+});
+</script>
+</body>
+</html>
+
