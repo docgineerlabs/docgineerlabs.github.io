@@ -114,7 +114,9 @@
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800">
-
+<div id="loading-overlay" class="fixed inset-0 bg-white z-[100] flex items-center justify-center">
+    <p class="text-lg font-medium">Loading Profile...</p>
+</div>
     <!-- Header Navigation -->
     <nav id="dashboard-header" class="fixed top-0 left-0 w-full z-40 transition-all duration-300 ease-in-out border-b border-transparent">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
@@ -326,242 +328,266 @@
     </div>
 
 
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    // --- THIS IS A SIMULATION ---
-    const currentUserRole = 'employee';
+<script type="module">
+    // Import Firebase modules
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
-    // --- NEW HEADER SCROLL LOGIC ---
-    const header = document.getElementById('dashboard-header');
-    const logoTransparent = header.querySelector('.logo-transparent');
-    const logoSolid = header.querySelector('.logo-solid');
-    const iconBtns = header.querySelectorAll('.icon-btn');
-    const lines = header.querySelectorAll('.line');
-
-    const applySolidHeader = () => {
-        header.classList.add('backdrop-blur-sm', 'bg-white/80', 'border-gray-200');
-        lines.forEach(line => line.classList.replace('bg-white', 'bg-slate-600'));
-        iconBtns.forEach(btn => {
-            btn.classList.remove('text-white', 'hover:bg-white/20');
-            btn.classList.add('text-gray-500', 'hover:text-black', 'hover:bg-gray-100');
-        });
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyB1n-RkiDibKhlc9tOE-G-Hpz4zA8LuQGA",
+        authDomain: "docgineerlabs-b4830.firebaseapp.com",
+        projectId: "docgineerlabs-b4830",
+        storageBucket: "docgineerlabs-b4830.firebasestorage.app",
+        messagingSenderId: "338822276527",
+        appId: "1:338822276527:web:271e8761eaabcc79e8fb5a",
+        measurementId: "G-Z9NW8GFLLC"
     };
 
-    const applyTransparentHeader = () => {
-        header.classList.remove('backdrop-blur-sm', 'bg-white/80', 'border-gray-200');
-        lines.forEach(line => line.classList.replace('bg-slate-600', 'bg-white'));
-        iconBtns.forEach(btn => {
-            btn.classList.add('text-white', 'hover:bg-white/20');
-            btn.classList.remove('text-gray-500', 'hover:text-black', 'hover:bg-gray-100');
-        });
-    };
-    
-    const handleScroll = () => {
-        if (window.scrollY > 50) {
-            logoTransparent.classList.add('hidden');
-            logoSolid.classList.remove('hidden');
-            applySolidHeader();
-        } else {
-            // This is the main change: We default to the solid (black) logo for visibility
-            logoTransparent.classList.add('hidden');
-            logoSolid.classList.remove('hidden');
-            // We also give the icons their "solid" look by default for visibility
-            applySolidHeader();
-            // But we remove the background to keep it transparent at the top
-            header.classList.remove('backdrop-blur-sm', 'bg-white/80', 'border-gray-200');
-        }
-    };
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-    window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Set initial state on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const mainContainer = document.getElementById('mainContainer');
+        let currentUserRole = 'employee';
+        let currentUserId = null;
 
-
-    // --- Existing Dashboard Logic ---
-    let isEditing = false;
-    const mainContainer = document.getElementById('mainContainer');
-    const saveProfileBtn = document.getElementById('saveProfileBtn');
-    const profilePicContainer = document.getElementById('profilePicContainer');
-    const profilePicInput = document.getElementById('profilePicInput');
-    const profileImage = document.getElementById('profileImage');
-    const backgroundImage = document.getElementById('backgroundImage');
-    const backgroundPicInput = document.getElementById('backgroundPicInput');
-    const changeBackgroundBtn = document.getElementById('changeBackgroundBtn');
-    const positionEditIcon = document.getElementById('positionEditIcon');
-    const editableElements = {
-        userName: document.getElementById('userName'),
-        userPosition: document.getElementById('userPosition'),
-        userBranch: document.getElementById('userBranch')
-    };
-    const aboutContentView = document.getElementById('aboutContentView');
-    const aboutEditView = document.getElementById('aboutEditView');
-    const aboutTextarea = document.getElementById('aboutTextarea');
-    const qualificationsContentView = document.getElementById('qualificationsContentView');
-    const qualificationsEditView = document.getElementById('qualificationsEditView');
-    const qualificationsEditList = document.getElementById('qualificationsEditList');
-    const addQualificationBtn = document.getElementById('addQualificationBtn');
-    const addAchievementCard = document.getElementById('addAchievementCard');
-    const achievementFileInput = document.getElementById('achievementFileInput');
-    const achievementsGrid = document.getElementById('achievementsGrid');
-    const hamburgerBtn = document.getElementById('hamburgerBtn');
-    const sideMenu = document.getElementById('sideMenu');
-    const menuOverlay = document.getElementById('menuOverlay');
-    const closeMenuBtn = document.getElementById('closeMenuBtn');
-    const projectsMenuItem = document.getElementById('projectsMenuItem');
-    const projectsSubMenu = document.getElementById('projectsSubMenu');
-    const projectArrow = document.getElementById('projectArrow');
-    const settingsMenuItem = document.getElementById('settingsMenuItem');
-    const settingsSubMenu = document.getElementById('settingsSubMenu');
-    const settingsArrow = document.getElementById('settingsArrow');
-    const editProfileSubMenuBtn = document.getElementById('editProfileSubMenuBtn');
-
-     function handleEditProfile() {
-        if (isEditing) return;
-        isEditing = true;
-        mainContainer.classList.add('edit-mode');
-        saveProfileBtn.classList.remove('hidden');
-        editableElements.userName.contentEditable = true;
-        editableElements.userBranch.contentEditable = true;
-        if (currentUserRole === 'ceo') {
-            editableElements.userPosition.contentEditable = true;
-            positionEditIcon.style.display = 'inline-block';
-        } else {
-            positionEditIcon.style.display = 'none';
-        }
-        aboutTextarea.value = aboutContentView.querySelector('p').textContent.trim();
-        aboutContentView.classList.add('hidden');
-        aboutEditView.classList.remove('hidden');
-        qualificationsEditList.innerHTML = '';
-        qualificationsContentView.querySelectorAll('li').forEach(item => createQualificationInput(item.textContent));
-        qualificationsContentView.classList.add('hidden');
-        qualificationsEditView.classList.remove('hidden');
-    }
-    function handleSaveProfile() {
-        if (!isEditing) return;
-        isEditing = false;
-        mainContainer.classList.remove('edit-mode');
-        saveProfileBtn.classList.add('hidden');
-        for (const key in editableElements) {
-            editableElements[key].contentEditable = false;
-        }
-        aboutContentView.querySelector('p').textContent = aboutTextarea.value;
-        aboutContentView.classList.remove('hidden');
-        aboutEditView.classList.add('hidden');
-        const list = qualificationsContentView.querySelector('ul');
-        list.innerHTML = '';
-        qualificationsEditList.querySelectorAll('input').forEach(input => {
-            if (input.value.trim()) {
-                const li = document.createElement('li');
-                li.textContent = input.value;
-                list.appendChild(li);
+        // --- AUTHENTICATION CHECK ---
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUserId = user.uid;
+                await loadUserProfile(user.uid);
+            } else {
+                // If no user is logged in, redirect to the index page.
+                window.location.href = 'index.html';
             }
         });
-        qualificationsContentView.classList.remove('hidden');
-        qualificationsEditView.classList.add('hidden');
-    }
-    profilePicContainer.addEventListener('click', () => {
-        if (isEditing) profilePicInput.click();
-    });
-    profilePicInput.addEventListener('change', event => {
-        if (event.target.files[0]) {
-            const reader = new FileReader();
-            reader.onload = e => profileImage.src = e.target.result;
-            reader.readAsDataURL(event.target.files[0]);
-        }
-    });
-    changeBackgroundBtn.addEventListener('click', () => {
-        if(isEditing) backgroundPicInput.click();
-    });
-    backgroundPicInput.addEventListener('change', event => {
-         if (event.target.files[0]) {
-            const reader = new FileReader();
-            reader.onload = e => backgroundImage.src = e.target.result;
-            reader.readAsDataURL(event.target.files[0]);
-        }
-    });
-    function createQualificationInput(value = '') {
-        const div = document.createElement('div');
-        div.className = 'flex items-center gap-2';
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.value = value;
-        input.className = 'w-full p-1 border border-slate-300 rounded-md';
-        const removeBtn = document.createElement('button');
-        removeBtn.textContent = '×';
-        removeBtn.className = 'text-red-500 font-bold';
-        removeBtn.onclick = () => div.remove();
-        div.appendChild(input);
-        div.appendChild(removeBtn);
-        qualificationsEditList.appendChild(div);
-    }
-    addQualificationBtn.addEventListener('click', () => createQualificationInput());
-    addAchievementCard.addEventListener('click', () => achievementFileInput.click());
-    achievementFileInput.addEventListener('change', event => {
-        if (event.target.files[0]) {
-            const reader = new FileReader();
-            reader.onload = e => {
-                const caption = prompt('Enter a caption for this achievement:');
-                if (caption === null) return;
-                const newItem = document.createElement('div');
-                newItem.className = 'bg-slate-50 rounded-lg overflow-hidden shadow relative group';
-                newItem.innerHTML = `
-                    <img src="${e.target.result}" alt="${caption || 'Achievement'}" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <p class="text-slate-700 font-semibold">${caption || 'New Achievement'}</p>
-                        <p class="text-sm text-slate-500">Newly added item.</p>
-                    </div>
-                    <button class="edit-control absolute top-2 right-2 bg-red-500 text-white rounded-full h-6 w-6 items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity" onclick="this.parentElement.remove()">×</button>
-                `;
-                achievementsGrid.insertBefore(newItem, addAchievementCard);
-            };
-            reader.readAsDataURL(event.target.files[0]);
-        }
-    });
-    function closeMenu() {
-        document.body.classList.remove('menu-is-open');
-        sideMenu.classList.remove('is-open');
-        menuOverlay.classList.remove('is-open');
-        if (!projectsSubMenu.classList.contains('hidden')) {
-            projectsSubMenu.classList.add('hidden');
-            projectArrow.classList.remove('rotate-180');
-        }
-        if (settingsSubMenu && !settingsSubMenu.classList.contains('hidden')) {
-            settingsSubMenu.classList.add('hidden');
-            settingsArrow.classList.remove('rotate-180');
-        }
-    }
-    hamburgerBtn.addEventListener('click', (event) => {
-        event.stopPropagation();
-        document.body.classList.toggle('menu-is-open');
-        sideMenu.classList.toggle('is-open');
-        menuOverlay.classList.toggle('is-open');
-    });
-    closeMenuBtn.addEventListener('click', closeMenu);
-    menuOverlay.addEventListener('click', closeMenu);
-    projectsMenuItem.addEventListener('click', (event) => {
-        event.stopPropagation();
-        projectsSubMenu.classList.toggle('hidden');
-        projectArrow.classList.toggle('rotate-180');
-    });
 
-    if (settingsMenuItem) {
+        async function loadUserProfile(userId) {
+            const userDocRef = doc(db, "users", userId);
+            try {
+                const userDocSnap = await getDoc(userDocRef);
+                if (userDocSnap.exists()) {
+                    const userData = userDocSnap.data();
+                    currentUserRole = userData.role || 'employee';
+                    
+                    document.getElementById('userName').textContent = userData.fullName || 'User Name';
+                    document.getElementById('userPosition').textContent = userData.position || 'N/A';
+                    document.getElementById('userBranch').textContent = userData.branch || 'N/A';
+                    document.getElementById('aboutText').textContent = userData.about || 'No information provided.';
+
+                    const qualificationsList = document.getElementById('qualificationsList');
+                    qualificationsList.innerHTML = '';
+                    if (userData.qualifications && userData.qualifications.length > 0) {
+                        userData.qualifications.forEach(q => {
+                            const li = document.createElement('li');
+                            li.textContent = q;
+                            qualificationsList.appendChild(li);
+                        });
+                    } else {
+                        qualificationsList.innerHTML = '<li>No qualifications listed.</li>';
+                    }
+
+                    loadingOverlay.style.display = 'none';
+                    mainContainer.classList.remove('opacity-0');
+                } else {
+                    throw new Error("User profile not found in database.");
+                }
+            } catch(error) {
+                console.error("Error loading user profile:", error);
+                loadingOverlay.innerHTML = '<p class="text-red-500">Error loading profile.</p>';
+            }
+        }
+
+        let isEditing = false;
+        
+        const saveProfileBtn = document.getElementById('saveProfileBtn');
+        const profilePicContainer = document.getElementById('profilePicContainer');
+        const profilePicInput = document.getElementById('profilePicInput');
+        const profileImage = document.getElementById('profileImage');
+        const backgroundImage = document.getElementById('backgroundImage');
+        const backgroundPicInput = document.getElementById('backgroundPicInput');
+        const changeBackgroundBtn = document.getElementById('changeBackgroundBtn');
+        const positionEditIcon = document.getElementById('positionEditIcon');
+        const editableElements = {
+            userName: document.getElementById('userName'),
+            userPosition: document.getElementById('userPosition'),
+            userBranch: document.getElementById('userBranch')
+        };
+        const aboutContentView = document.getElementById('aboutContentView');
+        const aboutEditView = document.getElementById('aboutEditView');
+        const aboutTextarea = document.getElementById('aboutTextarea');
+        const qualificationsContentView = document.getElementById('qualificationsContentView');
+        const qualificationsEditView = document.getElementById('qualificationsEditView');
+        const qualificationsEditList = document.getElementById('qualificationsEditList');
+        const addQualificationBtn = document.getElementById('addQualificationBtn');
+        const addAchievementCard = document.getElementById('addAchievementCard');
+        const achievementFileInput = document.getElementById('achievementFileInput');
+        const achievementsGrid = document.getElementById('achievementsGrid');
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const sideMenu = document.getElementById('sideMenu');
+        const menuOverlay = document.getElementById('menuOverlay');
+        const closeMenuBtn = document.getElementById('closeMenuBtn');
+        const projectsMenuItem = document.getElementById('projectsMenuItem');
+        const projectsSubMenu = document.getElementById('projectsSubMenu');
+        const projectArrow = document.getElementById('projectArrow');
+        const settingsMenuItem = document.getElementById('settingsMenuItem');
+        const settingsSubMenu = document.getElementById('settingsSubMenu');
+        const settingsArrow = document.getElementById('settingsArrow');
+        const editProfileSubMenuBtn = document.getElementById('editProfileSubMenuBtn');
+
+        function handleEditProfile() {
+            if (isEditing) return;
+            isEditing = true;
+            mainContainer.classList.add('edit-mode');
+            saveProfileBtn.classList.remove('hidden');
+            editableElements.userName.contentEditable = true;
+            editableElements.userBranch.contentEditable = true;
+
+            if (currentUserRole === 'ceo') {
+                editableElements.userPosition.contentEditable = true;
+                positionEditIcon.style.display = 'inline-block';
+            } else {
+                positionEditIcon.style.display = 'none';
+            }
+            
+            aboutTextarea.value = document.getElementById('aboutText').textContent.trim();
+            aboutContentView.classList.add('hidden');
+            aboutEditView.classList.remove('hidden');
+
+            qualificationsEditList.innerHTML = '';
+            document.querySelectorAll('#qualificationsList li').forEach(item => {
+                if (item.textContent !== 'No qualifications listed.') {
+                    createQualificationInput(item.textContent);
+                }
+            });
+            qualificationsContentView.classList.add('hidden');
+            qualificationsEditView.classList.remove('hidden');
+        }
+
+        async function handleSaveProfile() {
+            if (!isEditing || !currentUserId) return;
+            
+            const newQualifications = Array.from(qualificationsEditList.querySelectorAll('input'))
+                .map(input => input.value.trim())
+                .filter(value => value);
+
+            const updatedData = {
+                fullName: editableElements.userName.textContent.trim(),
+                branch: editableElements.userBranch.textContent.trim(),
+                about: aboutTextarea.value.trim(),
+                qualifications: newQualifications
+            };
+
+            if(currentUserRole === 'ceo') {
+                updatedData.position = editableElements.userPosition.textContent.trim();
+            }
+
+            try {
+                const userDocRef = doc(db, "users", currentUserId);
+                await updateDoc(userDocRef, updatedData);
+                
+                isEditing = false;
+                mainContainer.classList.remove('edit-mode');
+                saveProfileBtn.classList.add('hidden');
+
+                Object.values(editableElements).forEach(el => el.contentEditable = false);
+
+                document.getElementById('aboutText').textContent = updatedData.about;
+                aboutContentView.classList.remove('hidden');
+                aboutEditView.classList.add('hidden');
+
+                const qualificationsList = document.getElementById('qualificationsList');
+                qualificationsList.innerHTML = '';
+                if (updatedData.qualifications.length > 0) {
+                    updatedData.qualifications.forEach(q => {
+                        const li = document.createElement('li');
+                        li.textContent = q;
+                        qualificationsList.appendChild(li);
+                    });
+                } else {
+                    qualificationsList.innerHTML = '<li>No qualifications listed.</li>';
+                }
+                qualificationsContentView.classList.remove('hidden');
+                qualificationsEditView.classList.add('hidden');
+
+                alert("Profile updated successfully!");
+
+            } catch (error) {
+                console.error("Error updating document: ", error);
+                alert("Failed to update profile. Please try again.");
+            }
+        }
+
+        function createQualificationInput(value = '') {
+            const div = document.createElement('div');
+            div.className = 'flex items-center gap-2';
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = value;
+            input.className = 'w-full p-1 border border-slate-300 rounded-md';
+            const removeBtn = document.createElement('button');
+            removeBtn.textContent = '×';
+            removeBtn.className = 'text-red-500 font-bold';
+            removeBtn.onclick = () => div.remove();
+            div.appendChild(input);
+            div.appendChild(removeBtn);
+            qualificationsEditList.appendChild(div);
+        }
+        addQualificationBtn.addEventListener('click', () => createQualificationInput());
+
+        function closeMenu() {
+            document.body.classList.remove('menu-is-open');
+            sideMenu.classList.remove('is-open');
+            menuOverlay.classList.remove('is-open');
+        }
+        hamburgerBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            document.body.classList.toggle('menu-is-open');
+            sideMenu.classList.toggle('is-open');
+            menuOverlay.classList.toggle('is-open');
+        });
+        closeMenuBtn.addEventListener('click', closeMenu);
+        menuOverlay.addEventListener('click', closeMenu);
+        projectsMenuItem.addEventListener('click', (event) => {
+            event.stopPropagation();
+            projectsSubMenu.classList.toggle('hidden');
+            projectArrow.classList.toggle('rotate-180');
+        });
         settingsMenuItem.addEventListener('click', (event) => {
             event.stopPropagation();
             settingsSubMenu.classList.toggle('hidden');
             settingsArrow.classList.toggle('rotate-180');
         });
-    }
-    
-    if(editProfileSubMenuBtn) {
         editProfileSubMenuBtn.addEventListener('click', (event) => {
             event.preventDefault();
             closeMenu();
             handleEditProfile();
         });
-    }
+        saveProfileBtn.addEventListener('click', handleSaveProfile);
+        
+        profilePicContainer.addEventListener('click', () => { if (isEditing) profilePicInput.click(); });
+        changeBackgroundBtn.addEventListener('click', () => { if(isEditing) backgroundPicInput.click(); });
 
-    saveProfileBtn.addEventListener('click', handleSaveProfile);
-});
+        const header = document.getElementById('dashboard-header');
+        const logoTransparent = header.querySelector('.logo-transparent');
+        const logoSolid = header.querySelector('.logo-solid');
+        const hamburgerLines = header.querySelectorAll('.line');
+
+        const handleHeaderScroll = () => {
+            if (window.scrollY > 50) {
+                header.classList.add('backdrop-blur-sm', 'bg-white/80', 'border-gray-200');
+            } else {
+                header.classList.remove('backdrop-blur-sm', 'bg-white/80', 'border-gray-200');
+            }
+        };
+
+        window.addEventListener('scroll', handleHeaderScroll);
+        handleHeaderScroll();
+    });
 </script>
-</body>
-</html>
 
