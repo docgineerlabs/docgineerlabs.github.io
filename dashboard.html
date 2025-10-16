@@ -11,6 +11,7 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9; /* slate-100 */
         }
         /* Style for the profile picture upload button */
         .profile-pic-wrapper {
@@ -70,13 +71,12 @@
             pointer-events: auto;
         }
 
-        /* NEW, MORE ROBUST STYLES FOR HAMBURGER/CROSS ANIMATION */
+        /* Hamburger/Cross Animation */
         #hamburgerBtn .line {
             position: absolute;
             left: 50%;
-            width: 24px; /* w-6 */
-            height: 2px; /* h-0.5 */
-            background-color: #4A5568; /* slate-600 */
+            width: 24px;
+            height: 2px;
             border-radius: 9999px;
             transition: all 0.3s ease-in-out;
             transform-origin: center;
@@ -116,35 +116,36 @@
 <body class="bg-slate-100 text-slate-800">
 
     <!-- Header Navigation -->
-    <nav class="absolute top-0 left-0 w-full z-40">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-        <div class="flex items-center justify-between h-16 md:h-20">
-            <div class="flex-shrink-0">
-                <img src="logo-transparent.png" alt="Docgineer Labs" class="h-14 md:h-[210px] w-auto">
-            </div>
-            <div class="flex items-center space-x-4">
-                <button id="saveProfileBtn" class="hidden bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-white/30 transition-colors">Save Profile</button>
-                <div class="relative z-60">
-                    <button id="hamburgerBtn" class="relative w-10 h-10 p-2 rounded-full text-white hover:bg-white/20 transition-colors">
-                       <span class="line line-top bg-white"></span>
-                       <span class="line line-middle bg-white"></span>
-                       <span class="line line-bottom bg-white"></span>
-                    </button>
+    <nav id="dashboard-header" class="fixed top-0 left-0 w-full z-40 transition-all duration-300 ease-in-out border-b border-transparent">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+            <div class="flex items-center justify-between h-16 md:h-20">
+                <div class="flex-shrink-0">
+                    <img src="logo-transparent.png" alt="Docgineer Labs" class="h-14 md:h-[210px] w-auto logo-transparent">
+                    <img src="logo-solid.png" alt="Docgineer Labs" class="h-14 md:h-[210px] w-auto logo-solid hidden">
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="saveProfileBtn" class="hidden bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700">Save Profile</button>
+                    <div class="relative z-60">
+                         <button id="hamburgerBtn" class="icon-btn relative w-10 h-10 p-2 rounded-full text-white hover:bg-white/20 transition-colors">
+                           <span class="line line-top bg-white"></span>
+                           <span class="line line-middle bg-white"></span>
+                           <span class="line line-bottom bg-white"></span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
     <!-- Main Content Area -->
-    <main id="mainContainer" class="max-w-7xl mx-auto pt-64 pb-6 sm:px-6 lg:px-8">
-        <div class="px-4 py-6 sm:px-0">
+    <main id="mainContainer" class="max-w-7xl mx-auto pb-6 sm:px-6 lg:px-8">
+        <div class="px-4 pt-48 sm:px-0"> <!-- Added top padding to push content below the fixed header -->
             <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
 
                 <!-- Profile Header Section -->
                 <div class="mb-12">
                     <!-- Background Photo Container -->
-                    <div class="relative h-48 md:h-64 bg-slate-200 rounded-t-xl">
+                    <div class="relative h-48 md:h-64 bg-slate-200 rounded-t-xl -mt-40"> <!-- Negative margin to pull it up behind header -->
                         <img id="backgroundImage" src="https://placehold.co/1200x400/a5b4fc/1e293b?text=Cover+Photo" class="w-full h-full object-cover rounded-t-xl">
                         <button id="changeBackgroundBtn" class="edit-control absolute top-4 right-4 bg-white/90 text-slate-800 px-3 py-1.5 rounded-md text-sm font-semibold hover:bg-white shadow">Change Cover</button>
                          <input type="file" id="backgroundPicInput" accept="image/*">
@@ -187,7 +188,7 @@
                     </div>
                 </div>
 
-                <!-- About Section -->
+                <!-- About Section... and the rest of the content -->
                 <div class="mb-8">
                     <div class="flex items-center border-b-2 border-slate-200 pb-2 mb-4">
                         <h3 class="text-2xl font-bold text-slate-900">About</h3>
@@ -288,16 +289,16 @@
             </div>
             <!-- Google Meet Menu Item -->
             <a href="#" class="flex items-center px-4 py-2 text-sm text-slate-900 hover:bg-slate-100 transition-colors group" role="menuitem">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-900 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-900" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M17 10.5V7c0-1.66-1.34-3-3-3H7c-1.66 0-3 1.34-3 3v10c0 1.66 1.34 3 3 3h7c1.66 0 3-1.34 3-3v-3.5l4 4v-11l-4 4z"/>
                 </svg>
                 <span>Google Meet</span>
             </a>
             <!-- Settings Menu Item -->
-             <div id="settingsMenuItem" class="cursor-pointer group">
+            <div id="settingsMenuItem" class="cursor-pointer group">
                 <div class="flex justify-between items-center px-4 py-2 text-sm text-slate-900 hover:bg-slate-100 transition-colors">
                     <div class="flex items-center">
-                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-900 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="3"></circle>
                             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                         </svg>
@@ -319,7 +320,7 @@
                         </div>
                     </label>
                     <a href="#" id="editProfileSubMenuBtn" class="flex items-center pl-12 pr-4 py-2 text-sm text-slate-900 hover:bg-slate-100 transition-colors group">
-                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-900 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z" />
                         </svg>
                         <span>Edit Your profile</span>
@@ -333,16 +334,54 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     // --- THIS IS A SIMULATION ---
-    // In a real application, you would get this role from your server after the user logs in.
-    const currentUserRole = 'employee'; // <-- CHANGE TO 'ceo' to test CEO permissions
+    const currentUserRole = 'employee';
 
-    let isEditing = false;
+    // --- NEW HEADER SCROLL LOGIC ---
+    const header = document.getElementById('dashboard-header');
+    const logoTransparent = header.querySelector('.logo-transparent');
+    const logoSolid = header.querySelector('.logo-solid');
+    const iconBtns = header.querySelectorAll('.icon-btn');
+    const lines = header.querySelectorAll('.line');
+
+    const applySolidHeader = () => {
+        header.classList.add('backdrop-blur-sm', 'bg-white/80', 'border-gray-200');
+        logoTransparent.classList.add('hidden');
+        logoSolid.classList.remove('hidden');
+        iconBtns.forEach(btn => {
+            btn.classList.remove('text-white', 'hover:bg-white/20');
+            btn.classList.add('text-gray-500', 'hover:text-black', 'hover:bg-gray-100');
+        });
+        lines.forEach(line => line.classList.replace('bg-white', 'bg-slate-600'));
+    };
+
+    const applyTransparentHeader = () => {
+        header.classList.remove('backdrop-blur-sm', 'bg-white/80', 'border-gray-200');
+        logoTransparent.classList.remove('hidden');
+        logoSolid.classList.add('hidden');
+        iconBtns.forEach(btn => {
+            btn.classList.add('text-white', 'hover:bg-white/20');
+            btn.classList.remove('text-gray-500', 'hover:text-black', 'hover:bg-gray-100');
+        });
+        lines.forEach(line => line.classList.replace('bg-slate-600', 'bg-white'));
+    };
     
-    // --- Main Elements ---
+    const handleScroll = () => {
+        // Trigger point can be adjusted. 50px is a good starting point.
+        if (window.scrollY > 50) {
+            applySolidHeader();
+        } else {
+            applyTransparentHeader();
+        }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Set initial state on page load
+
+
+    // --- Existing Dashboard Logic ---
+    let isEditing = false;
     const mainContainer = document.getElementById('mainContainer');
     const saveProfileBtn = document.getElementById('saveProfileBtn');
-    
-    // --- Profile Elements ---
     const profilePicContainer = document.getElementById('profilePicContainer');
     const profilePicInput = document.getElementById('profilePicInput');
     const profileImage = document.getElementById('profileImage');
@@ -350,30 +389,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const backgroundPicInput = document.getElementById('backgroundPicInput');
     const changeBackgroundBtn = document.getElementById('changeBackgroundBtn');
     const positionEditIcon = document.getElementById('positionEditIcon');
-    
     const editableElements = {
         userName: document.getElementById('userName'),
         userPosition: document.getElementById('userPosition'),
         userBranch: document.getElementById('userBranch')
     };
-
-    // --- About Elements ---
     const aboutContentView = document.getElementById('aboutContentView');
     const aboutEditView = document.getElementById('aboutEditView');
     const aboutTextarea = document.getElementById('aboutTextarea');
-
-    // --- Qualifications Elements ---
     const qualificationsContentView = document.getElementById('qualificationsContentView');
     const qualificationsEditView = document.getElementById('qualificationsEditView');
     const qualificationsEditList = document.getElementById('qualificationsEditList');
     const addQualificationBtn = document.getElementById('addQualificationBtn');
-
-    // --- Achievements Elements ---
     const addAchievementCard = document.getElementById('addAchievementCard');
     const achievementFileInput = document.getElementById('achievementFileInput');
     const achievementsGrid = document.getElementById('achievementsGrid');
-
-    // --- Hamburger Menu Elements ---
     const hamburgerBtn = document.getElementById('hamburgerBtn');
     const sideMenu = document.getElementById('sideMenu');
     const menuOverlay = document.getElementById('menuOverlay');
@@ -386,50 +416,38 @@ document.addEventListener('DOMContentLoaded', () => {
     const settingsArrow = document.getElementById('settingsArrow');
     const editProfileSubMenuBtn = document.getElementById('editProfileSubMenuBtn');
 
-    // --- Enter Edit Mode ---
-    function handleEditProfile() {
+     function handleEditProfile() {
         if (isEditing) return;
         isEditing = true;
         mainContainer.classList.add('edit-mode');
         saveProfileBtn.classList.remove('hidden');
-
-        // Make fields editable based on role
         editableElements.userName.contentEditable = true;
         editableElements.userBranch.contentEditable = true;
-
         if (currentUserRole === 'ceo') {
             editableElements.userPosition.contentEditable = true;
             positionEditIcon.style.display = 'inline-block';
         } else {
             positionEditIcon.style.display = 'none';
         }
-        
         aboutTextarea.value = aboutContentView.querySelector('p').textContent.trim();
         aboutContentView.classList.add('hidden');
         aboutEditView.classList.remove('hidden');
-
         qualificationsEditList.innerHTML = '';
         qualificationsContentView.querySelectorAll('li').forEach(item => createQualificationInput(item.textContent));
         qualificationsContentView.classList.add('hidden');
         qualificationsEditView.classList.remove('hidden');
     }
-
-    // --- Save Profile and Exit Edit Mode ---
     function handleSaveProfile() {
         if (!isEditing) return;
         isEditing = false;
         mainContainer.classList.remove('edit-mode');
         saveProfileBtn.classList.add('hidden');
-
-        // Make all fields non-editable
         for (const key in editableElements) {
             editableElements[key].contentEditable = false;
         }
-
         aboutContentView.querySelector('p').textContent = aboutTextarea.value;
         aboutContentView.classList.remove('hidden');
         aboutEditView.classList.add('hidden');
-
         const list = qualificationsContentView.querySelector('ul');
         list.innerHTML = '';
         qualificationsEditList.querySelectorAll('input').forEach(input => {
@@ -442,9 +460,6 @@ document.addEventListener('DOMContentLoaded', () => {
         qualificationsContentView.classList.remove('hidden');
         qualificationsEditView.classList.add('hidden');
     }
-
-
-    // --- Profile Picture Logic ---
     profilePicContainer.addEventListener('click', () => {
         if (isEditing) profilePicInput.click();
     });
@@ -455,8 +470,6 @@ document.addEventListener('DOMContentLoaded', () => {
             reader.readAsDataURL(event.target.files[0]);
         }
     });
-
-    // --- Background Picture Logic ---
     changeBackgroundBtn.addEventListener('click', () => {
         if(isEditing) backgroundPicInput.click();
     });
@@ -467,8 +480,6 @@ document.addEventListener('DOMContentLoaded', () => {
             reader.readAsDataURL(event.target.files[0]);
         }
     });
-
-    // --- Qualification Input Management ---
     function createQualificationInput(value = '') {
         const div = document.createElement('div');
         div.className = 'flex items-center gap-2';
@@ -485,15 +496,13 @@ document.addEventListener('DOMContentLoaded', () => {
         qualificationsEditList.appendChild(div);
     }
     addQualificationBtn.addEventListener('click', () => createQualificationInput());
-
-    // --- Achievements Logic ---
     addAchievementCard.addEventListener('click', () => achievementFileInput.click());
     achievementFileInput.addEventListener('change', event => {
         if (event.target.files[0]) {
             const reader = new FileReader();
             reader.onload = e => {
                 const caption = prompt('Enter a caption for this achievement:');
-                if (caption === null) return; // Don't add if user cancels prompt
+                if (caption === null) return;
                 const newItem = document.createElement('div');
                 newItem.className = 'bg-slate-50 rounded-lg overflow-hidden shadow relative group';
                 newItem.innerHTML = `
@@ -509,54 +518,48 @@ document.addEventListener('DOMContentLoaded', () => {
             reader.readAsDataURL(event.target.files[0]);
         }
     });
-    
-    // --- Side Menu Logic ---
     function closeMenu() {
         document.body.classList.remove('menu-is-open');
         sideMenu.classList.remove('is-open');
         menuOverlay.classList.remove('is-open');
-        // Reset projects submenu state on close
         if (!projectsSubMenu.classList.contains('hidden')) {
             projectsSubMenu.classList.add('hidden');
             projectArrow.classList.remove('rotate-180');
         }
-        // Reset settings submenu state on close
-        if (!settingsSubMenu.classList.contains('hidden')) {
+        if (settingsSubMenu && !settingsSubMenu.classList.contains('hidden')) {
             settingsSubMenu.classList.add('hidden');
             settingsArrow.classList.remove('rotate-180');
         }
     }
-
     hamburgerBtn.addEventListener('click', (event) => {
         event.stopPropagation();
         document.body.classList.toggle('menu-is-open');
         sideMenu.classList.toggle('is-open');
         menuOverlay.classList.toggle('is-open');
     });
-
     closeMenuBtn.addEventListener('click', closeMenu);
     menuOverlay.addEventListener('click', closeMenu);
-
-    // Project Submenu
     projectsMenuItem.addEventListener('click', (event) => {
         event.stopPropagation();
         projectsSubMenu.classList.toggle('hidden');
         projectArrow.classList.toggle('rotate-180');
     });
 
-    // Settings Submenu
-    settingsMenuItem.addEventListener('click', (event) => {
-        event.stopPropagation();
-        settingsSubMenu.classList.toggle('hidden');
-        settingsArrow.classList.toggle('rotate-180');
-    });
-
-    // Event Listeners
-    editProfileSubMenuBtn.addEventListener('click', (event) => {
-        event.preventDefault();
-        closeMenu();
-        handleEditProfile();
-    });
+    if (settingsMenuItem) {
+        settingsMenuItem.addEventListener('click', (event) => {
+            event.stopPropagation();
+            settingsSubMenu.classList.toggle('hidden');
+            settingsArrow.classList.toggle('rotate-180');
+        });
+    }
+    
+    if(editProfileSubMenuBtn) {
+        editProfileSubMenuBtn.addEventListener('click', (event) => {
+            event.preventDefault();
+            closeMenu();
+            handleEditProfile();
+        });
+    }
 
     saveProfileBtn.addEventListener('click', handleSaveProfile);
 });
