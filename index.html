@@ -293,42 +293,34 @@ body.search-open {
         </footer>
     </div>
    <script type="module">
-    // Import the functions you need from the SDKs
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+  // Import the functions you need from the SDKs
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
 
-    // Your web app's Firebase configuration
-    const firebaseConfig = {
-        apiKey: "AIzaSyB1n-RkiDibKhlc9tOE-G-Hpz4zA8LuQGA",
-        authDomain: "docgineerlabs-b4830.firebaseapp.com",
-        projectId: "docgineerlabs-b4830",
-        storageBucket: "docgineerlabs-b4830.firebasestorage.app",
-        messagingSenderId: "338822276527",
-        appId: "1:338822276527:web:271e8761eaabcc79e8fb5a",
-        measurementId: "G-Z9NW8GFLLC"
-    };
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyB1n-RkiDibKhlc9tOE-G-Hpz4zA8LuQGA",
+    authDomain: "docgineerlabs-b4830.firebaseapp.com",
+    projectId: "docgineerlabs-b4830",
+    storageBucket: "docgineerlabs-b4830.firebasestorage.app",
+    messagingSenderId: "338822276527",
+    appId: "1:338822276527:web:271e8761eaabcc79e8fb5a",
+    measurementId: "G-Z9NW8GFLLC"
+  };
 
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const auth = getAuth(app);
 
-    // Make auth and firestore functions available to your other script
-    window.firebaseAuth = {
-        createUserWithEmailAndPassword,
-        signInWithEmailAndPassword,
-        sendEmailVerification,
-        auth
-    };
-    window.firebaseFirestore = {
-      db,
-      doc,
-      setDoc,
-      getDoc
-    };
+  // Make auth functions available to your other script
+  window.firebaseAuth = {
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    sendEmailVerification,
+    auth
+  };
 </script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -498,36 +490,19 @@ const searchableData = [
             loginForm.classList.add('hidden');
         });
 
-       // --- UPGRADED FORM SUBMISSION LOGIC ---
+      // --- NEW: FORM SUBMISSION LOGIC ---
 registerForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const fullName = document.getElementById('reg-name').value;
     const email = document.getElementById('reg-email').value;
     const password = document.getElementById('reg-password').value;
     const { createUserWithEmailAndPassword, sendEmailVerification, auth } = window.firebaseAuth;
-    const { db, doc, setDoc } = window.firebaseFirestore;
 
     createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             const user = userCredential.user;
-            // **THIS IS THE CRITICAL NEW STEP**
-            // Now, create the user profile in Firestore
-            const userDocRef = doc(db, "users", user.uid);
-            return setDoc(userDocRef, {
-                fullName: fullName,
-                email: email,
-                role: "employee", // Default role for new users
-                position: "Not Assigned",
-                branch: "Not Assigned",
-                about: `A new member of Docgineer Labs.`,
-                qualifications: []
-            }).then(() => {
-                sendEmailVerification(user); // Send verification email after profile is created
-            });
-        })
-        .then(() => {
-            alert('Registration successful! Please check your email for verification.');
-            loginTab.click(); // Switch to login tab
+            sendEmailVerification(user); 
+            alert('Registration successful! Please check your email to verify your account.');
+            loginTab.click();
         })
         .catch((error) => {
             alert('Error: ' + error.message);
@@ -539,30 +514,13 @@ loginForm.addEventListener('submit', (e) => {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
     const { signInWithEmailAndPassword, auth } = window.firebaseAuth;
-    const { db, doc, getDoc } = window.firebaseFirestore;
 
     signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
-            // Login is successful, now check the user's role before redirecting
             const user = userCredential.user;
-            const userDocRef = doc(db, "users", user.uid);
-            return getDoc(userDocRef);
-        })
-        .then((docSnap) => {
-            if (docSnap.exists()) {
-                const userData = docSnap.data();
-                // ROLE-BASED REDIRECTION
-                if (userData.role === 'ceo') {
-                   // This is where you would redirect to the admin page later
-                   alert("Admin login successful! Admin page not built yet.");
-                   // window.location.href = 'admin-dashboard.html'; 
-                } else {
-                    // For everyone else, redirect to the regular dashboard
-                    window.location.href = 'dashboard.html';
-                }
-            } else {
-                throw new Error("No user profile data found. Please register again.");
-            }
+            alert('Login successful! Welcome back.');
+            closeAllPanels();
+            handleScroll();
         })
         .catch((error) => {
             alert('Error: ' + error.message);
