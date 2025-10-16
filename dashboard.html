@@ -578,7 +578,26 @@
         
         profilePicContainer.addEventListener('click', () => { if (isEditing) profilePicInput.click(); });
         changeBackgroundBtn.addEventListener('click', () => { if(isEditing) backgroundPicInput.click(); });
+        // --- NEW: Image Preview Logic ---
+profilePicInput.addEventListener('change', function(event) {
+    if (event.target.files && event.target.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            profileImage.src = e.target.result;
+        }
+        reader.readAsDataURL(event.target.files[0]);
+    }
+});
 
+backgroundPicInput.addEventListener('change', function(event) {
+    if (event.target.files && event.target.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            backgroundImage.src = e.target.result;
+        }
+        reader.readAsDataURL(event.target.files[0]);
+    }
+});
         const header = document.getElementById('dashboard-header');
         const logoTransparent = header.querySelector('.logo-transparent');
         const logoSolid = header.querySelector('.logo-solid');
