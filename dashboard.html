@@ -120,16 +120,16 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
             <div class="flex items-center justify-between h-16 md:h-20">
                 <div class="flex-shrink-0">
-                    <img src="logo-transparent.png" alt="Docgineer Labs" class="h-14 md:h-[210px] w-auto logo-transparent">
-                    <img src="logo-solid.png" alt="Docgineer Labs" class="h-14 md:h-[210px] w-auto logo-solid hidden">
+                    <img src="logo-transparent.png" alt="Docgineer Labs" class="h-14 md:h-[210px] w-auto logo-transparent hidden">
+                    <img src="logo-solid.png" alt="Docgineer Labs" class="h-14 md:h-[210px] w-auto logo-solid">
                 </div>
                 <div class="flex items-center space-x-4">
                     <button id="saveProfileBtn" class="hidden bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700">Save Profile</button>
                     <div class="relative z-60">
-                         <button id="hamburgerBtn" class="icon-btn relative w-10 h-10 p-2 rounded-full text-white hover:bg-white/20 transition-colors">
-                           <span class="line line-top bg-white"></span>
-                           <span class="line line-middle bg-white"></span>
-                           <span class="line line-bottom bg-white"></span>
+                         <button id="hamburgerBtn" class="icon-btn relative w-10 h-10 p-2 rounded-full text-gray-500 hover:text-black hover:bg-gray-100 transition-colors">
+                           <span class="line line-top bg-slate-600"></span>
+                           <span class="line line-middle bg-slate-600"></span>
+                           <span class="line line-bottom bg-slate-600"></span>
                         </button>
                     </div>
                 </div>
@@ -138,53 +138,48 @@
     </nav>
 
     <!-- Main Content Area -->
-    <main id="mainContainer" class="max-w-7xl mx-auto pb-6 sm:px-6 lg:px-8">
-        <div class="px-4 pt-48 sm:px-0"> <!-- Added top padding to push content below the fixed header -->
-            <div class="bg-white rounded-xl shadow-lg p-6 md:p-8">
-
-                <!-- Profile Header Section -->
-                <div class="mb-12">
-                    <!-- Background Photo Container -->
-                    <div class="relative h-48 md:h-64 bg-slate-200 rounded-t-xl -mt-40"> <!-- Negative margin to pull it up behind header -->
-                        <img id="backgroundImage" src="https://placehold.co/1200x400/a5b4fc/1e293b?text=Cover+Photo" class="w-full h-full object-cover rounded-t-xl">
-                        <button id="changeBackgroundBtn" class="edit-control absolute top-4 right-4 bg-white/90 text-slate-800 px-3 py-1.5 rounded-md text-sm font-semibold hover:bg-white shadow">Change Cover</button>
-                         <input type="file" id="backgroundPicInput" accept="image/*">
-                    </div>
-                    
-                    <!-- User Info Bar -->
-                    <div class="px-4">
-                        <div class="flex flex-row items-end -mt-10 md:-mt-12 relative">
-                             <!-- Profile Photo -->
-                            <div class="flex-shrink-0">
-                                <div id="profilePicContainer" class="profile-pic-wrapper h-32 w-32 md:h-40 md:w-40 border-4 border-white rounded-full bg-slate-200">
-                                    <img id="profileImage" class="h-full w-full rounded-full object-cover" src="https://placehold.co/200x200/e2e8f0/334155?text=Photo" alt="User profile picture">
-                                    <div class="profile-pic-overlay">
-                                        <span class="text-center text-xs font-semibold">Change</span>
-                                    </div>
-                                </div>
-                            </div>
-                             <input type="file" id="profilePicInput" accept="image/*">
-                            
-                            <!-- User Details -->
-                            <div class="ml-4 md:ml-6 text-left w-full">
-                                <div class="flex items-center">
-                                    <h2 id="userName" class="text-2xl md:text-3xl font-bold text-slate-900 focus:outline-none focus:bg-indigo-100 rounded px-2">User Name</h2>
-                                    <span class="edit-icon">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg>
-                                    </span>
-                                </div>
-                                <p class="text-slate-900 mt-1 flex items-center">Position: <span id="userPosition" class="font-medium focus:outline-none focus:bg-indigo-100 rounded px-1">Software Engineer</span>
-                                    <span class="edit-icon" id="positionEditIcon">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg>
-                                    </span>
-                                </p>
-                                <p class="text-slate-900 flex items-center">Branch: <span id="userBranch" class="font-medium focus:outline-none focus:bg-indigo-100 rounded px-1">Computer Science</span>
-                                    <span class="edit-icon">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg>
-                                    </span>
-                                </p>
+    <main id="mainContainer">
+        <!-- Background Photo Container -->
+        <div class="relative h-64 md:h-80 w-full">
+            <img id="backgroundImage" src="https://placehold.co/1200x400/a5b4fc/1e293b?text=Cover+Photo" class="absolute inset-0 w-full h-full object-cover">
+            <button id="changeBackgroundBtn" class="edit-control absolute top-32 right-4 bg-white/90 text-slate-800 px-3 py-1.5 rounded-md text-sm font-semibold hover:bg-white shadow">Change Cover</button>
+            <input type="file" id="backgroundPicInput" accept="image/*">
+        </div>
+        
+        <!-- Profile Content -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+            <div class="relative bg-white rounded-xl shadow-lg p-6 md:p-8 -mt-24">
+                <!-- User Info Bar -->
+                <div class="flex flex-row items-end mb-12">
+                     <!-- Profile Photo -->
+                    <div class="flex-shrink-0 -mt-20">
+                        <div id="profilePicContainer" class="profile-pic-wrapper h-32 w-32 md:h-40 md:w-40 border-4 border-white rounded-full bg-slate-200">
+                            <img id="profileImage" class="h-full w-full rounded-full object-cover" src="https://placehold.co/200x200/e2e8f0/334155?text=Photo" alt="User profile picture">
+                            <div class="profile-pic-overlay">
+                                <span class="text-center text-xs font-semibold">Change</span>
                             </div>
                         </div>
+                        <input type="file" id="profilePicInput" accept="image/*">
+                    </div>
+                    
+                    <!-- User Details -->
+                    <div class="ml-4 md:ml-6 text-left w-full">
+                        <div class="flex items-center">
+                            <h2 id="userName" class="text-2xl md:text-3xl font-bold text-slate-900 focus:outline-none focus:bg-indigo-100 rounded px-2">User Name</h2>
+                            <span class="edit-icon">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg>
+                            </span>
+                        </div>
+                        <p class="text-slate-900 mt-1 flex items-center">Position: <span id="userPosition" class="font-medium focus:outline-none focus:bg-indigo-100 rounded px-1">Software Engineer</span>
+                            <span class="edit-icon" id="positionEditIcon">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg>
+                            </span>
+                        </p>
+                        <p class="text-slate-900 flex items-center">Branch: <span id="userBranch" class="font-medium focus:outline-none focus:bg-indigo-100 rounded px-1">Computer Science</span>
+                            <span class="edit-icon">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg>
+                            </span>
+                        </p>
                     </div>
                 </div>
 
@@ -345,32 +340,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const applySolidHeader = () => {
         header.classList.add('backdrop-blur-sm', 'bg-white/80', 'border-gray-200');
-        logoTransparent.classList.add('hidden');
-        logoSolid.classList.remove('hidden');
+        lines.forEach(line => line.classList.replace('bg-white', 'bg-slate-600'));
         iconBtns.forEach(btn => {
             btn.classList.remove('text-white', 'hover:bg-white/20');
             btn.classList.add('text-gray-500', 'hover:text-black', 'hover:bg-gray-100');
         });
-        lines.forEach(line => line.classList.replace('bg-white', 'bg-slate-600'));
     };
 
     const applyTransparentHeader = () => {
         header.classList.remove('backdrop-blur-sm', 'bg-white/80', 'border-gray-200');
-        logoTransparent.classList.remove('hidden');
-        logoSolid.classList.add('hidden');
+        lines.forEach(line => line.classList.replace('bg-slate-600', 'bg-white'));
         iconBtns.forEach(btn => {
             btn.classList.add('text-white', 'hover:bg-white/20');
             btn.classList.remove('text-gray-500', 'hover:text-black', 'hover:bg-gray-100');
         });
-        lines.forEach(line => line.classList.replace('bg-slate-600', 'bg-white'));
     };
     
     const handleScroll = () => {
-        // Trigger point can be adjusted. 50px is a good starting point.
         if (window.scrollY > 50) {
+            logoTransparent.classList.add('hidden');
+            logoSolid.classList.remove('hidden');
             applySolidHeader();
         } else {
-            applyTransparentHeader();
+            // This is the main change: We default to the solid (black) logo for visibility
+            logoTransparent.classList.add('hidden');
+            logoSolid.classList.remove('hidden');
+            // We also give the icons their "solid" look by default for visibility
+            applySolidHeader();
+            // But we remove the background to keep it transparent at the top
+            header.classList.remove('backdrop-blur-sm', 'bg-white/80', 'border-gray-200');
         }
     };
 
