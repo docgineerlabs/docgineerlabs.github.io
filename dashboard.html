@@ -339,7 +339,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
     import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
-
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-storage.js";
     // Your web app's Firebase configuration
     const firebaseConfig = {
         apiKey: "AIzaSyB1n-RkiDibKhlc9tOE-G-Hpz4zA8LuQGA",
@@ -355,7 +355,7 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-
+    const storage = getStorage(app);
     document.addEventListener('DOMContentLoaded', () => {
         const loadingOverlay = document.getElementById('loading-overlay');
         const mainContainer = document.getElementById('mainContainer');
@@ -374,40 +374,48 @@
         });
 
         async function loadUserProfile(userId) {
-            const userDocRef = doc(db, "users", userId);
-            try {
-                const userDocSnap = await getDoc(userDocRef);
-                if (userDocSnap.exists()) {
-                    const userData = userDocSnap.data();
-                    currentUserRole = userData.role || 'employee';
-                    
-                    document.getElementById('userName').textContent = userData.fullName || 'User Name';
-                    document.getElementById('userPosition').textContent = userData.position || 'N/A';
-                    document.getElementById('userBranch').textContent = userData.branch || 'N/A';
-                    document.getElementById('aboutText').textContent = userData.about || 'No information provided.';
+    const userDocRef = doc(db, "users", userId);
+    try {
+        const userDocSnap = await getDoc(userDocRef);
+        if (userDocSnap.exists()) {
+            const userData = userDocSnap.data();
+            currentUserRole = userData.role || 'employee';
+            
+            document.getElementById('userName').textContent = userData.fullName || 'User Name';
+            document.getElementById('userPosition').textContent = userData.position || 'N/A';
+            document.getElementById('userBranch').textContent = userData.branch || 'N/A';
+            document.getElementById('aboutText').textContent = userData.about || 'No information provided.';
 
-                    const qualificationsList = document.getElementById('qualificationsList');
-                    qualificationsList.innerHTML = '';
-                    if (userData.qualifications && userData.qualifications.length > 0) {
-                        userData.qualifications.forEach(q => {
-                            const li = document.createElement('li');
-                            li.textContent = q;
-                            qualificationsList.appendChild(li);
-                        });
-                    } else {
-                        qualificationsList.innerHTML = '<li>No qualifications listed.</li>';
-                    }
-
-                    loadingOverlay.style.display = 'none';
-                    mainContainer.classList.remove('opacity-0');
-                } else {
-                    throw new Error("User profile not found in database.");
-                }
-            } catch(error) {
-                console.error("Error loading user profile:", error);
-                loadingOverlay.innerHTML = '<p class="text-red-500">Error loading profile.</p>';
+            // *** NEW: Load images from saved URLs ***
+            if (userData.profileImageUrl) {
+                profileImage.src = userData.profileImageUrl;
             }
+            if (userData.coverImageUrl) {
+                backgroundImage.src = userData.coverImageUrl;
+            }
+
+            const qualificationsList = document.getElementById('qualificationsList');
+            qualificationsList.innerHTML = '';
+            if (userData.qualifications && userData.qualifications.length > 0) {
+                userData.qualifications.forEach(q => {
+                    const li = document.createElement('li');
+                    li.textContent = q;
+                    qualificationsList.appendChild(li);
+                });
+            } else {
+                qualificationsList.innerHTML = '<li>No qualifications listed.</li>';
+            }
+
+            loadingOverlay.style.display = 'none';
+            mainContainer.classList.remove('opacity-0');
+        } else {
+            throw new Error("User profile not found in database.");
         }
+    } catch(error) {
+        console.error("Error loading user profile:", error);
+        loadingOverlay.innerHTML = '<p class="text-red-500">Error loading profile.</p>';
+    }
+}
 
         let isEditing = false;
         
@@ -475,60 +483,97 @@
             qualificationsEditView.classList.remove('hidden');
         }
 
-        async function handleSaveProfile() {
-            if (!isEditing || !currentUserId) return;
-            
-            const newQualifications = Array.from(qualificationsEditList.querySelectorAll('input'))
-                .map(input => input.value.trim())
-                .filter(value => value);
+       // Helper function to convert Data URL to a file for uploading
+function dataURLtoBlob(dataurl) {
+    var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+    while(n--){
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new Blob([u8arr], {type:mime});
+}
 
-            const updatedData = {
-                fullName: editableElements.userName.textContent.trim(),
-                branch: editableElements.userBranch.textContent.trim(),
-                about: aboutTextarea.value.trim(),
-                qualifications: newQualifications
-            };
+async function handleSaveProfile() {
+    if (!isEditing || !currentUserId) return;
+    
+    saveProfileBtn.disabled = true;
+    saveProfileBtn.textContent = 'Saving...';
 
-            if(currentUserRole === 'ceo') {
-                updatedData.position = editableElements.userPosition.textContent.trim();
-            }
+    try {
+        // --- Image Upload Logic ---
+        const profilePicFile = profilePicInput.files[0];
+        const backgroundPicFile = backgroundPicInput.files[0];
+        let profileImageUrl = null;
+        let coverImageUrl = null;
 
-            try {
-                const userDocRef = doc(db, "users", currentUserId);
-                await updateDoc(userDocRef, updatedData);
-                
-                isEditing = false;
-                mainContainer.classList.remove('edit-mode');
-                saveProfileBtn.classList.add('hidden');
-
-                Object.values(editableElements).forEach(el => el.contentEditable = false);
-
-                document.getElementById('aboutText').textContent = updatedData.about;
-                aboutContentView.classList.remove('hidden');
-                aboutEditView.classList.add('hidden');
-
-                const qualificationsList = document.getElementById('qualificationsList');
-                qualificationsList.innerHTML = '';
-                if (updatedData.qualifications.length > 0) {
-                    updatedData.qualifications.forEach(q => {
-                        const li = document.createElement('li');
-                        li.textContent = q;
-                        qualificationsList.appendChild(li);
-                    });
-                } else {
-                    qualificationsList.innerHTML = '<li>No qualifications listed.</li>';
-                }
-                qualificationsContentView.classList.remove('hidden');
-                qualificationsEditView.classList.add('hidden');
-
-                alert("Profile updated successfully!");
-
-            } catch (error) {
-                console.error("Error updating document: ", error);
-                alert("Failed to update profile. Please try again.");
-            }
+        if (profilePicFile) {
+            const profileImageRef = ref(storage, `profileImages/${currentUserId}`);
+            await uploadBytes(profileImageRef, profilePicFile);
+            profileImageUrl = await getDownloadURL(profileImageRef);
         }
 
+        if (backgroundPicFile) {
+            const coverImageRef = ref(storage, `coverImages/${currentUserId}`);
+            await uploadBytes(coverImageRef, backgroundPicFile);
+            coverImageUrl = await getDownloadURL(coverImageRef);
+        }
+
+        // --- Firestore Data Update Logic ---
+        const newQualifications = Array.from(qualificationsEditList.querySelectorAll('input'))
+            .map(input => input.value.trim())
+            .filter(value => value);
+
+        const updatedData = {
+            fullName: editableElements.userName.textContent.trim(),
+            branch: editableElements.userBranch.textContent.trim(),
+            about: aboutTextarea.value.trim(),
+            qualifications: newQualifications
+        };
+
+        if(profileImageUrl) updatedData.profileImageUrl = profileImageUrl;
+        if(coverImageUrl) updatedData.coverImageUrl = coverImageUrl;
+        
+        if(currentUserRole === 'ceo') {
+            updatedData.position = editableElements.userPosition.textContent.trim();
+        }
+
+        const userDocRef = doc(db, "users", currentUserId);
+        await updateDoc(userDocRef, updatedData);
+        
+        isEditing = false;
+        mainContainer.classList.remove('edit-mode');
+        saveProfileBtn.classList.add('hidden');
+
+        Object.values(editableElements).forEach(el => el.contentEditable = false);
+
+        document.getElementById('aboutText').textContent = updatedData.about;
+        aboutContentView.classList.remove('hidden');
+        aboutEditView.classList.add('hidden');
+
+        const qualificationsList = document.getElementById('qualificationsList');
+        qualificationsList.innerHTML = '';
+        if (updatedData.qualifications.length > 0) {
+            updatedData.qualifications.forEach(q => {
+                const li = document.createElement('li');
+                li.textContent = q;
+                qualificationsList.appendChild(li);
+            });
+        } else {
+            qualificationsList.innerHTML = '<li>No qualifications listed.</li>';
+        }
+        qualificationsContentView.classList.remove('hidden');
+        qualificationsEditView.classList.add('hidden');
+        
+        alert("Profile updated successfully!");
+
+    } catch (error) {
+        console.error("Error updating document: ", error);
+        alert("Failed to update profile. Please try again.");
+    } finally {
+        saveProfileBtn.disabled = false;
+        saveProfileBtn.textContent = 'Save Profile';
+    }
+}
         function createQualificationInput(value = '') {
             const div = document.createElement('div');
             div.className = 'flex items-center gap-2';
