@@ -297,6 +297,8 @@
 		import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
 		import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics.js";
 		import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+        // *** ADD THESE IMPORTS ***
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
 		// Your web app's Firebase configuration
 		const firebaseConfig = {
@@ -313,13 +315,20 @@
 		const app = initializeApp(firebaseConfig);
 		const analytics = getAnalytics(app);
 		const auth = getAuth(app);
+        // *** INITIALIZE FIRESTORE ***
+        const db = getFirestore(app);
+
 
 		// Make auth functions available to your other script
 		window.firebaseAuth = {
 			createUserWithEmailAndPassword,
 			signInWithEmailAndPassword,
 			sendEmailVerification,
-			auth
+			auth,
+            // *** MAKE FIRESTORE FUNCTIONS AVAILABLE ***
+            db,
+            doc,
+            setDoc
 		};
 	</script>
     <script>
@@ -494,13 +503,28 @@
         // --- FORM SUBMISSION LOGIC ---
         registerForm.addEventListener('submit', (e) => {
             e.preventDefault();
+            const fullName = document.getElementById('reg-name').value;
             const email = document.getElementById('reg-email').value;
             const password = document.getElementById('reg-password').value;
-            const { createUserWithEmailAndPassword, sendEmailVerification, auth } = window.firebaseAuth;
+            const { createUserWithEmailAndPassword, sendEmailVerification, auth, db, doc, setDoc } = window.firebaseAuth;
 
             createUserWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
+                .then(async (userCredential) => {
                     const user = userCredential.user;
+                    
+                    // *** THIS IS THE NEW PART ***
+                    // Create a document in Firestore for the new user
+                    const userDocRef = doc(db, "users", user.uid);
+                    await setDoc(userDocRef, {
+                        fullName: fullName,
+                        email: email,
+                        role: 'employee', // Default role
+                        position: 'N/A',
+                        branch: 'N/A',
+                        about: 'This is a new user profile. Please update your information.',
+                        qualifications: []
+                    });
+                    
                     sendEmailVerification(user); 
                     alert('Registration successful! Please check your email to verify your account.');
                     loginTab.click();
@@ -518,8 +542,6 @@
 
             signInWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
-                    // *** THIS IS THE CHANGE ***
-                    // On successful login, redirect to the dashboard.
                     window.location.href = 'dashboard.html';
                 })
                 .catch((error) => {
