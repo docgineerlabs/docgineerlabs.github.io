@@ -267,11 +267,22 @@
                     </div>
                     
                     <div class="ml-0 sm:ml-6 text-center sm:text-left">
-                        <h2 id="memberName" class="text-2xl md:text-3xl font-bold text-slate-900">User Name</h2>
-                        <p id="memberContact" class="text-slate-600 mt-1 font-medium">email@example.com</p>
+                        <div class="flex items-center justify-center sm:justify-start">
+                            <h2 id="memberName" class="text-2xl md:text-3xl font-bold text-slate-900 focus:outline-none focus:bg-indigo-100 rounded px-2">User Name</h2>
+                            <span class="edit-icon">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg>
+                            </span>
+                        </div>
+                        <p id="memberEmail" class="text-slate-600 mt-1 font-medium">email@example.com</p>
+                        <div class="text-slate-600 mt-1 flex items-center justify-center sm:justify-start">
+                            Contact:
+                            <span id="memberContact" class="font-medium focus:outline-none focus:bg-indigo-100 rounded px-1 ml-1">N/A</span>
+                            <span class="edit-icon">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg>
+                            </span>
+                        </div>
                         <p class="text-sm text-indigo-600 font-semibold mt-1">Role: Member</p>
                     </div>
-                </div>
 
                 <div class.mb-8">
                     <div class="flex items-center border-b-2 border-slate-200 pb-2 mb-4">
@@ -313,19 +324,19 @@
     <div id="menuOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 opacity-0 pointer-events-none transition-opacity duration-300"></div>
 
     <!-- Side Menu -->
-    <div id="sideMenu" class="fixed top-0 right-0 h-full w-72 bg-white shadow-lg z-50 transform translate-x-full transition-transform duration-300 ease-in-out">
-        <div class="flex justify-between items-center h-16 px-4 border-b border-slate-200">
+    <div id="sideMenu" class="fixed top-0 right-0 h-full w-72 bg-white shadow-lg z-50 transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+        <div class="flex justify-between items-center h-16 px-4 border-b border-slate-200 flex-shrink-0">
             <h3 class="font-bold text-lg text-slate-900">Menu</h3>
             <button id="closeMenuBtn" class="p-2 rounded-md hover:bg-slate-200 text-slate-600">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
-        <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-            <!-- Projects Menu Item -->
+        
+        <nav id="employeeNavLinks" class="hidden flex-grow py-1 overflow-y-auto" role="menu" aria-orientation="vertical">
             <div id="projectsMenuItem" class="cursor-pointer group">
-                <div class="flex justify-between items-center px-4 py-2 text-sm text-slate-900 hover:bg-slate-100 transition-colors">
+                <div class="flex justify-between items-center px-4 py-3 text-sm text-slate-900 hover:bg-slate-100 transition-colors">
                     <div class="flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-900 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                         </svg>
                         <span>Projects</span>
@@ -337,16 +348,14 @@
                     <a href="#" class="block pl-12 pr-4 py-2 text-sm text-slate-900 hover:bg-slate-100 transition-colors">Future Project</a>
                 </div>
             </div>
-            <!-- Google Meet Menu Item -->
-            <a href="#" class="flex items-center px-4 py-2 text-sm text-slate-900 hover:bg-slate-100 transition-colors group" role="menuitem">
+            <a href="#" class="flex items-center px-4 py-3 text-sm text-slate-900 hover:bg-slate-100 transition-colors group" role="menuitem">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-900" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M17 10.5V7c0-1.66-1.34-3-3-3H7c-1.66 0-3 1.34-3 3v10c0 1.66 1.34 3 3 3h7c1.66 0 3-1.34 3-3v-3.5l4 4v-11l-4 4z"/>
                 </svg>
                 <span>Google Meet</span>
             </a>
-            <!-- Settings Menu Item -->
             <div id="settingsMenuItem" class="cursor-pointer group">
-                <div class="flex justify-between items-center px-4 py-2 text-sm text-slate-900 hover:bg-slate-100 transition-colors">
+                <div class="flex justify-between items-center px-4 py-3 text-sm text-slate-900 hover:bg-slate-100 transition-colors">
                     <div class="flex items-center">
                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="3"></circle>
@@ -358,40 +367,55 @@
                 </div>
                 <div id="settingsSubMenu" class="hidden bg-slate-50">
                     <label for="privateAccountToggle" class="flex items-center justify-between pl-12 pr-4 py-2 text-sm text-slate-900 hover:bg-slate-100 transition-colors group cursor-pointer">
-                        <div class="flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                            </svg>
-                            <span>Make my account Private</span>
-                        </div>
-                        <div class="relative inline-flex items-center">
-                            <input type="checkbox" id="privateAccountToggle" class="sr-only peer">
-                            <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
-                        </div>
-                    </label>
-                    <a href="#" id="editProfileSubMenuBtn" class="flex items-center pl-12 pr-4 py-2 text-sm text-slate-900 hover:bg-slate-100 transition-colors group">
+                        </label>
+                    <a href="#" id="employeeEditProfileBtn" class="flex items-center pl-12 pr-4 py-2 text-sm text-slate-900 hover:bg-slate-100 transition-colors group">
                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                          <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z" />
+                           <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z" />
                         </svg>
                         <span>Edit Your profile</span>
                     </a>
                 </div>
             </div>
+        </nav>
+
+        <nav id="memberNavLinks" class="hidden flex-grow py-1 overflow-y-auto" role="menu" aria-orientation="vertical">
+            <a href="#" class="flex items-center px-4 py-3 text-sm text-slate-900 hover:bg-slate-100 transition-colors group" role="menuitem">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-900" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17 10.5V7c0-1.66-1.34-3-3-3H7c-1.66 0-3 1.34-3 3v10c0 1.66 1.34 3 3 3h7c1.66 0 3-1.34 3-3v-3.5l4 4v-11l-4 4z"/>
+                </svg>
+                <span>Google Meet</span>
+            </a>
+            
+            <a href="#" id="memberEditProfileBtn" class="flex items-center px-4 py-3 text-sm text-slate-900 hover:bg-slate-100 transition-colors group" role="menuitem">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                   <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z" />
+                </svg>
+                <span>Edit Your profile</span>
+            </a>
+
+            <a href="https://docgineerlabs.com" target="_blank" class="flex items-center px-4 py-3 text-sm text-slate-900 hover:bg-slate-100 transition-colors group" role="menuitem">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                 </svg>
+                <span>Support Docgineer Labs</span>
+            </a>
+        </nav>
+
+        <div class="flex-shrink-0 border-t border-slate-200">
+            <a href="#" id="logoutBtn" class="flex items-center px-4 py-3 text-sm text-slate-900 hover:bg-slate-100 transition-colors group" role="menuitem">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                <span>Logout</span>
+            </a>
         </div>
     </div>
-<!-- Logout Button -->
-<a href="#" id="logoutBtn" class="flex items-center px-4 py-2 text-sm text-slate-900 hover:bg-slate-100 transition-colors group" role="menuitem">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-    </svg>
-    <span>Logout</span>
-</a>
+
 
 <script type="module">
     // Import Firebase modules
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
-    // *** MODIFIED FIRESTORE IMPORT ***
     import { getFirestore, doc, getDoc, updateDoc, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-storage.js";
     
@@ -419,14 +443,12 @@
 
         // --- EMPLOYEE DASHBOARD ELEMENTS ---
         const employeeContainer = document.getElementById('mainContainer');
-        const saveProfileBtn = document.getElementById('saveProfileBtn');
         const profilePicContainer = document.getElementById('profilePicContainer');
-        const profilePicInput = document.getElementById('profilePicInput');
+        const profilePicInput = document.getElementById('profilePicInput'); // This is shared
         const profileImage = document.getElementById('profileImage');
         const backgroundImage = document.getElementById('backgroundImage');
         const backgroundPicInput = document.getElementById('backgroundPicInput');
         const changeBackgroundBtn = document.getElementById('changeBackgroundBtn');
-        const positionEditIcon = document.getElementById('positionEditIcon');
         const editableElements = {
             userName: document.getElementById('userName'),
             userPosition: document.getElementById('userPosition'),
@@ -439,14 +461,12 @@
         const qualificationsEditView = document.getElementById('qualificationsEditView');
         const qualificationsEditList = document.getElementById('qualificationsEditList');
         const addQualificationBtn = document.getElementById('addQualificationBtn');
-        const addAchievementCard = document.getElementById('addAchievementCard');
-        const achievementFileInput = document.getElementById('achievementFileInput');
-        const achievementsGrid = document.getElementById('achievementsGrid');
 
-        // --- NEW: MEMBER DASHBOARD ELEMENTS ---
+        // --- MEMBER DASHBOARD ELEMENTS ---
         const memberContainer = document.getElementById('memberContainer');
         const memberProfileImage = document.getElementById('memberProfileImage');
         const memberName = document.getElementById('memberName');
+        const memberEmail = document.getElementById('memberEmail');
         const memberContact = document.getElementById('memberContact');
         const ideaForm = document.getElementById('ideaForm');
         const ideaText = document.getElementById('ideaText');
@@ -455,21 +475,31 @@
         const submitIdeaBtn = document.getElementById('submitIdeaBtn');
 
         // --- SHARED NAV/MENU ELEMENTS ---
+        const saveProfileBtn = document.getElementById('saveProfileBtn');
         const hamburgerBtn = document.getElementById('hamburgerBtn');
         const sideMenu = document.getElementById('sideMenu');
         const menuOverlay = document.getElementById('menuOverlay');
         const closeMenuBtn = document.getElementById('closeMenuBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const header = document.getElementById('dashboard-header');
+
+        // --- ROLE-BASED MENU ELEMENTS ---
+        const employeeNavLinks = document.getElementById('employeeNavLinks');
+        const memberNavLinks = document.getElementById('memberNavLinks');
+        
+        // Employee Menu
         const projectsMenuItem = document.getElementById('projectsMenuItem');
         const projectsSubMenu = document.getElementById('projectsSubMenu');
         const projectArrow = document.getElementById('projectArrow');
         const settingsMenuItem = document.getElementById('settingsMenuItem');
         const settingsSubMenu = document.getElementById('settingsSubMenu');
         const settingsArrow = document.getElementById('settingsArrow');
-        const editProfileSubMenuBtn = document.getElementById('editProfileSubMenuBtn');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const header = document.getElementById('dashboard-header');
+        const employeeEditProfileBtn = document.getElementById('employeeEditProfileBtn');
 
-        let isEditing = false; // For employee profile
+        // Member Menu
+        const memberEditProfileBtn = document.getElementById('memberEditProfileBtn');
+
+        let isEditing = false; 
 
         // --- AUTHENTICATION CHECK ---
         onAuthStateChanged(auth, async (user) => {
@@ -477,7 +507,6 @@
                 currentUserId = user.uid;
                 await loadUserProfile(user.uid);
             } else {
-                // If no user is logged in, redirect to the index page.
                 window.location.href = './index.html';
             }
         });
@@ -489,28 +518,29 @@
                 const userDocSnap = await getDoc(userDocRef);
                 if (userDocSnap.exists()) {
                     const userData = userDocSnap.data();
-                    currentUserRole = userData.role || 'employee'; // Default to 'employee' if no role
+                    currentUserRole = userData.role || 'employee';
 
-                    // --- ROLE-BASED DASHBOARD ROUTING ---
                     if (currentUserRole === 'member') {
-                        // --- SHOW MEMBER DASHBOARD ---
+                        // --- SHOW MEMBER DASHBOARD & MENU ---
                         employeeContainer.style.display = 'none';
                         memberContainer.classList.remove('hidden');
-                        
-                        // Hide employee-only menu items
-                        editProfileSubMenuBtn.style.display = 'none'; 
+                        employeeNavLinks.classList.add('hidden');
+                        memberNavLinks.classList.remove('hidden'); // Show member menu
                         
                         // Populate member fields
                         memberName.textContent = userData.fullName || 'User Name';
-                        memberContact.textContent = userData.email || 'No email';
+                        memberEmail.textContent = userData.email || 'No email';
+                        memberContact.textContent = userData.contactPhone || 'N/A';
                         if (userData.profileImageUrl) {
                             memberProfileImage.src = userData.profileImageUrl;
                         }
 
-                    } else { // 'employee', 'ceo', or any other role
-                        // --- SHOW EMPLOYEE DASHBOARD ---
+                    } else { 
+                        // --- SHOW EMPLOYEE DASHBOARD & MENU ---
                         memberContainer.style.display = 'none';
                         employeeContainer.classList.remove('hidden'); 
+                        employeeNavLinks.classList.remove('hidden'); // Show employee menu
+                        memberNavLinks.classList.add('hidden');
                         
                         // Populate employee fields
                         editableElements.userName.textContent = userData.fullName || 'User Name';
@@ -538,7 +568,6 @@
                         }
                     }
                     
-                    // Hide loading screen
                     loadingOverlay.style.display = 'none';
 
                 } else {
@@ -550,11 +579,11 @@
             }
         }
 
-       // --- *** MODIFIED: IDEA SUBMISSION LOGIC *** ---
+        // --- MEMBER IDEA SUBMISSION LOGIC (No changes) ---
         ideaFile.addEventListener('change', () => {
             if (ideaFile.files.length > 0) {
                 ideaFileName.textContent = ideaFile.files[0].name;
-                ideaFileName.classList.add('text-indigo-600'); // Show selection
+                ideaFileName.classList.add('text-indigo-600');
             } else {
                 ideaFileName.textContent = 'Click to upload a file';
                 ideaFileName.classList.remove('text-indigo-600');
@@ -565,12 +594,10 @@
             e.preventDefault();
             if (!currentUserId) return;
 
-            // Get values from all fields
             const aboutYourself = document.getElementById('aboutYourselfText').value.trim();
             const ideaDescription = ideaText.value.trim();
             const file = ideaFile.files[0];
 
-            // --- MANDATORY FIELD CHECKS ---
             if (!ideaDescription) {
                 alert('Please tell us about your idea before submitting.');
                 return;
@@ -579,32 +606,29 @@
                 alert('Please add a photo or video to support your idea.');
                 return;
             }
-            // --- End of checks ---
 
             submitIdeaBtn.disabled = true;
             submitIdeaBtn.textContent = 'Submitting...';
 
             try {
                 let fileUrl = null;
-                // 1. Upload file (we know it exists)
                 const ideaFileRef = ref(storage, `ideaSubmissions/${currentUserId}/${Date.now()}_${file.name}`);
                 await uploadBytes(ideaFileRef, file);
                 fileUrl = await getDownloadURL(ideaFileRef);
 
-                // 2. Save idea to Firestore
                 await addDoc(collection(db, "ideaSubmissions"), {
                     userId: currentUserId,
                     userName: memberName.textContent,
-                    userEmail: memberContact.textContent,
-                    aboutUser: aboutYourself,      // <-- ADDED THIS FIELD
+                    userEmail: memberEmail.textContent,
+                    aboutUser: aboutYourself,
                     description: ideaDescription,
-                    fileUrl: fileUrl,              // This is now mandatory
+                    fileUrl: fileUrl,
                     submittedAt: serverTimestamp(),
                     status: 'new'
                 });
 
                 alert('Thank you! Your idea has been submitted successfully.');
-                ideaForm.reset(); // Clear the form
+                ideaForm.reset();
                 ideaFileName.textContent = 'Click to upload a file';
                 ideaFileName.classList.remove('text-indigo-600');
 
@@ -618,34 +642,45 @@
         });
 
 
-        // --- EMPLOYEE PROFILE EDIT/SAVE LOGIC (No changes below) ---
+        // --- *** MODIFIED: UNIVERSAL PROFILE EDIT/SAVE LOGIC *** ---
+
         function handleEditProfile() {
             if (isEditing) return;
             isEditing = true;
-            employeeContainer.classList.add('edit-mode');
-            saveProfileBtn.classList.remove('hidden');
-            editableElements.userName.contentEditable = true;
-            editableElements.userBranch.contentEditable = true;
-
-            if (currentUserRole === 'ceo') {
-                editableElements.userPosition.contentEditable = true;
-                positionEditIcon.style.display = 'inline-block';
-            } else {
-                positionEditIcon.style.display = 'none';
-            }
             
-            aboutTextarea.value = document.getElementById('aboutText').textContent.trim();
-            aboutContentView.classList.add('hidden');
-            aboutEditView.classList.remove('hidden');
+            saveProfileBtn.classList.remove('hidden');
 
-            qualificationsEditList.innerHTML = '';
-            document.querySelectorAll('#qualificationsList li').forEach(item => {
-                if (item.textContent !== 'No qualifications listed.') {
-                    createQualificationInput(item.textContent);
-                }
-            });
-            qualificationsContentView.classList.add('hidden');
-            qualificationsEditView.classList.remove('hidden');
+            if (currentUserRole === 'member') {
+                // --- MEMBER EDIT MODE ---
+                memberContainer.classList.add('edit-mode');
+                memberName.contentEditable = true;
+                memberContact.contentEditable = true;
+                
+                // Add click listener for member profile pic
+                document.getElementById('memberProfileImage').parentElement.addEventListener('click', () => {
+                    if (isEditing) profilePicInput.click(); // Use the shared input
+                });
+
+            } else {
+                // --- EMPLOYEE EDIT MODE (Original Logic) ---
+                employeeContainer.classList.add('edit-mode');
+                editableElements.userName.contentEditable = true;
+                editableElements.userPosition.contentEditable = true;
+                editableElements.userBranch.contentEditable = true;
+                
+                aboutTextarea.value = document.getElementById('aboutText').textContent.trim();
+                aboutContentView.classList.add('hidden');
+                aboutEditView.classList.remove('hidden');
+
+                qualificationsEditList.innerHTML = '';
+                document.querySelectorAll('#qualificationsList li').forEach(item => {
+                    if (item.textContent !== 'No qualifications listed.') {
+                        createQualificationInput(item.textContent);
+                    }
+                });
+                qualificationsContentView.classList.add('hidden');
+                qualificationsEditView.classList.remove('hidden');
+            }
         }
 
         async function handleSaveProfile() {
@@ -656,66 +691,79 @@
 
             try {
                 const profilePicFile = profilePicInput.files[0];
-                const backgroundPicFile = backgroundPicInput.files[0];
                 let profileImageUrl = null;
-                let coverImageUrl = null;
-
+                
+                // 1. Check for new profile picture
                 if (profilePicFile) {
                     const profileImageRef = ref(storage, `profileImages/${currentUserId}`);
                     await uploadBytes(profileImageRef, profilePicFile);
                     profileImageUrl = await getDownloadURL(profileImageRef);
                 }
 
-                if (backgroundPicFile) {
-                    const coverImageRef = ref(storage, `coverImages/${currentUserId}`);
-                    await uploadBytes(coverImageRef, backgroundPicFile);
-                    coverImageUrl = await getDownloadURL(coverImageRef);
-                }
-
-                const newQualifications = Array.from(qualificationsEditList.querySelectorAll('input'))
-                    .map(input => input.value.trim())
-                    .filter(value => value);
-
-                const updatedData = {
-                    fullName: editableElements.userName.textContent.trim(),
-                    branch: editableElements.userBranch.textContent.trim(),
-                    about: aboutTextarea.value.trim(),
-                    qualifications: newQualifications
-                };
-
-                if(profileImageUrl) updatedData.profileImageUrl = profileImageUrl;
-                if(coverImageUrl) updatedData.coverImageUrl = coverImageUrl;
+                // 2. Prepare data based on role
+                const updatedData = {};
                 
-                if(currentUserRole === 'ceo') {
+                if (currentUserRole === 'member') {
+                    // --- SAVE MEMBER DATA ---
+                    updatedData.fullName = memberName.textContent.trim();
+                    updatedData.contactPhone = memberContact.textContent.trim();
+                    if(profileImageUrl) updatedData.profileImageUrl = profileImageUrl;
+
+                    // Update UI
+                    memberContainer.classList.remove('edit-mode');
+                    memberName.contentEditable = false;
+                    memberContact.contentEditable = false;
+
+                } else {
+                    // --- SAVE EMPLOYEE DATA (Original Logic) ---
+                    updatedData.fullName = editableElements.userName.textContent.trim();
                     updatedData.position = editableElements.userPosition.textContent.trim();
+                    updatedData.branch = editableElements.userBranch.textContent.trim();
+                    updatedData.about = aboutTextarea.value.trim();
+                    updatedData.qualifications = Array.from(qualificationsEditList.querySelectorAll('input'))
+                        .map(input => input.value.trim())
+                        .filter(value => value);
+                        
+                    if(profileImageUrl) updatedData.profileImageUrl = profileImageUrl;
+                    
+                    const backgroundPicFile = backgroundPicInput.files[0];
+                    if (backgroundPicFile) {
+                        const coverImageRef = ref(storage, `coverImages/${currentUserId}`);
+                        await uploadBytes(coverImageRef, backgroundPicFile);
+                        updatedData.coverImageUrl = await getDownloadURL(coverImageRef);
+                    }
+
+                    // Update UI
+                    employeeContainer.classList.remove('edit-mode');
+                    Object.values(editableElements).forEach(el => el.contentEditable = false);
+                    document.getElementById('aboutText').textContent = updatedData.about;
+                    aboutContentView.classList.remove('hidden');
+                    aboutEditView.classList.add('hidden');
+                    // (Re-render qualifications list)
+                    const qualificationsList = document.getElementById('qualificationsList');
+                    qualificationsList.innerHTML = '';
+                    if (updatedData.qualifications.length > 0) {
+                        updatedData.qualifications.forEach(q => {
+                            const li = document.createElement('li');
+                            li.textContent = q;
+                            qualificationsList.appendChild(li);
+                        });
+                    } else {
+                        qualificationsList.innerHTML = '<li>No qualifications listed.</li>';
+                    }
+                    qualificationsContentView.classList.remove('hidden');
+                    qualificationsEditView.classList.add('hidden');
                 }
 
+                // 3. Update Firestore
                 const userDocRef = doc(db, "users", currentUserId);
                 await updateDoc(userDocRef, updatedData);
                 
+                // 4. Reset UI
                 isEditing = false;
-                employeeContainer.classList.remove('edit-mode');
                 saveProfileBtn.classList.add('hidden');
-
-                Object.values(editableElements).forEach(el => el.contentEditable = false);
-
-                document.getElementById('aboutText').textContent = updatedData.about;
-                aboutContentView.classList.remove('hidden');
-                aboutEditView.classList.add('hidden');
-
-                const qualificationsList = document.getElementById('qualificationsList');
-                qualificationsList.innerHTML = '';
-                if (updatedData.qualifications.length > 0) {
-                    updatedData.qualifications.forEach(q => {
-                        const li = document.createElement('li');
-                        li.textContent = q;
-                        qualificationsList.appendChild(li);
-                    });
-                } else {
-                    qualificationsList.innerHTML = '<li>No qualifications listed.</li>';
-                }
-                qualificationsContentView.classList.remove('hidden');
-                qualificationsEditView.classList.add('hidden');
+                profilePicInput.value = ''; 
+                backgroundPicInput.value = '';
                 
                 alert("Profile updated successfully!");
 
@@ -727,7 +775,8 @@
                 saveProfileBtn.textContent = 'Save Profile';
             }
         }
-
+        
+        // Employee-only qualification input helper
         function createQualificationInput(value = '') {
             const div = document.createElement('div');
             div.className = 'flex items-center gap-2';
@@ -745,16 +794,23 @@
         }
         addQualificationBtn.addEventListener('click', () => createQualificationInput());
 
+
+        // --- IMAGE PREVIEW & CLICK LISTENERS ---
         profilePicInput.addEventListener('change', function(event) {
             if (event.target.files && event.target.files[0]) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    profileImage.src = e.target.result;
+                    if (currentUserRole === 'member') {
+                        memberProfileImage.src = e.target.result; // Update member pic
+                    } else {
+                        profileImage.src = e.target.result; // Update employee pic
+                    }
                 }
                 reader.readAsDataURL(event.target.files[0]);
             }
         });
 
+        // Employee-only background image preview
         backgroundPicInput.addEventListener('change', function(event) {
             if (event.target.files && event.target.files[0]) {
                 const reader = new FileReader();
@@ -765,26 +821,45 @@
             }
         });
 
-        saveProfileBtn.addEventListener('click', handleSaveProfile);
-        profilePicContainer.addEventListener('click', () => { if (isEditing) profilePicInput.click(); });
-        changeBackgroundBtn.addEventListener('click', () => { if(isEditing) backgroundPicInput.click(); });
+        // Click listeners for EMPLOYEE images
+        profilePicContainer.addEventListener('click', () => { 
+            if (isEditing && currentUserRole !== 'member') profilePicInput.click(); 
+        });
+        changeBackgroundBtn.addEventListener('click', () => { 
+            if(isEditing && currentUserRole !== 'member') backgroundPicInput.click(); 
+        });
 
 
-        // --- SHARED MENU & HEADER LOGIC ---
+        // --- *** MODIFIED: MENU & HEADER LOGIC *** ---
         function closeMenu() {
             document.body.classList.remove('menu-is-open');
             sideMenu.classList.remove('is-open');
             menuOverlay.classList.remove('is-open');
         }
+        
         hamburgerBtn.addEventListener('click', (event) => {
             event.stopPropagation();
             document.body.classList.toggle('menu-is-open');
             sideMenu.classList.toggle('is-open');
             menuOverlay.classList.toggle('is-open');
         });
+        
         closeMenuBtn.addEventListener('click', closeMenu);
         menuOverlay.addEventListener('click', closeMenu);
         
+        // --- Listeners for BOTH edit buttons ---
+        memberEditProfileBtn.addEventListener('click', (event) => {
+            event.preventDefault();
+            closeMenu();
+            handleEditProfile();
+        });
+        employeeEditProfileBtn.addEventListener('click', (event) => {
+            event.preventDefault();
+            closeMenu();
+            handleEditProfile();
+        });
+
+        // --- Listeners for EMPLOYEE sub-menus ---
         projectsMenuItem.addEventListener('click', (event) => {
             event.stopPropagation();
             projectsSubMenu.classList.toggle('hidden');
@@ -795,12 +870,11 @@
             settingsSubMenu.classList.toggle('hidden');
             settingsArrow.classList.toggle('rotate-180');
         });
-        editProfileSubMenuBtn.addEventListener('click', (event) => {
-            event.preventDefault();
-            closeMenu();
-            handleEditProfile();
-        });
 
+        // Universal Save button
+        saveProfileBtn.addEventListener('click', handleSaveProfile);
+
+        // Universal Logout button
         logoutBtn.addEventListener('click', (e) => {
             e.preventDefault();
             signOut(auth).then(() => {
@@ -822,4 +896,3 @@
         handleHeaderScroll();
     });
 </script>
-
