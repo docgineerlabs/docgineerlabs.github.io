@@ -105,30 +105,51 @@
 		</nav>
 	</div>
 
-    <div id="login-panel" class="panel fixed inset-y-0 right-0 w-96 bg-white text-black px-6 pt-[110px] pb-6 transform translate-x-full shadow-2xl flex flex-col overflow-y-auto z-30">
-		<div id="login-content" class="flex-grow">
-			<div class="flex items-center space-x-6 mb-8">
-				<button id="login-tab" class="tab-btn text-lg font-bold pb-2 text-gray-500 active">Login</button>
-				<button id="register-tab" class="tab-btn text-lg font-bold pb-2 text-gray-500">Register</button>
-			</div>
-			<form id="login-form" class="space-y-6">
-				<div><label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label><input type="email" name="email" id="email" class="form-input" required></div>
-				<div><label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label><input type="password" name="password" id="password" class="form-input" required></div>
-				<div><button type="submit" class="w-full bg-black text-white font-bold py-3 px-4 rounded-md hover:bg-gray-800 transition-colors">Log in to the Hub</button></div>
-				<div class="text-sm text-center pt-2">
-					<a href="#" class="font-medium text-blue-600 hover:text-blue-800">
-						Forgot your password?
-					</a>
-				</div>
-			</form>
-			<form id="register-form" class="space-y-6 hidden">
-				<div><label for="reg-name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label><input type="text" name="reg-name" id="reg-name" class="form-input" required></div>
-				<div><label for="reg-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label><input type="email" name="reg-email" id="reg-email" class="form-input" required></div>
-				<div><label for="reg-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label><input type="password" name="reg-password" id="reg-password" class="form-input" required></div>
-				<div><button type="submit" class="w-full bg-black text-white font-bold py-3 px-4 rounded-md hover:bg-gray-800 transition-colors">Register</button></div>
-			</form>
-		</div>
-	</div>
+<div id="login-panel" class="panel fixed inset-y-0 right-0 w-96 bg-white text-black px-6 pt-[110px] pb-6 transform translate-x-full shadow-2xl flex flex-col overflow-y-auto z-30">
+        <div id="login-content" class="flex-grow">
+            <div class="flex items-center space-x-6 mb-8">
+                <button id="login-tab" class="tab-btn text-lg font-bold pb-2 text-gray-500 active">Login</button>
+                <button id="register-tab" class="tab-btn text-lg font-bold pb-2 text-gray-500">Register</button>
+            </div>
+
+            <form id="login-form" class="space-y-6">
+                <div><label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label><input type="email" name="email" id="email" class="form-input" required></div>
+                <div><label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label><input type="password" name="password" id="password" class="form-input" required></div>
+                <div><button type="submit" class="w-full bg-black text-white font-bold py-3 px-4 rounded-md hover:bg-gray-800 transition-colors">Log in to the Hub</button></div>
+                <div class="text-sm text-center pt-2">
+                    <a href="#" class="font-medium text-blue-600 hover:text-blue-800">
+                        Forgot your password?
+                    </a>
+                </div>
+            </form>
+
+            <div id="role-selection" class="space-y-4 hidden">
+                <h3 class="text-xl font-bold mb-4 text-center">Register</h3>
+                <p class="text-sm text-center text-gray-600 mb-6">How would you like to join?</p>
+                <button id="register-as-member" type="button" class="w-full bg-black text-white font-bold py-3 px-4 rounded-md hover:bg-gray-800 transition-colors">
+                    Register as Member
+                </button>
+                <button id="register-as-employee" type="button" class="w-full bg-gray-100 text-black font-bold py-3 px-4 rounded-md hover:bg-gray-200 transition-colors border border-gray-300">
+                    Register as Employee
+                </button>
+            </div>
+
+            <form id="register-form" class="space-y-6 hidden">
+                <h3 id="register-form-title" class="text-xl font-bold mb-4">Create your account</h3>
+                
+                <div><label for="reg-name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label><input type="text" name="reg-name" id="reg-name" class="form-input" required></div>
+                <div><label for="reg-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label><input type="email" name="reg-email" id="reg-email" class="form-input" required></div>
+                <div><label for="reg-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label><input type="password" name="reg-password" id="reg-password" class="form-input" required></div>
+                <div><button type="submit" class="w-full bg-black text-white font-bold py-3 px-4 rounded-md hover:bg-gray-800 transition-colors">Register</button></div>
+                
+                <div class="text-sm text-center pt-2">
+                    <button type="button" id="back-to-role-selection" class="font-medium text-blue-600 hover:text-blue-800">
+                        ← Back to role selection
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
     
     <header id="main-header" class="fixed top-0 z-40 w-full transition-all duration-300 ease-in-out border-b border-transparent">
         <div class="max-w-7xl mx-auto px-12 sm:px-16 lg:px-24 pt-8">
@@ -347,33 +368,44 @@
         const userOpenIcon = document.getElementById('user-open-icon');
         const userCloseIcon = document.getElementById('user-close-icon');
         const submenuToggles = document.querySelectorAll('.submenu-toggle');
-        const loginTab = document.getElementById('login-tab');
-        const registerTab = document.getElementById('register-tab');
-        const loginForm = document.getElementById('login-form');
-        const registerForm = document.getElementById('register-form');
         const header = document.getElementById('main-header');
         const heroSection = document.getElementById('hero-section');
         const logoTransparent = document.querySelector('.logo-transparent');
         const logoSolid = document.querySelector('.logo-solid');
         const iconBtns = document.querySelectorAll('.icon-btn');
-		const searchableData = [
-			{ title: 'News + Updates', url: '#', category: 'Navigation' },
-			{ title: 'Research', url: '#', category: 'Navigation' },
-			{ title: 'Projects', url: '#', category: 'Navigation' },
-			{ title: 'Engineering Projects', url: '#', category: 'Projects' },
-			{ title: 'Medical Projects', url: '#', category: 'Projects' },
-			{ title: 'Biomedical Engineering Projects', url: '#', category: 'Projects' },
-			{ title: 'Events', url: '#', category: 'Navigation' },
-			{ title: 'People', url: '#', category: 'Navigation' },
-			{ title: 'Members', url: '#', category: 'Navigation' },
-			{ title: 'Engineers', url: '#', category: 'Members' },
-			{ title: 'Doctors', url: '#', category: 'Members' },
-			{ title: 'Submit your Idea', url: '#', category: 'Get Involved' },
-			{ title: 'Support Docgineer Labs', url: '#', category: 'Get Involved' },
-			{ title: 'Member Portal', url: '#', category: 'Get Involved' }
-		];
+        
+        // --- *** NEW & MODIFIED LOGIN/REGISTER ELEMENTS *** ---
+        const loginTab = document.getElementById('login-tab');
+        const registerTab = document.getElementById('register-tab');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const roleSelectionView = document.getElementById('role-selection');
+        const registerAsMemberBtn = document.getElementById('register-as-member');
+        const registerAsEmployeeBtn = document.getElementById('register-as-employee');
+        const registerFormTitle = document.getElementById('register-form-title');
+        const backToRoleBtn = document.getElementById('back-to-role-selection');
 
-        // --- Header Style Functions ---
+        // --- *** NEW STATE VARIABLE *** ---
+        let selectedRole = 'member'; // Default role
+
+        const searchableData = [
+            { title: 'News + Updates', url: '#', category: 'Navigation' },
+            { title: 'Research', url: '#', category: 'Navigation' },
+            { title: 'Projects', url: '#', category: 'Navigation' },
+            { title: 'Engineering Projects', url: '#', category: 'Projects' },
+            { title: 'Medical Projects', url: '#', category: 'Projects' },
+            { title: 'Biomedical Engineering Projects', url: '#', category: 'Projects' },
+            { title: 'Events', url: '#', category: 'Navigation' },
+            { title: 'People', url: '#', category: 'Navigation' },
+            { title: 'Members', url: '#', category: 'Navigation' },
+            { title: 'Engineers', url: '#', category: 'Members' },
+            { title: 'Doctors', url: '#', category: 'Members' },
+            { title: 'Submit your Idea', url: '#', category: 'Get Involved' },
+            { title: 'Support Docgineer Labs', url: '#', category: 'Get Involved' },
+            { title: 'Member Portal', url: '#', category: 'Get Involved' }
+        ];
+
+        // --- Header Style Functions (No changes here) ---
         const applySolidHeader = () => {
             header.classList.add('backdrop-blur-sm', 'bg-white/80', 'border-gray-200');
             logoTransparent.classList.add('hidden');
@@ -405,7 +437,7 @@
             }
         };
 
-        // --- Panel Toggling Functions ---
+        // --- Panel Toggling Functions (No changes here) ---
         const closeAllPanels = () => {
             if (document.body.classList.contains('menu-open')) {
                 document.body.classList.remove('menu-open');
@@ -463,13 +495,13 @@
             }
         };
         
-        // --- Event Listeners ---
+        // --- Event Listeners (Main Panels) ---
         searchToggle.addEventListener('click', (e) => { e.stopPropagation(); toggleSearch(); });
         menuToggle.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(); });
         userToggle.addEventListener('click', (e) => { e.stopPropagation(); toggleLoginPanel(); });
         pageContentWrapper.addEventListener('click', () => { closeAllPanels(); handleScroll(); });
 
-        // --- Submenu Toggle Logic ---
+        // --- Submenu Toggle Logic (No changes here) ---
         submenuToggles.forEach(toggle => {
             toggle.addEventListener('click', () => {
                 const submenu = toggle.nextElementSibling;
@@ -484,22 +516,58 @@
             });
         });
 
-        // --- Login/Register Tab Logic ---
+        // --- *** MODIFIED: Login/Register Tab Logic *** ---
         loginTab.addEventListener('click', () => {
             loginTab.classList.add('active');
             registerTab.classList.remove('active');
-            loginForm.classList.remove('hidden');
+            
+            // Hide other panels
             registerForm.classList.add('hidden');
+            roleSelectionView.classList.add('hidden');
+            
+            // Show login form
+            loginForm.classList.remove('hidden');
         });
         
         registerTab.addEventListener('click', () => {
             registerTab.classList.add('active');
             loginTab.classList.remove('active');
-            registerForm.classList.remove('hidden');
+            
+            // Hide other panels
             loginForm.classList.add('hidden');
+            registerForm.classList.add('hidden');
+
+            // Show role selection
+            roleSelectionView.classList.remove('hidden');
         });
 
-        // --- FORM SUBMISSION LOGIC ---
+        // --- *** NEW: Role Selection Logic *** ---
+        const showRegisterFormForRole = (role) => {
+            selectedRole = role; // Store the selected role
+            
+            // Update the form title
+            if (role === 'member') {
+                registerFormTitle.textContent = 'Register as Member';
+            } else {
+                registerFormTitle.textContent = 'Register as Employee';
+            }
+
+            // Hide role selection and show the form
+            roleSelectionView.classList.add('hidden');
+            registerForm.classList.remove('hidden');
+        };
+
+        registerAsMemberBtn.addEventListener('click', () => showRegisterFormForRole('member'));
+        registerAsEmployeeBtn.addEventListener('click', () => showRegisterFormForRole('employee'));
+
+        backToRoleBtn.addEventListener('click', () => {
+            // Hide form and show role selection
+            registerForm.classList.add('hidden');
+            roleSelectionView.classList.remove('hidden');
+        });
+
+
+        // --- *** MODIFIED: FORM SUBMISSION LOGIC *** ---
         registerForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const fullName = document.getElementById('reg-name').value;
@@ -512,25 +580,33 @@
                     const user = userCredential.user;
                     
                     const userDocRef = doc(db, "users", user.uid);
+                    
+                    // *** THIS IS THE KEY CHANGE ***
+                    // It now uses the 'selectedRole' variable
                     await setDoc(userDocRef, {
                         fullName: fullName,
                         email: email,
-                        role: 'employee',
+                        role: selectedRole, // Use the dynamic role
                         position: 'N/A',
                         branch: 'N/A',
                         about: 'This is a new user profile. Please update your information.',
                         qualifications: []
                     });
                     
-                    sendEmailVerification(user); 
+                    sendEmailVerification(user);  
                     alert('Registration successful! Please check your email to verify your account.');
-                    loginTab.click();
+                    
+                    // Go back to the login tab
+                    loginTab.click(); 
+                    // Reset the form
+                    registerForm.reset();
                 })
                 .catch((error) => {
                     alert('Error: ' + error.message);
                 });
         });
 
+        // --- LOGIN FORM (No changes here) ---
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const email = document.getElementById('email').value;
@@ -545,38 +621,36 @@
                     alert('Error: ' + error.message);
                 });
         });
-		// --- SEARCH LOGIC ---
-		const searchInput = document.getElementById('search-input');
-		const searchResults = document.getElementById('search-results');
 
-		searchInput.addEventListener('input', (e) => {
-			const searchTerm = e.target.value.toLowerCase();
-			searchResults.innerHTML = '';
+        // --- SEARCH LOGIC (No changes here) ---
+        const searchInput = document.getElementById('search-input');
+        const searchResults = document.getElementById('search-results');
 
-			if (searchTerm.length > 0) {
-				const matchedItems = searchableData.filter(item => 
-					item.title.toLowerCase().includes(searchTerm)
-				);
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            searchResults.innerHTML = '';
 
-				if (matchedItems.length > 0) {
-					matchedItems.forEach(item => {
-						const resultItem = document.createElement('a');
-						resultItem.href = item.url;
-						resultItem.className = 'block p-3 text-gray-700 hover:bg-gray-100 rounded-md';
-						resultItem.textContent = item.title;
-						searchResults.appendChild(resultItem);
-					});
-				} else {
-					searchResults.innerHTML = '<p class="p-3 text-gray-500">No results found.</p>';
-				}
-			}
-		}); 
+            if (searchTerm.length > 0) {
+                const matchedItems = searchableData.filter(item => 
+                    item.title.toLowerCase().includes(searchTerm)
+                );
+
+                if (matchedItems.length > 0) {
+                    matchedItems.forEach(item => {
+                        const resultItem = document.createElement('a');
+                        resultItem.href = item.url;
+                        resultItem.className = 'block p-3 text-gray-700 hover:bg-gray-100 rounded-md';
+                        resultItem.textContent = item.title;
+                        searchResults.appendChild(resultItem);
+                    });
+                } else {
+                    searchResults.innerHTML = '<p class="p-3 text-gray-500">No results found.</p>';
+                }
+            }
+        }); 
+        
         // --- Initial State ---
         handleScroll();
         window.addEventListener('scroll', handleScroll);
     });
 </script>
-
-</body>
-</html>
-
