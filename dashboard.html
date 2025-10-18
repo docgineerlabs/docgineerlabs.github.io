@@ -688,31 +688,26 @@
             }
         }
 
-        async function handleSaveProfile() {
+       async function handleSaveProfile() {
             if (!isEditing || !currentUserId) return;
             
             saveProfileBtn.disabled = true;
             saveProfileBtn.textContent = 'Saving...';
 
             try {
-                const profilePicFile = profilePicInput.files[0];
-                let profileImageUrl = null;
-                
-                // 1. Check for new profile picture
-                if (profilePicFile) {
-                    const profileImageRef = ref(storage, `profileImages/${currentUserId}`);
-                    await uploadBytes(profileImageRef, profilePicFile);
-                    profileImageUrl = await getDownloadURL(profileImageRef);
-                }
+                // --- NO MORE IMAGE UPLOAD ---
+                // const profilePicFile = profilePicInput.files[0];
+                // let profileImageUrl = null;
+                // if (profilePicFile) { ... } // Removed
 
-                // 2. Prepare data based on role
+                // 1. Prepare data based on role (WITHOUT image URLs)
                 const updatedData = {};
                 
                 if (currentUserRole === 'member') {
-                    // --- SAVE MEMBER DATA ---
+                    // --- SAVE MEMBER DATA (Name, Contact ONLY) ---
                     updatedData.fullName = memberName.textContent.trim();
                     updatedData.contactPhone = memberContact.textContent.trim();
-                    if(profileImageUrl) updatedData.profileImageUrl = profileImageUrl;
+                    // NO profileImageUrl
 
                     // Update UI
                     memberContainer.classList.remove('edit-mode');
@@ -720,7 +715,7 @@
                     memberContact.contentEditable = false;
 
                 } else {
-                    // --- SAVE EMPLOYEE DATA (Original Logic) ---
+                    // --- SAVE EMPLOYEE DATA (Original Full Save, but NO images) ---
                     updatedData.fullName = editableElements.userName.textContent.trim();
                     updatedData.position = editableElements.userPosition.textContent.trim();
                     updatedData.branch = editableElements.userBranch.textContent.trim();
@@ -729,14 +724,10 @@
                         .map(input => input.value.trim())
                         .filter(value => value);
                         
-                    if(profileImageUrl) updatedData.profileImageUrl = profileImageUrl;
-                    
-                    const backgroundPicFile = backgroundPicInput.files[0];
-                    if (backgroundPicFile) {
-                        const coverImageRef = ref(storage, `coverImages/${currentUserId}`);
-                        await uploadBytes(coverImageRef, backgroundPicFile);
-                        updatedData.coverImageUrl = await getDownloadURL(coverImageRef);
-                    }
+                    // NO profileImageUrl
+                    // NO coverImageUrl upload
+                    // const backgroundPicFile = backgroundPicInput.files[0];
+                    // if (backgroundPicFile) { ... } // Removed
 
                     // Update UI
                     employeeContainer.classList.remove('edit-mode');
@@ -744,7 +735,7 @@
                     document.getElementById('aboutText').textContent = updatedData.about;
                     aboutContentView.classList.remove('hidden');
                     aboutEditView.classList.add('hidden');
-                    // (Re-render qualifications list)
+                    
                     const qualificationsList = document.getElementById('qualificationsList');
                     qualificationsList.innerHTML = '';
                     if (updatedData.qualifications.length > 0) {
@@ -752,7 +743,7 @@
                             const li = document.createElement('li');
                             li.textContent = q;
                             qualificationsList.appendChild(li);
-                        });
+});
                     } else {
                         qualificationsList.innerHTML = '<li>No qualifications listed.</li>';
                     }
@@ -760,15 +751,15 @@
                     qualificationsEditView.classList.add('hidden');
                 }
 
-                // 3. Update Firestore
+                // 2. Update Firestore (COMMON) - Only non-image data
                 const userDocRef = doc(db, "users", currentUserId);
                 await updateDoc(userDocRef, updatedData);
                 
-                // 4. Reset UI
+                // 3. Reset UI (COMMON)
                 isEditing = false;
                 saveProfileBtn.classList.add('hidden');
-                profilePicInput.value = ''; 
-                backgroundPicInput.value = '';
+                profilePicInput.value = ''; // Clear file input just in case
+                backgroundPicInput.value = ''; // Clear file input just in case
                 
                 alert("Profile updated successfully!");
 
