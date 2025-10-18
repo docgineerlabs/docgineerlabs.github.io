@@ -670,7 +670,13 @@
                 // --- EMPLOYEE EDIT MODE (Original Logic) ---
                 employeeContainer.classList.add('edit-mode');
                 editableElements.userName.contentEditable = true;
+               // *** ONLY CEO CAN EDIT POSITION ***
+                if (currentUserRole === 'ceo') {
                 editableElements.userPosition.contentEditable = true;
+            } else {
+                editableElements.userPosition.contentEditable = false;
+}
+// **********************************
                 editableElements.userBranch.contentEditable = true;
                 
                 aboutTextarea.value = document.getElementById('aboutText').textContent.trim();
