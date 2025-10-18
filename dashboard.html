@@ -173,7 +173,7 @@
                             </span>
                         </div>
                         <p class="text-slate-900 mt-1 flex items-center">Position: <span id="userPosition" class="font-medium focus:outline-none focus:bg-indigo-100 rounded px-1">Software Engineer</span>
-                            <span class="edit-icon" id="positionEditIcon">
+                           <span id="positionEditIcon" class="edit-icon"> id="positionEditIcon">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg>
                             </span>
                         </p>
@@ -656,29 +656,35 @@
             saveProfileBtn.classList.remove('hidden');
 
             if (currentUserRole === 'member') {
-                // --- MEMBER EDIT MODE ---
+                // --- MEMBER EDIT MODE (Name, Contact, Photo ONLY) ---
                 memberContainer.classList.add('edit-mode');
                 memberName.contentEditable = true;
                 memberContact.contentEditable = true;
                 
                 // Add click listener for member profile pic
-                document.getElementById('memberProfileImage').parentElement.addEventListener('click', () => {
+                memberProfilePicContainer.addEventListener('click', () => {
                     if (isEditing) profilePicInput.click(); // Use the shared input
                 });
 
             } else {
-                // --- EMPLOYEE EDIT MODE (Original Logic) ---
+                // --- EMPLOYEE EDIT MODE (Original Full Edit, but Position is conditional) ---
                 employeeContainer.classList.add('edit-mode');
                 editableElements.userName.contentEditable = true;
-               // *** ONLY CEO CAN EDIT POSITION ***
-                if (currentUserRole === 'ceo') {
-                editableElements.userPosition.contentEditable = true;
-            } else {
-                editableElements.userPosition.contentEditable = false;
-}
-// **********************************
-                editableElements.userBranch.contentEditable = true;
+                // editableElements.userPosition is handled below
+                editableElements.userBranch.contentEditable = true; 
                 
+                // *** ONLY CEO CAN EDIT POSITION ***
+                const positionEditIcon = document.getElementById('positionEditIcon'); // GET THE ICON
+                if (currentUserRole === 'ceo') {
+                    editableElements.userPosition.contentEditable = true;
+                    if (positionEditIcon) positionEditIcon.classList.remove('hidden'); // SHOW ICON for CEO
+                } else {
+                    editableElements.userPosition.contentEditable = false;
+                    if (positionEditIcon) positionEditIcon.classList.add('hidden'); // HIDE ICON for others
+                }
+                // **********************************
+                
+                // --- Rest of Employee Edit Logic ---
                 aboutTextarea.value = document.getElementById('aboutText').textContent.trim();
                 aboutContentView.classList.add('hidden');
                 aboutEditView.classList.remove('hidden');
@@ -693,7 +699,6 @@
                 qualificationsEditView.classList.remove('hidden');
             }
         }
-
        async function handleSaveProfile() {
             if (!isEditing || !currentUserId) return;
             
