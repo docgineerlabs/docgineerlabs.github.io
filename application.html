@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Your Application</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9fafb; /* gray-50 */
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen px-4">
+
+    <header class="fixed top-0 left-0 right-0 z-10 p-6">
+         <a href="index.html">
+            <img src="logo-solid.png" alt="Company Logo" class="h-16 w-auto">
+         </a>
+    </header>
+
+    <div class="w-full max-w-2xl pt-32 pb-12">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-gray-900">Complete Your Application</h1>
+            <p class="mt-2 text-gray-600">Join our team of innovators.</p>
+        </div>
+
+        <div class="bg-white p-8 rounded-lg shadow-md">
+            <form id="applicationForm" class="space-y-8">
+                
+                <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                    <div class="col-span-full">
+                        <label for="full-name" class="block text-base font-semibold text-gray-900">Full Name</label>
+                        <div class="mt-2">
+                            <input type="text" name="full-name" id="full-name" required class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3">
+                        </div>
+                    </div>
+                    <div class="sm:col-span-3">
+                        <label for="email" class="block text-base font-semibold text-gray-900">Email address</label>
+                        <div class="mt-2">
+                            <input id="email" name="email" type="email" autocomplete="email" required class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3">
+                        </div>
+                    </div>
+                    <div class="sm:col-span-3">
+                        <label for="password" class="block text-base font-semibold text-gray-900">Password</label>
+                        <div class="mt-2">
+                            <input type="password" name="password" id="password" required class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3">
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="text-base font-semibold text-gray-900">Applying as</label>
+                    <fieldset class="mt-4">
+                        <legend class="sr-only">Application role</legend>
+                        <div class="space-y-4 sm:flex sm:items-center sm:space-y-0 sm:space-x-10">
+                            <div class="flex items-center">
+                                <input id="role-doctor" name="application-role" type="radio" value="Doctor" class="form-radio h-4 w-4 text-black border-gray-300 focus:ring-black">
+                                <label for="role-doctor" class="ml-3 block text-sm font-medium text-gray-700">Doctor</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input id="role-engineer" name="application-role" type="radio" value="Engineer" class="form-radio h-4 w-4 text-black border-gray-300 focus:ring-black" checked>
+                                <label for="role-engineer" class="ml-3 block text-sm font-medium text-gray-700">Engineer</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input id="role-researcher" name="application-role" type="radio" value="Researcher" class="form-radio h-4 w-4 text-black border-gray-300 focus:ring-black">
+                                <label for="role-researcher" class="ml-3 block text-sm font-medium text-gray-700">Researcher</o>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+                
+                <div id="engineering-branch-selection" class="hidden">
+                    <label for="engineering-branch" class="block text-base font-semibold text-gray-900">Select Your Engineering Branch</label>
+                    <div id="engineering-branch" class="mt-2 h-48 overflow-y-auto rounded-md border border-gray-300 shadow-sm p-3 space-y-3">
+                        <div><label class="flex items-center"><input type="radio" name="engineering-branch-option" value="Computer Science and Engineering (CSE)" class="form-radio h-4 w-4 text-black focus:ring-black"><span class="ml-3 text-sm text-gray-700">Computer Science and Engineering (CSE)</span></label></div>
+                        <div><label class="flex items-center"><input type="radio" name="engineering-branch-option" value="Electrical Engineering (EE)" class="form-radio h-4 w-4 text-black focus:ring-black"><span class="ml-3 text-sm text-gray-700">Electrical Engineering (EE)</span></label></div>
+                        <div><label class="flex items-center"><input type="radio" name="engineering-branch-option" value="Mechanical Engineering (ME)" class="form-radio h-4 w-4 text-black focus:ring-black"><span class="ml-3 text-sm text-gray-700">Mechanical Engineering (ME)</span></label></div>
+                        <div><label class="flex items-center"><input type="radio" name="engineering-branch-option" value="Civil Engineering (CE)" class="form-radio h-4 w-4 text-black focus:ring-black"><span class="ml-3 text-sm text-gray-700">Civil Engineering (CE)</span></label></div>
+                        <div><label class="flex items-center"><input type="radio" name="engineering-branch-option" value="Chemical Engineering (ChE)" class="form-radio h-4 w-4 text-black focus:ring-black"><span class="ml-3 text-sm text-gray-700">Chemical Engineering (ChE)</span></label></div>
+                        <div><label class="flex items-center"><input type="radio" name="engineering-branch-option" value="Aerospace Engineering" class="form-radio h-4 w-4 text-black focus:ring-black"><span class="ml-3 text-sm text-gray-700">Aerospace Engineering</span></label></div>
+                        <div><label class="flex items-center"><input type="radio" name="engineering-branch-option" value="Metallurgical and Materials Engineering (MME)" class="form-radio h-4 w-4 text-black focus:ring-black"><span class="ml-3 text-sm text-gray-700">Metallurgical and Materials Engineering (MME)</span></label></div>
+                        <div><label class="flex items-center"><input type="radio" name="engineering-branch-option" value="Engineering Physics (EP)" class="form-radio h-4 w-4 text-black focus:ring-black"><span class="ml-3 text-sm text-gray-700">Engineering Physics (EP)</span></label></div>
+                        <div><label class="flex items-center"><input type="radio" name="engineering-branch-option" value="Biotechnology / Biological Sciences and Bioengineering (BSBE)" class="form-radio h-4 w-4 text-black focus:ring-black"><span class="ml-3 text-sm text-gray-700">Biotechnology / Biological Sciences and Bioengineering (BSBE)</span></label></div>
+                        <div><label class="flex items-center"><input type="radio" name="engineering-branch-option" value="Industrial Engineering / Production Engineering" class="form-radio h-4 w-4 text-black focus:ring-black"><span class="ml-3 text-sm text-gray-700">Industrial Engineering / Production Engineering</span></label></div>
+                        <div><label class="flex items-center"><input type="radio" name="engineering-branch-option" value="Mining Engineering" class="form-radio h-4 w-4 text-black focus:ring-black"><span class="ml-3 text-sm text-gray-700">Mining Engineering</span></label></div>
+                        <div><label class="flex items-center"><input type="radio" name="engineering-branch-option" value="Ocean Engineering / Naval Architecture" class="form-radio h-4 w-4 text-black focus:ring-black"><span class="ml-3 text-sm text-gray-700">Ocean Engineering / Naval Architecture</span></label></div>
+                    </div>
+                </div>
+
+                <div id="doctor-specialization-selection" class="hidden">
+                    <label for="doctor-specialization" class="block text-base font-semibold text-gray-900">Select Your Medical Specialization</label>
+                    <div id="doctor-specialization" class="mt-2 h-48 overflow-y-auto rounded-md border border-gray-300 shadow-sm p-3 space-y-3">
+                        <div><label class="flex items-center"><input type="radio" name="doctor-specialization-option" value="Orthopedics" class="form-radio h-4 w-4 text-black focus:ring-black"><span class="ml-3 text-sm text-gray-700">Orthopedics</span></label></div>
+                        <div><label class="flex items-center"><input type="radio" name="doctor-specialization-option" value="Neurology" class="form-radio h-4 w-4 text-black focus:ring-black"><span class="ml-3 text-sm text-gray-700">Neurology</span></label></div>
+                        <div><label class="flex items-center"><input type="radio" name="doctor-specialization-option" value="Neurosurgery" class="form-radio h-4 w-4 text-black focus:ring-black"><span class="ml-3 text-sm text-gray-700">Neurosurgery</span></label></div>
+                        <div><label class="flex items-center"><input type="radio" name="doctor-specialization-option" value="Cardiology" class="form-radio h-4 w-4 text-black focus:ring-black"><span class="ml-3 text-sm text-gray-700">Cardiology</span></label></div>
+                        <div><label class="flex items-center"><input type="radio" name="doctor-specialization-option" value="Pulmonology" class="form-radio h-4 w-4 text-black focus:ring-black"><span class="ml-3 text-sm text-gray-700">Pulmonology</span></label></div>
+                        <div><label class="flex items-center"><input type="radio" name="doctor-specialization-option" value="Oncology" class="form-radio h-4 w-4 text-black focus:ring-black"><span class="ml-3 text-sm text-gray-700">Oncology</span></label></div>
+                        <div><label class="flex items-center"><input type="radio" name="doctor-specialization-option" value="Plastic Surgery" class="form-radio h-4 w-4 text-black focus:ring-black"><span class="ml-3 text-sm text-gray-700">Plastic Surgery</span></label></div>
+                        <div><label class="flex items-center"><input type="radio" name="doctor-specialization-option" value="General Medicine" class="form-radio h-4 w-4 text-black focus:ring-black"><span class="ml-3 text-sm text-gray-700">General Medicine</span></label></div>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="about" class="block text-base font-semibold text-gray-900">Tell us about yourself</label>
+                    <div class="mt-2">
+                        <textarea id="about" name="about" rows="4" required class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3" placeholder="Your background, passion, and why you want to join our team..."></textarea>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="skills" class="block text-base font-semibold text-gray-900">Your Skills</label>
+                    <div class="mt-2">
+                        <textarea id="skills" name="skills" rows="4" required class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3" placeholder="List your key technical skills, software proficiency, and other qualifications..."></textarea>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="work" class="block text-base font-semibold text-gray-900">Show us some of your work / research</label>
+                    <div class="mt-2">
+                        <textarea id="work" name="work" rows="4" required class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3" placeholder="Provide links to your portfolio, GitHub, published papers, or describe your most relevant projects..."></textarea>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="file-upload" class="block text-base font-semibold text-gray-900">Add Photo/Video related to your work <span class="text-sm font-normal text-gray-500">(Optional)</span></label>
+                    <div class="mt-2 flex justify-center rounded-md border-2 border-dashed border-gray-300 px-6 pt-5 pb-6">
+                        <div class="space-y-1 text-center">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <div class="flex text-sm text-gray-600">
+                                <label for="file-upload" class="relative cursor-pointer rounded-md bg-white font-medium text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 hover:text-indigo-500">
+                                    <span>Upload a file</span>
+                                    <input id="file-upload" name="file-upload" type="file" class="sr-only">
+                                </label>
+                                <p class="pl-1">or drag and drop</p>
+                            </div>
+                            <p id="file-name" class="text-xs text-gray-500"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" id="submit-btn" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-black hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
+                        Submit Application
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Success Message Overlay -->
+    <div id="success-overlay" class="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-lg shadow-xl text-center p-8 max-w-md">
+            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100 mb-4">
+                <svg class="h-6 w-6 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900">Submission Received!</h3>
+            <p class="mt-2 text-sm text-gray-600">
+                Thank you for your submission. Our team will review your application and get back to you through email soon.
+            </p>
+            <div class="mt-6">
+                 <a href="index.html" class="inline-flex justify-center rounded-md border border-transparent bg-black px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-gray-800">
+                    Back to Homepage
+                </a>
+            </div>
+        </div>
+    </div>
+
+<script type="module">
+    // Import Firebase modules
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-storage.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyB1n-RkiDibKhlc9tOE-G-Hpz4zA8LuQGA",
+        authDomain: "docgineerlabs-b4830.firebaseapp.com",
+        projectId: "docgineerlabs-b4830",
+        storageBucket: "docgineerlabs-b4830.firebasestorage.app",
+        messagingSenderId: "338822276527",
+        appId: "1:338822276527:web:271e8761eaabcc79e8fb5a",
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const applicationForm = document.getElementById('applicationForm');
+        const successOverlay = document.getElementById('success-overlay');
+        const fileUploadInput = document.getElementById('file-upload');
+        const fileNameDisplay = document.getElementById('file-name');
+        const roleRadios = document.querySelectorAll('input[name="application-role"]');
+        const engineeringBranchSelection = document.getElementById('engineering-branch-selection');
+        const doctorSpecializationSelection = document.getElementById('doctor-specialization-selection');
+        const submitBtn = document.getElementById('submit-btn');
+
+        function handleRoleChange() {
+            const selectedRole = document.querySelector('input[name="application-role"]:checked').value;
+            
+            if (selectedRole === 'Engineer') {
+                engineeringBranchSelection.classList.remove('hidden');
+                doctorSpecializationSelection.classList.add('hidden');
+            } else if (selectedRole === 'Doctor') {
+                doctorSpecializationSelection.classList.remove('hidden');
+                engineeringBranchSelection.classList.add('hidden');
+            } else {
+                engineeringBranchSelection.classList.add('hidden');
+                doctorSpecializationSelection.classList.add('hidden');
+            }
+        }
+
+        roleRadios.forEach(radio => {
+            radio.addEventListener('change', handleRoleChange);
+        });
+
+        handleRoleChange();
+
+        fileUploadInput.addEventListener('change', function() {
+            if (this.files && this.files.length > 0) {
+                fileNameDisplay.textContent = this.files[0].name;
+            } else {
+                fileNameDisplay.textContent = '';
+            }
+        });
+
+        applicationForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            // 1. Gather all form data
+            const fullName = document.getElementById('full-name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const role = document.querySelector('input[name="application-role"]:checked').value;
+            
+            let branch = 'N/A';
+            if (role === 'Engineer') {
+                const selectedBranch = document.querySelector('input[name="engineering-branch-option"]:checked');
+                if (selectedBranch) branch = selectedBranch.value;
+            } else if (role === 'Doctor') {
+                const selectedSpecialization = document.querySelector('input[name="doctor-specialization-option"]:checked');
+                if (selectedSpecialization) branch = selectedSpecialization.value; // Store in 'branch' field for simplicity
+            }
+            
+            const about = document.getElementById('about').value;
+            const skills = document.getElementById('skills').value;
+            const work = document.getElementById('work').value;
+            const file = fileUploadInput.files[0];
+
+            try {
+                // 2. Create user account
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // 3. Upload file if it exists
+                let fileUrl = null;
+                if (file) {
+                    const fileRef = ref(storage, `application-files/${user.uid}/${file.name}`);
+                    await uploadBytes(fileRef, file);
+                    fileUrl = await getDownloadURL(fileRef);
+                }
+
+                // 4. Create user profile in Firestore
+                const userDocRef = doc(db, "users", user.uid);
+                await setDoc(userDocRef, {
+                    fullName: fullName,
+                    email: email,
+                    role: 'employee', // All applicants are employees for now
+                    position: role, // Doctor, Engineer, Researcher
+                    branch: branch, // The specific branch/specialization
+                    about: about,
+                    skills: skills,
+                    work: work,
+                    workFileUrl: fileUrl, // URL to their uploaded work
+                    qualifications: [] // Can be edited later
+                });
+                
+                // 5. Send verification email
+                await sendEmailVerification(user);
+
+                // 6. Show success message
+                successOverlay.classList.remove('hidden');
+
+            } catch (error) {
+                console.error("Application Error: ", error);
+                alert('Error submitting application: ' + error.message);
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Application';
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
+
