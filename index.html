@@ -52,58 +52,58 @@
             overflow: hidden;
         }
         /* CSS FOR SEARCH PANEL PUSH EFFECT */
-		body.search-open #page-content-wrapper {
-			transform: translateX(-384px);
-		}
-		body.search-open #search-panel {
-			transform: translateX(0);
-		}
-		body.search-open {
-			overflow: hidden;
-		}
+        body.search-open #page-content-wrapper {
+            transform: translateX(-384px);
+        }
+        body.search-open #search-panel {
+            transform: translateX(0);
+        }
+        body.search-open {
+            overflow: hidden;
+        }
     </style>
 </head>
 <body class="antialiased">
     <div id="search-panel" class="panel fixed inset-y-0 right-0 w-96 bg-white text-black p-6 pt-24 transform translate-x-full shadow-2xl z-30 overflow-y-auto">
-		<div class="mt-16 w-full">
-			<h3 class="text-lg font-bold mb-4 text-gray-800">Search</h3>
-			<input type="search" id="search-input" placeholder="Find People, Projects, etc." class="w-full bg-transparent text-black text-xl p-3 border-b-2 border-gray-300 focus:border-black outline-none">
-			<div id="search-results" class="mt-4"></div>
-		</div>
-	</div>
+        <div class="mt-16 w-full">
+            <h3 class="text-lg font-bold mb-4 text-gray-800">Search</h3>
+            <input type="search" id="search-input" placeholder="Find People, Projects, etc." class="w-full bg-transparent text-black text-xl p-3 border-b-2 border-gray-300 focus:border-black outline-none">
+            <div id="search-results" class="mt-4"></div>
+        </div>
+    </div>
 
     <div id="mobile-menu" class="panel fixed inset-y-0 right-0 w-72 bg-gray-100 text-black p-4 pt-[110px] transform translate-x-full shadow-2xl z-30 overflow-y-auto">
-		<nav class="space-y-2">
-			<div class="block px-4 py-2 rounded-md text-lg font-bold text-pink-600">News + Updates</div>
-			<a href="#" class="block px-4 py-2 rounded-md text-lg font-bold text-gray-700 hover:text-black">Research</a>
-			<div>
-				<button class="submenu-toggle w-full flex justify-between items-center px-4 py-2 rounded-md text-lg font-bold text-gray-700 hover:text-black text-left">
-					<span>Projects</span>
-					<svg class="h-5 w-5 transform transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-				</button>
-				<div class="submenu pl-5 mt-1 space-y-1">
-					<a href="#" class="block px-4 py-2 rounded-md text-base font-medium text-gray-600 hover:text-black hover:bg-gray-200">Engineering Projects</a>
-					<a href="#" class="block px-4 py-2 rounded-md text-base font-medium text-gray-600 hover:text-black hover:bg-gray-200">Medical Projects</a>
-					<a href="#" class="block px-4 py-2 rounded-md text-base font-medium text-gray-600 hover:text-black hover:bg-gray-200">Biomedical Engineering Projects</a>
-				</div>
-			</div>
-			<a href="#" class="block px-4 py-2 rounded-md text-lg font-bold text-gray-700 hover:text-black">Events</a>
-			<a href="#" class="block px-4 py-2 rounded-md text-lg font-bold text-gray-700 hover:text-black">People</a>
-			<div>
-				<button class="submenu-toggle w-full flex justify-between items-center px-4 py-2 rounded-md text-lg font-bold text-gray-700 hover:text-black text-left">
-					<span>Members</span>
-					<svg class="h-5 w-5 transform transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
-				</button>
-				<div class="submenu pl-5 mt-1 space-y-1">
-					<a href="#" class="block px-4 py-2 rounded-md text-base font-medium text-gray-600 hover:text-black hover:bg-gray-200">Engineers</a>
-					<a href="#" class="block px-4 py-2 rounded-md text-base font-medium text-gray-600 hover:text-black hover:bg-gray-200">Doctors</a>
-				</div>
-			</div>
-			<hr class="my-2 border-gray-300">
-			<a href="#" class="block px-4 py-2 rounded-md text-lg font-bold text-pink-600 hover:text-pink-800">Submit your Idea</a>
-			<a href="#" class="block px-4 py-2 rounded-md text-lg font-bold text-gray-700 hover:text-black">Support Docgineer Labs</a>
-		</nav>
-	</div>
+        <nav class="space-y-2">
+            <div class="block px-4 py-2 rounded-md text-lg font-bold text-pink-600">News + Updates</div>
+            <a href="#" class="block px-4 py-2 rounded-md text-lg font-bold text-gray-700 hover:text-black">Research</a>
+            <div>
+                <button class="submenu-toggle w-full flex justify-between items-center px-4 py-2 rounded-md text-lg font-bold text-gray-700 hover:text-black text-left">
+                    <span>Projects</span>
+                    <svg class="h-5 w-5 transform transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                </button>
+                <div class="submenu pl-5 mt-1 space-y-1">
+                    <a href="#" class="block px-4 py-2 rounded-md text-base font-medium text-gray-600 hover:text-black hover:bg-gray-200">Engineering Projects</a>
+                    <a href="#" class="block px-4 py-2 rounded-md text-base font-medium text-gray-600 hover:text-black hover:bg-gray-200">Medical Projects</a>
+                    <a href="#" class="block px-4 py-2 rounded-md text-base font-medium text-gray-600 hover:text-black hover:bg-gray-200">Biomedical Engineering Projects</a>
+                </div>
+            </div>
+            <a href="#" class="block px-4 py-2 rounded-md text-lg font-bold text-gray-700 hover:text-black">Events</a>
+            <a href="#" class="block px-4 py-2 rounded-md text-lg font-bold text-gray-700 hover:text-black">People</a>
+            <div>
+                <button class="submenu-toggle w-full flex justify-between items-center px-4 py-2 rounded-md text-lg font-bold text-gray-700 hover:text-black text-left">
+                    <span>Members</span>
+                    <svg class="h-5 w-5 transform transition-transform" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+                </button>
+                <div class="submenu pl-5 mt-1 space-y-1">
+                    <a href="#" class="block px-4 py-2 rounded-md text-base font-medium text-gray-600 hover:text-black hover:bg-gray-200">Engineers</a>
+                    <a href="#" class="block px-4 py-2 rounded-md text-base font-medium text-gray-600 hover:text-black hover:bg-gray-200">Doctors</a>
+                </div>
+            </div>
+            <hr class="my-2 border-gray-300">
+            <a href="#" class="block px-4 py-2 rounded-md text-lg font-bold text-pink-600 hover:text-pink-800">Submit your Idea</a>
+            <a href="#" class="block px-4 py-2 rounded-md text-lg font-bold text-gray-700 hover:text-black">Support Docgineer Labs</a>
+        </nav>
+    </div>
 
 <div id="login-panel" class="panel fixed inset-y-0 right-0 w-96 bg-white text-black px-6 pt-[110px] pb-6 transform translate-x-full shadow-2xl flex flex-col overflow-y-auto z-30">
         <div id="login-content" class="flex-grow">
@@ -130,7 +130,7 @@
                     Register as Member
                 </button>
                 <a href="application.html" class="w-full block text-center bg-gray-100 text-black font-bold py-3 px-4 rounded-md hover:bg-gray-200 transition-colors border border-gray-300">
-    Register as Employee
+Register as Employee
 </a>
             </div>
 
@@ -157,10 +157,10 @@
                 <div class="flex-shrink-0"><a href="#" id="logo"><img src="logo-transparent.png" alt="Docgineer Labs" class="h-14 md:h-[210px] w-auto logo-transparent"><img src="logo-solid.png" alt="Docgineer Labs" class="h-14 md:h-[210px] w-auto logo-solid hidden"></a></div>
                 <div class="flex items-center space-x-2 sm:space-x-4">
                     <button id="search-toggle" class="icon-btn p-2 rounded-full text-white hover:bg-white/20 transition-colors relative h-6 w-6">
-						<span class="sr-only">Search</span>
-						<svg id="search-open-icon" class="h-6 w-6 absolute top-0 left-0 transition-opacity duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-						<svg id="search-close-icon" class="h-6 w-6 absolute top-0 left-0 opacity-0 transition-opacity duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-					</button>
+                        <span class="sr-only">Search</span>
+                        <svg id="search-open-icon" class="h-6 w-6 absolute top-0 left-0 transition-opacity duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        <svg id="search-close-icon" class="h-6 w-6 absolute top-0 left-0 opacity-0 transition-opacity duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
                     <button id="user-toggle" class="icon-btn p-2 rounded-full text-white hover:bg-white/20 transition-colors relative h-6 w-6">
                         <span class="sr-only">User Account</span>
                         <svg id="user-open-icon" class="h-6 w-6 absolute top-0 left-0 transition-opacity duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
@@ -313,344 +313,290 @@
         </footer>
     </div>
     <script type="module">
-		// Import the functions you need from the SDKs
-		import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
-		import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics.js";
-		import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
-        // *** ADD THESE IMPORTS ***
+        // Import the functions you need from the SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
-		// Your web app's Firebase configuration
-		const firebaseConfig = {
-			apiKey: "AIzaSyB1n-RkiDibKhlc9tOE-G-Hpz4zA8LuQGA",
-			authDomain: "docgineerlabs-b4830.firebaseapp.com",
-			projectId: "docgineerlabs-b4830",
-			storageBucket: "docgineerlabs-b4830.firebasestorage.app",
-			messagingSenderId: "338822276527",
-			appId: "1:338822276527:web:271e8761eaabcc79e8fb5a",
-			measurementId: "G-Z9NW8GFLLC"
-		};
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyB1n-RkiDibKhlc9tOE-G-Hpz4zA8LuQGA",
+            authDomain: "docgineerlabs-b4830.firebaseapp.com",
+            projectId: "docgineerlabs-b4830",
+            storageBucket: "docgineerlabs-b4830.firebasestorage.app",
+            messagingSenderId: "338822276527",
+            appId: "1:338822276527:web:271e8761eaabcc79e8fb5a",
+            measurementId: "G-Z9NW8GFLLC"
+        };
 
-		// Initialize Firebase
-		const app = initializeApp(firebaseConfig);
-		const analytics = getAnalytics(app);
-		const auth = getAuth(app);
-        // *** INITIALIZE FIRESTORE ***
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const db = getFirestore(app);
 
-
-		// Make auth functions available to your other script
-		window.firebaseAuth = {
-			createUserWithEmailAndPassword,
-			signInWithEmailAndPassword,
-			sendEmailVerification,
-			auth,
-            // *** MAKE FIRESTORE FUNCTIONS AVAILABLE ***
-            db,
-            doc,
-            setDoc
-		};
-	</script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Get all the elements
-        const searchToggle = document.getElementById('search-toggle');
-        const searchPanel = document.getElementById('search-panel');
-        const searchOpenIcon = document.getElementById('search-open-icon');
-        const searchCloseIcon = document.getElementById('search-close-icon');
-        const menuToggle = document.getElementById('menu-toggle');
-        const userToggle = document.getElementById('user-toggle');
-        const pageContentWrapper = document.getElementById('page-content-wrapper');
-        const mobileMenu = document.getElementById('mobile-menu');
-        const loginPanel = document.getElementById('login-panel');
-        const menuOpenIcon = document.getElementById('menu-open-icon');
-        const menuCloseIcon = document.getElementById('menu-close-icon');
-        const userOpenIcon = document.getElementById('user-open-icon');
-        const userCloseIcon = document.getElementById('user-close-icon');
-        const submenuToggles = document.querySelectorAll('.submenu-toggle');
-        const header = document.getElementById('main-header');
-        const heroSection = document.getElementById('hero-section');
-        const logoTransparent = document.querySelector('.logo-transparent');
-        const logoSolid = document.querySelector('.logo-solid');
-        const iconBtns = document.querySelectorAll('.icon-btn');
-        
-        // --- *** NEW & MODIFIED LOGIN/REGISTER ELEMENTS *** ---
-        const loginTab = document.getElementById('login-tab');
-        const registerTab = document.getElementById('register-tab');
-        const loginForm = document.getElementById('login-form');
-        const registerForm = document.getElementById('register-form');
-        const roleSelectionView = document.getElementById('role-selection');
-        const registerAsMemberBtn = document.getElementById('register-as-member');
-        const registerAsEmployeeBtn = document.getElementById('register-as-employee');
-        const registerFormTitle = document.getElementById('register-form-title');
-        const backToRoleBtn = document.getElementById('back-to-role-selection');
-
-        // --- *** NEW STATE VARIABLE *** ---
-        let selectedRole = 'member'; // Default role
-
-        const searchableData = [
-            { title: 'News + Updates', url: '#', category: 'Navigation' },
-            { title: 'Research', url: '#', category: 'Navigation' },
-            { title: 'Projects', url: '#', category: 'Navigation' },
-            { title: 'Engineering Projects', url: '#', category: 'Projects' },
-            { title: 'Medical Projects', url: '#', category: 'Projects' },
-            { title: 'Biomedical Engineering Projects', url: '#', category: 'Projects' },
-            { title: 'Events', url: '#', category: 'Navigation' },
-            { title: 'People', url: '#', category: 'Navigation' },
-            { title: 'Members', url: '#', category: 'Navigation' },
-            { title: 'Engineers', url: '#', category: 'Members' },
-            { title: 'Doctors', url: '#', category: 'Members' },
-            { title: 'Submit your Idea', url: '#', category: 'Get Involved' },
-            { title: 'Support Docgineer Labs', url: '#', category: 'Get Involved' },
-            { title: 'Member Portal', url: '#', category: 'Get Involved' }
-        ];
-
-        // --- Header Style Functions (No changes here) ---
-        const applySolidHeader = () => {
-            header.classList.add('backdrop-blur-sm', 'bg-white/80', 'border-gray-200');
-            logoTransparent.classList.add('hidden');
-            logoSolid.classList.remove('hidden');
-            iconBtns.forEach(btn => {
-                btn.classList.remove('text-white', 'hover:bg-white/20');
-                btn.classList.add('text-gray-500', 'hover:text-black', 'hover:bg-gray-100');
-            });
-        };
-
-        const applyTransparentHeader = () => {
-            header.classList.remove('backdrop-blur-sm', 'bg-white/80', 'border-gray-200');
-            logoTransparent.classList.remove('hidden');
-            logoSolid.classList.add('hidden');
-            iconBtns.forEach(btn => {
-                btn.classList.add('text-white', 'hover:bg-white/20');
-                btn.classList.remove('text-gray-500', 'hover:text-black', 'hover:bg-gray-100');
-            });
-        };
-        
-        const handleScroll = () => {
-            if (document.body.classList.contains('menu-open') || document.body.classList.contains('login-open') || document.body.classList.contains('search-open')) return;
-            const scrollPosition = window.scrollY;
-            const triggerPoint = heroSection.offsetHeight - header.offsetHeight;
-            if (scrollPosition > triggerPoint) {
-                applySolidHeader();
-            } else {
-                applyTransparentHeader();
-            }
-        };
-
-        // --- Panel Toggling Functions (No changes here) ---
-        const closeAllPanels = () => {
-            if (document.body.classList.contains('menu-open')) {
-                document.body.classList.remove('menu-open');
-                menuOpenIcon.classList.remove('opacity-0');
-                menuCloseIcon.classList.add('opacity-0');
-            }
-            if (document.body.classList.contains('login-open')) {
-                document.body.classList.remove('login-open');
-                userOpenIcon.classList.remove('opacity-0');
-                userCloseIcon.classList.add('opacity-0');
-            }
-            if (document.body.classList.contains('search-open')) {
-                document.body.classList.remove('search-open');
-                searchOpenIcon.classList.remove('opacity-0');
-                searchCloseIcon.classList.add('opacity-0');
-            }
-        };
-
-        const toggleSearch = () => {
-            const isOpening = !document.body.classList.contains('search-open');
-            closeAllPanels();
-            if (isOpening) {
-                document.body.classList.add('search-open');
-                searchOpenIcon.classList.add('opacity-0');
-                searchCloseIcon.classList.remove('opacity-0');
-                applySolidHeader();
-            } else {
-                handleScroll();
-            }
-        };
-
-        const toggleMenu = () => {
-            const isOpening = !document.body.classList.contains('menu-open');
-            closeAllPanels();
-            if (isOpening) {
-                document.body.classList.add('menu-open');
-                menuOpenIcon.classList.add('opacity-0');
-                menuCloseIcon.classList.remove('opacity-0');
-                applySolidHeader();
-            } else {
-                handleScroll();
-            }
-        };
-
-        const toggleLoginPanel = () => {
-            const isOpening = !document.body.classList.contains('login-open');
-            closeAllPanels();
-            if (isOpening) {
-                document.body.classList.add('login-open');
-                userOpenIcon.classList.add('opacity-0');
-                userCloseIcon.classList.remove('opacity-0');
-                applySolidHeader();
-            } else {
-                handleScroll();
-            }
-        };
-        
-        // --- Event Listeners (Main Panels) ---
-        searchToggle.addEventListener('click', (e) => { e.stopPropagation(); toggleSearch(); });
-        menuToggle.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(); });
-        userToggle.addEventListener('click', (e) => { e.stopPropagation(); toggleLoginPanel(); });
-        pageContentWrapper.addEventListener('click', () => { closeAllPanels(); handleScroll(); });
-
-        // --- Submenu Toggle Logic (No changes here) ---
-        submenuToggles.forEach(toggle => {
-            toggle.addEventListener('click', () => {
-                const submenu = toggle.nextElementSibling;
-                const icon = toggle.querySelector('svg');
-                if (submenu.style.maxHeight) {
-                    submenu.style.maxHeight = null;
-                    icon.style.transform = 'rotate(0deg)';
-                } else {
-                    submenu.style.maxHeight = submenu.scrollHeight + "px";
-                    icon.style.transform = 'rotate(-180deg)';
-                }
-            });
-        });
-
-        // --- *** MODIFIED: Login/Register Tab Logic *** ---
-        loginTab.addEventListener('click', () => {
-            loginTab.classList.add('active');
-            registerTab.classList.remove('active');
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get all the elements
+            const searchToggle = document.getElementById('search-toggle');
+            const searchPanel = document.getElementById('search-panel');
+            const searchOpenIcon = document.getElementById('search-open-icon');
+            const searchCloseIcon = document.getElementById('search-close-icon');
+            const menuToggle = document.getElementById('menu-toggle');
+            const userToggle = document.getElementById('user-toggle');
+            const pageContentWrapper = document.getElementById('page-content-wrapper');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const loginPanel = document.getElementById('login-panel');
+            const menuOpenIcon = document.getElementById('menu-open-icon');
+            const menuCloseIcon = document.getElementById('menu-close-icon');
+            const userOpenIcon = document.getElementById('user-open-icon');
+            const userCloseIcon = document.getElementById('user-close-icon');
+            const submenuToggles = document.querySelectorAll('.submenu-toggle');
+            const header = document.getElementById('main-header');
+            const heroSection = document.getElementById('hero-section');
+            const logoTransparent = document.querySelector('.logo-transparent');
+            const logoSolid = document.querySelector('.logo-solid');
+            const iconBtns = document.querySelectorAll('.icon-btn');
             
-            // Hide other panels
-            registerForm.classList.add('hidden');
-            roleSelectionView.classList.add('hidden');
-            
-            // Show login form
-            loginForm.classList.remove('hidden');
-        });
-        
-        registerTab.addEventListener('click', () => {
-            registerTab.classList.add('active');
-            loginTab.classList.remove('active');
-            
-            // Hide other panels
-            loginForm.classList.add('hidden');
-            registerForm.classList.add('hidden');
+            const loginTab = document.getElementById('login-tab');
+            const registerTab = document.getElementById('register-tab');
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const roleSelectionView = document.getElementById('role-selection');
+            const registerAsMemberBtn = document.getElementById('register-as-member');
+            const registerFormTitle = document.getElementById('register-form-title');
+            const backToRoleBtn = document.getElementById('back-to-role-selection');
 
-            // Show role selection
-            roleSelectionView.classList.remove('hidden');
-        });
+            let selectedRole = 'member';
 
-        // --- *** NEW: Role Selection Logic *** ---
-        const showRegisterFormForRole = (role) => {
-            selectedRole = role; // Store the selected role
-            
-            // Update the form title
-            if (role === 'member') {
-                registerFormTitle.textContent = 'Register as Member';
-            } else {
-                registerFormTitle.textContent = 'Register as Employee';
-            }
+            const searchableData = [
+                { title: 'News + Updates', url: '#', category: 'Navigation' },
+                { title: 'Research', url: '#', category: 'Navigation' },
+                { title: 'Projects', url: '#', category: 'Navigation' },
+                { title: 'Engineering Projects', url: '#', category: 'Projects' },
+                { title: 'Medical Projects', url: '#', category: 'Projects' },
+                { title: 'Biomedical Engineering Projects', url: '#', category: 'Projects' },
+                { title: 'Events', url: '#', category: 'Navigation' },
+                { title: 'People', url: '#', category: 'Navigation' },
+                { title: 'Members', url: '#', category: 'Navigation' },
+                { title: 'Engineers', url: '#', category: 'Members' },
+                { title: 'Doctors', url: '#', category: 'Members' },
+                { title: 'Submit your Idea', url: '#', category: 'Get Involved' },
+                { title: 'Support Docgineer Labs', url: '#', category: 'Get Involved' },
+                { title: 'Member Portal', url: '#', category: 'Get Involved' }
+            ];
 
-            // Hide role selection and show the form
-            roleSelectionView.classList.add('hidden');
-            registerForm.classList.remove('hidden');
-        };
-
-        registerAsMemberBtn.addEventListener('click', () => showRegisterFormForRole('member'));
-        registerAsEmployeeBtn.addEventListener('click', () => showRegisterFormForRole('employee'));
-
-        backToRoleBtn.addEventListener('click', () => {
-            // Hide form and show role selection
-            registerForm.classList.add('hidden');
-            roleSelectionView.classList.remove('hidden');
-        });
-
-
-        // --- *** MODIFIED: FORM SUBMISSION LOGIC *** ---
-        registerForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const fullName = document.getElementById('reg-name').value;
-            const email = document.getElementById('reg-email').value;
-            const password = document.getElementById('reg-password').value;
-            const { createUserWithEmailAndPassword, sendEmailVerification, auth, db, doc, setDoc } = window.firebaseAuth;
-
-            createUserWithEmailAndPassword(auth, email, password)
-                .then(async (userCredential) => {
-                    const user = userCredential.user;
-                    
-                    const userDocRef = doc(db, "users", user.uid);
-                    
-                    // *** THIS IS THE KEY CHANGE ***
-                    // It now uses the 'selectedRole' variable
-                    await setDoc(userDocRef, {
-                        fullName: fullName,
-                        email: email,
-                        role: selectedRole, // Use the dynamic role
-                        position: 'N/A',
-                        branch: 'N/A',
-                        about: 'This is a new user profile. Please update your information.',
-                        qualifications: []
-                    });
-                    
-                    sendEmailVerification(user);  
-                    alert('Registration successful! Please check your email to verify your account.');
-                    
-                    // Go back to the login tab
-                    loginTab.click(); 
-                    // Reset the form
-                    registerForm.reset();
-                })
-                .catch((error) => {
-                    alert('Error: ' + error.message);
+            const applySolidHeader = () => {
+                header.classList.add('backdrop-blur-sm', 'bg-white/80', 'border-gray-200');
+                logoTransparent.classList.add('hidden');
+                logoSolid.classList.remove('hidden');
+                iconBtns.forEach(btn => {
+                    btn.classList.remove('text-white', 'hover:bg-white/20');
+                    btn.classList.add('text-gray-500', 'hover:text-black', 'hover:bg-gray-100');
                 });
-        });
+            };
 
-        // --- LOGIN FORM (No changes here) ---
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const { signInWithEmailAndPassword, auth } = window.firebaseAuth;
-
-            signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    window.location.href = 'dashboard.html';
-                })
-                .catch((error) => {
-                    alert('Error: ' + error.message);
+            const applyTransparentHeader = () => {
+                header.classList.remove('backdrop-blur-sm', 'bg-white/80', 'border-gray-200');
+                logoTransparent.classList.remove('hidden');
+                logoSolid.classList.add('hidden');
+                iconBtns.forEach(btn => {
+                    btn.classList.add('text-white', 'hover:bg-white/20');
+                    btn.classList.remove('text-gray-500', 'hover:text-black', 'hover:bg-gray-100');
                 });
-        });
-
-        // --- SEARCH LOGIC (No changes here) ---
-        const searchInput = document.getElementById('search-input');
-        const searchResults = document.getElementById('search-results');
-
-        searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            searchResults.innerHTML = '';
-
-            if (searchTerm.length > 0) {
-                const matchedItems = searchableData.filter(item => 
-                    item.title.toLowerCase().includes(searchTerm)
-                );
-
-                if (matchedItems.length > 0) {
-                    matchedItems.forEach(item => {
-                        const resultItem = document.createElement('a');
-                        resultItem.href = item.url;
-                        resultItem.className = 'block p-3 text-gray-700 hover:bg-gray-100 rounded-md';
-                        resultItem.textContent = item.title;
-                        searchResults.appendChild(resultItem);
-                    });
+            };
+            
+            const handleScroll = () => {
+                if (document.body.classList.contains('menu-open') || document.body.classList.contains('login-open') || document.body.classList.contains('search-open')) return;
+                const scrollPosition = window.scrollY;
+                const triggerPoint = heroSection.offsetHeight - header.offsetHeight;
+                if (scrollPosition > triggerPoint) {
+                    applySolidHeader();
                 } else {
-                    searchResults.innerHTML = '<p class="p-3 text-gray-500">No results found.</p>';
+                    applyTransparentHeader();
                 }
-            }
-        }); 
-        
-        // --- Initial State ---
-        handleScroll();
-        window.addEventListener('scroll', handleScroll);
-    });
-</script>
+            };
+
+            const closeAllPanels = () => {
+                if (document.body.classList.contains('menu-open')) {
+                    document.body.classList.remove('menu-open');
+                    menuOpenIcon.classList.remove('opacity-0');
+                    menuCloseIcon.classList.add('opacity-0');
+                }
+                if (document.body.classList.contains('login-open')) {
+                    document.body.classList.remove('login-open');
+                    userOpenIcon.classList.remove('opacity-0');
+                    userCloseIcon.classList.add('opacity-0');
+                }
+                if (document.body.classList.contains('search-open')) {
+                    document.body.classList.remove('search-open');
+                    searchOpenIcon.classList.remove('opacity-0');
+                    searchCloseIcon.classList.add('opacity-0');
+                }
+            };
+
+            const toggleSearch = () => {
+                const isOpening = !document.body.classList.contains('search-open');
+                closeAllPanels();
+                if (isOpening) {
+                    document.body.classList.add('search-open');
+                    searchOpenIcon.classList.add('opacity-0');
+                    searchCloseIcon.classList.remove('opacity-0');
+                    applySolidHeader();
+                } else {
+                    handleScroll();
+                }
+            };
+
+            const toggleMenu = () => {
+                const isOpening = !document.body.classList.contains('menu-open');
+                closeAllPanels();
+                if (isOpening) {
+                    document.body.classList.add('menu-open');
+                    menuOpenIcon.classList.add('opacity-0');
+                    menuCloseIcon.classList.remove('opacity-0');
+                    applySolidHeader();
+                } else {
+                    handleScroll();
+                }
+            };
+
+            const toggleLoginPanel = () => {
+                const isOpening = !document.body.classList.contains('login-open');
+                closeAllPanels();
+                if (isOpening) {
+                    document.body.classList.add('login-open');
+                    userOpenIcon.classList.add('opacity-0');
+                    userCloseIcon.classList.remove('opacity-0');
+                    applySolidHeader();
+                } else {
+                    handleScroll();
+                }
+            };
+            
+            searchToggle.addEventListener('click', (e) => { e.stopPropagation(); toggleSearch(); });
+            menuToggle.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(); });
+            userToggle.addEventListener('click', (e) => { e.stopPropagation(); toggleLoginPanel(); });
+            pageContentWrapper.addEventListener('click', () => { closeAllPanels(); handleScroll(); });
+
+            submenuToggles.forEach(toggle => {
+                toggle.addEventListener('click', () => {
+                    const submenu = toggle.nextElementSibling;
+                    const icon = toggle.querySelector('svg');
+                    if (submenu.style.maxHeight) {
+                        submenu.style.maxHeight = null;
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        submenu.style.maxHeight = submenu.scrollHeight + "px";
+                        icon.style.transform = 'rotate(-180deg)';
+                    }
+                });
+            });
+
+            loginTab.addEventListener('click', () => {
+                loginTab.classList.add('active');
+                registerTab.classList.remove('active');
+                registerForm.classList.add('hidden');
+                roleSelectionView.classList.add('hidden');
+                loginForm.classList.remove('hidden');
+            });
+            
+            registerTab.addEventListener('click', () => {
+                registerTab.classList.add('active');
+                loginTab.classList.remove('active');
+                loginForm.classList.add('hidden');
+                registerForm.classList.add('hidden');
+                roleSelectionView.classList.remove('hidden');
+            });
+
+            const showRegisterFormForRole = (role) => {
+                selectedRole = role;
+                registerFormTitle.textContent = role === 'member' ? 'Register as Member' : 'Register as Employee';
+                roleSelectionView.classList.add('hidden');
+                registerForm.classList.remove('hidden');
+            };
+
+            registerAsMemberBtn.addEventListener('click', () => showRegisterFormForRole('member'));
+
+            backToRoleBtn.addEventListener('click', () => {
+                registerForm.classList.add('hidden');
+                roleSelectionView.classList.remove('hidden');
+            });
+
+            registerForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const fullName = document.getElementById('reg-name').value;
+                const email = document.getElementById('reg-email').value;
+                const password = document.getElementById('reg-password').value;
+
+                createUserWithEmailAndPassword(auth, email, password)
+                    .then(async (userCredential) => {
+                        const user = userCredential.user;
+                        const userDocRef = doc(db, "users", user.uid);
+                        
+                        await setDoc(userDocRef, {
+                            fullName: fullName,
+                            email: email,
+                            role: selectedRole,
+                            position: 'N/A',
+                            branch: 'N/A',
+                            about: 'This is a new user profile. Please update your information.',
+                            qualifications: []
+                        });
+                        
+                        sendEmailVerification(user);  
+                        alert('Registration successful! Please check your email to verify your account.');
+                        
+                        loginTab.click(); 
+                        registerForm.reset();
+                    })
+                    .catch((error) => {
+                        alert('Error: ' + error.message);
+                    });
+            });
+
+            loginForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+
+                signInWithEmailAndPassword(auth, email, password)
+                    .then((userCredential) => {
+                        window.location.href = 'dashboard.html';
+                    })
+                    .catch((error) => {
+                        alert('Error: ' + error.message);
+                    });
+            });
+
+            const searchInput = document.getElementById('search-input');
+            const searchResults = document.getElementById('search-results');
+
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                searchResults.innerHTML = '';
+
+                if (searchTerm.length > 0) {
+                    const matchedItems = searchableData.filter(item => 
+                        item.title.toLowerCase().includes(searchTerm)
+                    );
+
+                    if (matchedItems.length > 0) {
+                        matchedItems.forEach(item => {
+                            const resultItem = document.createElement('a');
+                            resultItem.href = item.url;
+                            resultItem.className = 'block p-3 text-gray-700 hover:bg-gray-100 rounded-md';
+                            resultItem.textContent = item.title;
+                            searchResults.appendChild(resultItem);
+                        });
+                    } else {
+                        searchResults.innerHTML = '<p class="p-3 text-gray-500">No results found.</p>';
+                    }
+                }
+            }); 
+            
+            handleScroll();
+            window.addEventListener('scroll', handleScroll);
+        });
+    </script>
+</body>
+</html>
+
