@@ -316,8 +316,8 @@
         // Import the functions you need from the SDKs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-analytics.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, signOut } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
         // Your web app's Firebase configuration
         const firebaseConfig = {
@@ -557,19 +557,51 @@
                 });
         });
 
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
-                    window.location.href = 'dashboard.html';
-                })
-                .catch((error) => {
-                    alert('Error: ' + error.message);
-                });
-        });
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // After successful login, check their Firestore document
+                const userDocRef = doc(db, "users", user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+
+                if (!userDocSnap.exists()) {
+                    throw new Error("User data not found.");
+                }
+
+                const userData = userDocSnap.data();
+
+                // Check user status
+                if (userData.status === 'pending') {
+                    alert('Your application is still pending review. We will notify you via email once it is processed.');
+                    await signOut(auth);
+                } else if (userData.status === 'rejected') {
+                    alert('Your application was not approved. Please contact support if you believe this is an error.');
+                    await signOut(auth);
+                } else if (userData.status === 'active') {
+                    // Status is active, now check email verification
+                    if (!user.emailVerified) {
+                        // Send verification email NOW
+                       await sendEmailVerification(user);
+                        alert('Your application is approved! We have just sent a verification link to your email. Please verify your account before logging in.');
+                        await signOut(auth);
+                    } else {
+                        // User is active AND email is verified. Let them in.
+                        window.location.href = 'dashboard.html';
+                    }
+                } else {
+                    alert('An unknown error occurred with your account status.');
+                    await signOut(auth);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        });
 
         const searchInput = document.getElementById('search-input');
         const searchResults = document.getElementById('search-results');
