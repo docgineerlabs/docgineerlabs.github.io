@@ -238,72 +238,72 @@
         });
 
         applicationForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Submitting...';
+            e.preventDefault();
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
 
-            // 1. Gather all form data
-            const fullName = document.getElementById('full-name').value;
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const role = document.querySelector('input[name="application-role"]:checked').value;
-            
-            let branch = 'N/A';
-            if (role === 'Engineer') {
-                const selectedBranch = document.querySelector('input[name="engineering-branch-option"]:checked');
-                if (selectedBranch) branch = selectedBranch.value;
-            } else if (role === 'Doctor') {
-                const selectedSpecialization = document.querySelector('input[name="doctor-specialization-option"]:checked');
-                if (selectedSpecialization) branch = selectedSpecialization.value;
-            }
-            
-            const about = document.getElementById('about').value;
-            const skills = document.getElementById('skills').value;
-            const work = document.getElementById('work').value;
-            const file = fileUploadInput.files[0];
+            // 1. Gather all form data
+            const fullName = document.getElementById('full-name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const role = document.querySelector('input[name="application-role"]:checked').value;
+            
+            let branch = 'N/A';
+            if (role === 'Engineer') {
+                const selectedBranch = document.querySelector('input[name="engineering-branch-option"]:checked');
+                if (selectedBranch) branch = selectedBranch.value;
+            } else if (role === 'Doctor') {
+                const selectedSpecialization = document.querySelector('input[name="doctor-specialization-option"]:checked');
+                if (selectedSpecialization) branch = selectedSpecialization.value;
+            }
+            
+            const about = document.getElementById('about').value;
+            const skills = document.getElementById('skills').value;
+            const work = document.getElementById('work').value;
+            // const file = fileUploadInput.files[0]; // File variable removed
 
-            try {
-                // 2. Create user account
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
+            try {
+                // 2. Create user account
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
 
-                // 3. Upload file if it exists
-                let fileUrl = null;
-                if (file) {
-                    const fileRef = ref(storage, `application-files/${user.uid}/${file.name}`);
-                    await uploadBytes(fileRef, file);
-                    fileUrl = await getDownloadURL(fileRef);
-                }
+                // 3. File upload logic is REMOVED as requested.
+                // let fileUrl = null;
+                // if (file) {
+                //     const fileRef = ref(storage, `application-files/${user.uid}/${file.name}`);
+                //     await uploadBytes(fileRef, file);
+                //     fileUrl = await getDownloadURL(fileRef);
+                // }
 
-                // 4. Create user profile in Firestore with "pending" status
-                const userDocRef = doc(db, "users", user.uid);
-                await setDoc(userDocRef, {
-                    fullName: fullName,
-                    email: email,
-                    role: 'employee', 
-                    position: role, 
-                    branch: branch,
-                    about: about,
-                    skills: skills,
-                    work: work,
-                    workFileUrl: fileUrl,
-                    qualifications: [],
-                    status: 'pending' // KEY CHANGE: Set status to pending
-                });
-                
-                // 5. Send verification email (optional but good practice)
-                await sendEmailVerification(user);
+                // 4. Create user profile in Firestore with "pending" status
+                const userDocRef = doc(db, "users", user.uid);
+                await setDoc(userDocRef, {
+                    fullName: fullName,
+                    email: email,
+                    role: 'employee', 
+                    position: role, 
+                    branch: branch,
+                    about: about,
+                    skills: skills,
+                    work: work,
+                    workFileUrl: null, // Set to null since we are not uploading a file
+                    qualifications: [],
+                    status: 'pending' 
+                });
+                
+                // 5. DO NOT send verification email here. Admin will approve first.
+                // await sendEmailVerification(user); // <-- THIS LINE IS REMOVED.
 
-                // 6. Show success message
-                successOverlay.classList.remove('hidden');
+                // 6. Show success message
+                successOverlay.classList.remove('hidden');
 
-            } catch (error) {
-                console.error("Application Error: ", error);
-                alert('Error submitting application: ' + error.message);
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit Application';
-            }
-        });
+            } catch (error) {
+                console.error("Application Error: ", error);
+                alert('Error submitting application: ' + error.message);
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Application';
+            }
+        });
     });
 </script>
 
