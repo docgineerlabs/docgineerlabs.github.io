@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Control Room | Docgineer Labs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9; /* slate-100 */
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+
+<!-- Loading/Access Denied Overlay -->
+<div id="auth-overlay" class="fixed inset-0 bg-white z-[100] flex items-center justify-center">
+    <p id="auth-message" class="text-lg font-medium">Verifying Access...</p>
+</div>
+
+<!-- Main Content (Hidden until authorized) -->
+<div id="main-content" class="hidden">
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-900">Control Room</h1>
+                <p class="text-sm text-slate-500">System Administration Dashboard</p>
+            </div>
+            <a href="dashboard.html" class="text-sm font-medium text-indigo-600 hover:text-indigo-800">&larr; Back to Dashboard</a>
+        </div>
+    </header>
+
+    <!-- Main Dashboard -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
+        
+        <!-- Employees Section -->
+        <section id="employees-section">
+            <div class="flex justify-between items-center mb-6">
+                 <h2 class="text-3xl font-bold text-slate-800">Active Employees</h2>
+                 <div class="flex items-center gap-4">
+                    <button id="message-group-btn" class="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-600 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                          <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                        </svg>
+                        <span>Message Group</span>
+                    </button>
+                    <button id="start-group-meet-btn" class="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-600 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M17 10.5V7c0-1.66-1.34-3-3-3H7c-1.66 0-3 1.34-3 3v10c0 1.66 1.34 3 3 3h7c1.66 0 3-1.34 3-3v-3.5l4 4v-11l-4 4z"/>
+                        </svg>
+                        <span>Start Group Meet</span>
+                    </button>
+                 </div>
+            </div>
+
+            <!-- Employee User Management -->
+            <div id="employees-user-management">
+                <h3 class="text-xl font-semibold text-slate-700 mb-1">User Management</h3>
+                <div class="bg-white rounded-lg shadow overflow-hidden mt-4">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-slate-200">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Name</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Branch</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Position</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Message</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Meet</th>
+                                    <th scope="col" class="relative px-6 py-3"><span class="sr-only">Edit</span></th>
+                                </tr>
+                            </thead>
+                            <tbody id="employees-table-body" class="bg-white divide-y divide-slate-200">
+                                <!-- Employee rows will be dynamically inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Members Section -->
+        <section id="members-section">
+             <div class="flex justify-between items-center mb-6">
+                <h2 class="text-3xl font-bold text-slate-800">Members</h2>
+                <div class="flex items-center gap-4">
+                    <button id="message-group-btn-members" class="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-600 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                          <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                        </svg>
+                        <span>Message Group</span>
+                    </button>
+                    <button id="start-group-meet-btn-members" class="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-600 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M17 10.5V7c0-1.66-1.34-3-3-3H7c-1.66 0-3 1.34-3 3v10c0 1.66 1.34 3 3 3h7c1.66 0 3-1.34 3-3v-3.5l4 4v-11l-4 4z"/>
+                        </svg>
+                        <span>Start Group Meet</span>
+                     </button>
+                </div>
+            </div>
+
+            <!-- Member User Management -->
+            <div id="members-user-management">
+                <h3 class="text-xl font-semibold text-slate-700 mb-1">User Management</h3>
+                <div class="bg-white rounded-lg shadow overflow-hidden mt-4">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-slate-200">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Name</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Email ID</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Contact</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Message</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Meet</th>
+                                    <th scope="col" class="relative px-6 py-3"><span class="sr-only">Edit</span></th>
+                                </tr>
+                            </thead>
+                            <tbody id="members-table-body" class="bg-white divide-y divide-slate-200">
+                                <!-- Member rows will be dynamically inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Member Idea Submissions -->
+            <div id="members-idea-submissions" class="mt-8">
+                <h3 class="text-xl font-semibold text-slate-700 mb-1">Idea Submissions</h3>
+                <div id="members-ideas-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-4">
+                    <!-- Idea cards will be dynamically inserted here -->
+                </div>
+            </div>
+        </section>
+        
+        <!-- Employee Applications Section -->
+        <section id="applications-section">
+            <h2 class="text-3xl font-bold text-slate-800 mb-6">Pending Applications</h2>
+            <div class="bg-white rounded-lg shadow overflow-hidden mt-4">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-200">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Applicant Name</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Applying For</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Branch / Specialization</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="applications-table-body" class="bg-white divide-y divide-slate-200">
+                            <!-- Applicant rows will be dynamically inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- Edit User Modal -->
+<div id="edit-user-modal" class="fixed inset-0 bg-slate-900 bg-opacity-75 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-lg">
+        <div class="p-5 border-b border-slate-200 flex justify-between items-center">
+            <h3 class="text-lg font-bold text-slate-900">Edit User Details</h3>
+            <button id="edit-modal-close-btn" class="text-slate-400 hover:text-slate-600 text-2xl leading-none">&times;</button>
+        </div>
+        <div class="p-5 space-y-4">
+            <div>
+                <label for="edit-full-name" class="block text-sm font-medium text-slate-700">Full Name</label>
+                <input type="text" id="edit-full-name" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2">
+            </div>
+            <div>
+                <label for="edit-position" class="block text-sm font-medium text-slate-700">Position</label>
+                <input type="text" id="edit-position" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2">
+            </div>
+            <div>
+                <label for="edit-branch" class="block text-sm font-medium text-slate-700">Branch / Specialization</label>
+                <input type="text" id="edit-branch" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2">
+            </div>
+        </div>
+        <div class="p-5 bg-slate-50 border-t border-slate-200 text-right">
+            <button id="save-changes-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Save Changes
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Message Modal -->
+<div id="message-modal" class="fixed inset-0 bg-slate-900 bg-opacity-75 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-lg">
+        <div class="p-5 border-b border-slate-200 flex justify-between items-center">
+            <h3 id="message-modal-title" class="text-lg font-bold text-slate-900">Send Message</h3>
+            <button id="message-modal-close-btn" class="text-slate-400 hover:text-slate-600 text-2xl leading-none">&times;</button>
+        </div>
+        <div class="p-5">
+            <textarea id="message-modal-textarea" rows="6" class="block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3" placeholder="Type your message here..."></textarea>
+        </div>
+        <div class="p-5 bg-slate-50 border-t border-slate-200 text-right">
+            <button id="send-message-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Send Message
+            </button>
+        </div>
+    </div>
+</div>
+
+
+<!-- Application Details Modal -->
+<div id="application-details-modal" class="fixed inset-0 bg-slate-900 bg-opacity-75 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b border-slate-200 sticky top-0 bg-white z-10">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-900">Applicant Details</h3>
+                    <p id="modal-applicant-name" class="text-sm text-slate-600"></p>
+                </div>
+                <button id="modal-close-btn" class="text-slate-400 hover:text-slate-600 text-2xl leading-none">&times;</button>
+            </div>
+        </div>
+        <div class="p-6 space-y-6">
+            <div>
+                <h4 class="font-semibold text-slate-700">Role & Specialization</h4>
+                <p id="modal-applicant-role" class="mt-1 text-sm text-slate-600"></p>
+            </div>
+            <div>
+                <h4 class="font-semibold text-slate-700">About</h4>
+                <p id="modal-applicant-about" class="mt-1 text-sm text-slate-600 whitespace-pre-wrap"></p>
+            </div>
+            <div>
+                <h4 class="font-semibold text-slate-700">Skills</h4>
+                <p id="modal-applicant-skills" class="mt-1 text-sm text-slate-600 whitespace-pre-wrap"></p>
+            </div>
+            <div>
+                <h4 class="font-semibold text-slate-700">Work / Research</h4>
+                <p id="modal-applicant-work" class="mt-1 text-sm text-slate-600 whitespace-pre-wrap"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script type="module">
+    // Import Firebase modules
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, collection, getDocs, updateDoc, query, where, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+
+    // Your Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyB1n-RkiDibKhlc9tOE-G-Hpz4zA8LuQGA",
+        authDomain: "docgineerlabs-b4830.firebaseapp.com",
+        projectId: "docgineerlabs-b4830",
+        storageBucket: "docgineerlabs-b4830.firebasestorage.app",
+        messagingSenderId: "338822276527",
+        appId: "1:338822276527:web:271e8761eaabcc79e8fb5a"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const authOverlay = document.getElementById('auth-overlay');
+        const authMessage = document.getElementById('auth-message');
+        const mainContent = document.getElementById('main-content');
+        
+        const applicationsTableBody = document.getElementById('applications-table-body');
+        const employeesTableBody = document.getElementById('employees-table-body');
+        const membersTableBody = document.getElementById('members-table-body');
+        const membersIdeasContainer = document.getElementById('members-ideas-container');
+
+        // Modals
+        const messageModal = document.getElementById('message-modal');
+        const applicationDetailsModal = document.getElementById('application-details-modal');
+        const editUserModal = document.getElementById('edit-user-modal');
+
+        // Modal Buttons
+        const messageModalCloseBtn = document.getElementById('message-modal-close-btn');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+        const editModalCloseBtn = document.getElementById('edit-modal-close-btn');
+        const sendMessageBtn = document.getElementById('send-message-btn');
+        const saveChangesBtn = document.getElementById('save-changes-btn');
+        
+        // Non-Modal Buttons
+        const messageGroupBtn = document.getElementById('message-group-btn');
+        const messageGroupBtnMembers = document.getElementById('message-group-btn-members');
+        const startGroupMeetBtn = document.getElementById('start-group-meet-btn');
+        const startGroupMeetBtnMembers = document.getElementById('start-group-meet-btn-members');
+
+
+        // Edit Modal Form Fields
+        const editFullName = document.getElementById('edit-full-name');
+        const editPosition = document.getElementById('edit-position');
+        const editBranch = document.getElementById('edit-branch');
+
+        // Global state
+        let currentAdminProfile = null;
+        let messageRecipient = { id: null, name: null };
+        let editingUser = { id: null, role: null };
+        let allEmployeeEmails = [];
+        let allMemberEmails = [];
+
+        onAuthStateChanged(auth, async (user) => {
+            const isPreviewMode = !auth.currentUser;
+            if (isPreviewMode) {
+                 authOverlay.style.display = 'none';
+                 mainContent.classList.remove('hidden');
+                 loadUsers(true);
+                 loadIdeas(true);
+                 loadApplications(true);
+                 loadMembers(true);
+            } else {
+                const userDocRef = doc(db, "users", user.uid);
+                try {
+                    const userDocSnap = await getDoc(userDocRef);
+                    if (userDocSnap.exists() && userDocSnap.data().position === 'Founder and CEO') {
+                        currentAdminProfile = userDocSnap.data();
+                        authOverlay.style.display = 'none';
+                        mainContent.classList.remove('hidden');
+                        loadAllData();
+                    } else {
+                        authMessage.textContent = 'Access Denied. Redirecting...';
+                        authMessage.classList.add('text-red-500');
+                        setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
+                    }
+                } catch (e) {
+                    authMessage.textContent = 'You are not logged in. Redirecting...';
+                    setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+                }
+            }
+        });
+
+        function loadAllData() {
+            loadUsers();
+            loadIdeas();
+            loadApplications();
+            loadMembers();
+        }
+        
+        async function loadApplications(isPreview = false) {
+             applicationsTableBody.innerHTML = `<tr><td colspan="4" class="px-6 py-4 text-center text-slate-500">Loading applications...</td></tr>`;
+             if(isPreview) { 
+                const mailtoLink = "mailto:applicant@example.com?subject=Update%20on%20your%20Docgineer%20Labs%20Application&body=Dear%20New%20Applicant%20(Sample)%2C%0A%0AThank%20you%20for%20your%20interest%20in%20Docgineer%20Labs.%20We%20are%20currently%20reviewing%20your%20application%20and%20will%20get%20back%20to%20you%20shortly.%0A%0ABest%20regards%2C%0AThe%20Docgineer%20Labs%20Team";
+                applicationsTableBody.innerHTML = `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-medium text-slate-900">New Applicant (Sample)</div><div class="text-sm text-slate-500">applicant@example.com</div></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">Engineer</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">Mechanical Engineering (ME)</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                            <button class="view-btn text-blue-600 hover:text-blue-900">View</button>
+                            <button class="grant-btn text-green-600 hover:text-green-900">Grant</button>
+                            <button class="reject-btn text-red-600 hover:text-red-900">Reject</button>
+                            <a href="${mailtoLink}" class="text-indigo-600 hover:text-indigo-900">Mail</a>
+                        </td>
+                    </tr>
+                `;
+                return; 
+            }
+             try {
+                const q = query(collection(db, "users"), where("status", "==", "pending"));
+                const querySnapshot = await getDocs(q);
+                applicationsTableBody.innerHTML = '';
+                if(querySnapshot.empty) {
+                    applicationsTableBody.innerHTML = `<tr><td colspan="4" class="px-6 py-4 text-center text-slate-500">No pending applications.</td></tr>`;
+                    return;
+                }
+                querySnapshot.forEach((docSnap) => {
+                    const applicant = docSnap.data();
+                    const tr = document.createElement('tr');
+                    const mailtoLink = `mailto:${applicant.email}?subject=${encodeURIComponent("Update on your Docgineer Labs Application")}&body=${encodeURIComponent(`Dear ${applicant.fullName},\n\nThank you for your interest in Docgineer Labs.\n\nBest regards,\nThe Docgineer Labs Team`)}`;
+                    tr.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-medium text-slate-900">${applicant.fullName}</div><div class="text-sm text-slate-500">${applicant.email}</div></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">${applicant.position}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">${applicant.branch}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                            <button class="view-btn text-blue-600 hover:text-blue-900" data-id="${docSnap.id}">View</button>
+                            <button class="grant-btn text-green-600 hover:text-green-900" data-id="${docSnap.id}" data-name="${applicant.fullName}" data-email="${applicant.email}">Grant</button>
+                            <button class="reject-btn text-red-600 hover:text-red-900" data-id="${docSnap.id}">Reject</button>
+                            <a href="${mailtoLink}" class="text-indigo-600 hover:text-indigo-900">Mail</a>
+                        </td>
+                    `;
+                    applicationsTableBody.appendChild(tr);
+                });
+             } catch(error) {
+                console.error("Error loading applications: ", error);
+                applicationsTableBody.innerHTML = `<tr><td colspan="4" class="px-6 py-4 text-center text-red-500">Error loading applications.</td></tr>`;
+             }
+        }
+        
+        async function loadUsers(isPreview = false) {
+            employeesTableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-4 text-center text-slate-500">Loading employees...</td></tr>`;
+            if(isPreview) {
+                employeesTableBody.innerHTML = `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-medium text-slate-900">John Doe (Sample)</div></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">Computer Science (CSE)</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">Engineer</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center"><button class="text-blue-600 hover:text-blue-900"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-auto" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg></button></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center"><a href="https://meet.google.com/new" target="_blank" class="inline-block text-green-600 hover:text-green-900"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17 10.5V7c0-1.66-1.34-3-3-3H7c-1.66 0-3 1.34-3 3v10c0 1.66 1.34 3 3 3h7c1.66 0 3-1.34 3-3v-3.5l4 4v-11l-4 4z"/></svg></a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"><button class="text-indigo-600 hover:text-indigo-900">Edit</button></td>
+                    </tr>
+                `;
+                return;
+            }
+            try {
+                const q = query(collection(db, "users"), where("role", "==", "employee"), where("status", "==", "active"));
+                const querySnapshot = await getDocs(q);
+                employeesTableBody.innerHTML = '';
+                allEmployeeEmails = [];
+                if (querySnapshot.empty) {
+                    employeesTableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-4 text-center text-slate-500">No active employees found.</td></tr>`;
+                    return;
+                }
+                querySnapshot.forEach((docSnap) => {
+                    const user = docSnap.data();
+                    allEmployeeEmails.push(user.email);
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-medium text-slate-900">${user.fullName}</div><div class="text-sm text-slate-500">${user.email}</div></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">${user.branch}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">${user.position}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center"><button class="message-user-btn text-blue-600 hover:text-blue-900" data-id="${docSnap.id}" data-name="${user.fullName}"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-auto" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg></button></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center"><a href="https://meet.google.com/new?add=${encodeURIComponent(user.email)}" target="_blank" class="inline-block text-green-600 hover:text-green-900"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17 10.5V7c0-1.66-1.34-3-3-3H7c-1.66 0-3 1.34-3 3v10c0 1.66 1.34 3 3 3h7c1.66 0 3-1.34 3-3v-3.5l4 4v-11l-4 4z"/></svg></a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"><button class="edit-btn text-indigo-600 hover:text-indigo-900" data-id="${docSnap.id}" data-role="employee">Edit</button></td>
+                    `;
+                    employeesTableBody.appendChild(tr);
+                });
+            } catch(error) {
+                console.error("Error loading users: ", error);
+                employeesTableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-4 text-center text-red-500">Error loading employees.</td></tr>`;
+            }
+        }
+
+        async function loadMembers(isPreview = false) {
+            membersTableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-4 text-center text-slate-500">Loading members...</td></tr>`;
+            if (isPreview) {
+                membersTableBody.innerHTML = `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-medium text-slate-900">Sarah Connor (Sample)</div></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">sarah.c@example.com</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">-</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center"><button class="text-blue-600 hover:text-blue-900"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-auto" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg></button></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center"><a href="https://meet.google.com/new" target="_blank" class="inline-block text-green-600 hover:text-green-900"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17 10.5V7c0-1.66-1.34-3-3-3H7c-1.66 0-3 1.34-3 3v10c0 1.66 1.34 3 3 3h7c1.66 0 3-1.34 3-3v-3.5l4 4v-11l-4 4z"/></svg></a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"><button class="text-indigo-600 hover:text-indigo-900">Edit</button></td>
+                    </tr>
+                `;
+                return;
+            }
+            try {
+                const q = query(collection(db, "users"), where("role", "==", "member"));
+                const querySnapshot = await getDocs(q);
+                membersTableBody.innerHTML = '';
+                allMemberEmails = [];
+                if (querySnapshot.empty) {
+                    membersTableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-4 text-center text-slate-500">No members found.</td></tr>`;
+                    return;
+                }
+                querySnapshot.forEach((docSnap) => {
+                    const user = docSnap.data();
+                    allMemberEmails.push(user.email);
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-medium text-slate-900">${user.fullName}</div></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">${user.email}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">-</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center"><button class="message-user-btn text-blue-600 hover:text-blue-900" data-id="${docSnap.id}" data-name="${user.fullName}"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-auto" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg></button></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center"><a href="https://meet.google.com/new?add=${encodeURIComponent(user.email)}" target="_blank" class="inline-block text-green-600 hover:text-green-900"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17 10.5V7c0-1.66-1.34-3-3-3H7c-1.66 0-3 1.34-3 3v10c0 1.66 1.34 3 3 3h7c1.66 0 3-1.34 3-3v-3.5l4 4v-11l-4 4z"/></svg></a></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"><button class="edit-btn text-indigo-600 hover:text-indigo-900" data-id="${docSnap.id}" data-role="member">Edit</button></td>
+                    `;
+                    membersTableBody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error("Error loading members: ", error);
+                membersTableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-4 text-center text-red-500">Error loading members.</td></tr>`;
+            }
+        }
+        
+        async function loadIdeas(isPreview = false) {
+            membersIdeasContainer.innerHTML = '<p class="text-slate-500 col-span-full text-center p-4">Loading idea submissions...</p>';
+            if (isPreview) {
+                membersIdeasContainer.innerHTML = `
+                    <div class="bg-white rounded-lg shadow p-5 flex flex-col">
+                        <div class="flex justify-between items-start">
+                            <div><p class="font-bold text-slate-800">Jane Smith (Sample)</p><p class="text-xs text-slate-500">Oct 20, 2025, 2:58:00 AM</p></div>
+                            <span class="text-xs font-semibold px-2 py-1 rounded-full bg-blue-100 text-blue-800">new</span>
+                        </div>
+                        <p class="text-sm text-slate-600 mt-3 mb-4 flex-grow">This is a sample idea submission...</p>
+                        <div class="mt-auto border-t border-slate-200 pt-4"><div class="flex gap-2"><button data-id="sample-id" data-status="granted" class="grant-btn flex-1 bg-green-100 text-green-800 px-3 py-1.5 rounded-md text-xs font-semibold hover:bg-green-200">Grant</button><button data-id="sample-id" data-status="rejected" class="reject-btn flex-1 bg-red-100 text-red-800 px-3 py-1.5 rounded-md text-xs font-semibold hover:bg-red-200">Reject</button></div></div>
+                    </div>
+                `;
+                return;
+            }
+            try {
+                const ideaSnapshot = await getDocs(collection(db, "ideaSubmissions"));
+                membersIdeasContainer.innerHTML = '';
+                if (ideaSnapshot.empty) {
+                    membersIdeasContainer.innerHTML = '<p class="text-slate-500 col-span-full text-center p-4">No idea submissions found.</p>';
+                    return;
+                }
+                ideaSnapshot.forEach(docSnap => {
+                    const ideaData = docSnap.data();
+                    const card = document.createElement('div');
+                    card.className = 'bg-white rounded-lg shadow p-5 flex flex-col';
+                    const statusColors = { new: 'bg-blue-100 text-blue-800', granted: 'bg-green-100 text-green-800', rejected: 'bg-red-100 text-red-800' };
+                    const statusColor = statusColors[ideaData.status] || 'bg-slate-100 text-slate-800';
+                    card.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <div><p class="font-bold text-slate-800">${ideaData.userName || 'Anonymous'}</p><p class="text-xs text-slate-500">${ideaData.submittedAt ? new Date(ideaData.submittedAt.toDate()).toLocaleString() : 'N/A'}</p></div>
+                            <span id="status-${docSnap.id}" class="text-xs font-semibold px-2 py-1 rounded-full ${statusColor}">${ideaData.status}</span>
+                        </div>
+                        <p class="text-sm text-slate-600 mt-3 mb-4 flex-grow">${ideaData.description}</p>
+                        <div class="mt-auto border-t border-slate-200 pt-4"><div class="flex gap-2"><button data-id="${docSnap.id}" data-status="granted" class="grant-btn flex-1 bg-green-100 text-green-800 px-3 py-1.5 rounded-md text-xs font-semibold hover:bg-green-200">Grant</button><button data-id="${docSnap.id}" data-status="rejected" class="reject-btn flex-1 bg-red-100 text-red-800 px-3 py-1.5 rounded-md text-xs font-semibold hover:bg-red-200">Reject</button></div></div>
+                    `;
+                    membersIdeasContainer.appendChild(card);
+                });
+            } catch (error) {
+                console.error("Error loading ideas:", error);
+                membersIdeasContainer.innerHTML = '<p class="text-red-500 col-span-full text-center p-4">Failed to load idea submissions.</p>';
+            }
+        }
+
+        async function updateIdeaStatus(ideaId, status) {
+            try {
+                await updateDoc(doc(db, "ideaSubmissions", ideaId), { status });
+                loadIdeas();
+            } catch (error) {
+                console.error("Error updating idea status:", error);
+                alert("Failed to update idea status.");
+            }
+        }
+
+        async function grantApplication(userId, userName, userEmail) {
+            try {
+                await updateDoc(doc(db, "users", userId), { status: 'active' });
+                const mailtoLink = `mailto:${userEmail}?subject=${encodeURIComponent("Welcome to Docgineer Labs!")}&body=${encodeURIComponent(`Dear ${userName},\n\nCongratulations! Your application has been approved.\n\nBest regards,\nThe Docgineer Labs Team`)}`;
+                window.location.href = mailtoLink;
+                setTimeout(loadAllData, 500);
+            } catch(error) {
+                console.error("Error updating application status: ", error);
+                alert("Failed to update status.");
+            }
+        }
+
+        async function rejectApplication(userId) {
+             try {
+                await updateDoc(doc(db, "users", userId), { status: 'rejected' });
+                alert(`Application has been rejected.`);
+                loadAllData();
+            } catch(error) {
+                console.error("Error updating application status: ", error);
+                alert("Failed to update status.");
+            }
+        }
+
+        async function openEditModal(userId) {
+            try {
+                const userDoc = await getDoc(doc(db, "users", userId));
+                if (!userDoc.exists()) {
+                    alert("User not found!");
+                    return;
+                }
+                const userData = userDoc.data();
+                editingUser.id = userId;
+                editingUser.role = userData.role;
+                editFullName.value = userData.fullName || '';
+                editPosition.value = userData.position || '';
+                editBranch.value = userData.branch || '';
+                editUserModal.classList.remove('hidden');
+            } catch(error) {
+                console.error("Error fetching user data for edit:", error);
+                alert("Could not load user data.");
+            }
+        }
+
+        async function saveChanges() {
+            if (!editingUser.id) return;
+            saveChangesBtn.disabled = true;
+            saveChangesBtn.textContent = 'Saving...';
+            try {
+                await updateDoc(doc(db, "users", editingUser.id), {
+                    fullName: editFullName.value,
+                    position: editPosition.value,
+                    branch: editBranch.value
+                });
+                editUserModal.classList.add('hidden');
+                if (editingUser.role === 'employee') {
+                    loadUsers();
+                } else {
+                    loadMembers();
+                }
+            } catch (error) {
+                console.error("Error saving changes:", error);
+                alert("Failed to save changes.");
+            } finally {
+                saveChangesBtn.disabled = false;
+                saveChangesBtn.textContent = 'Save Changes';
+            }
+        }
+
+        async function openApplicationModal(userId) {
+            try {
+                const userDoc = await getDoc(doc(db, "users", userId));
+                if (!userDoc.exists()) {
+                    alert("Applicant not found!");
+                    return;
+                }
+                const applicant = userDoc.data();
+                document.getElementById('modal-applicant-name').textContent = `${applicant.fullName} (${applicant.email})`;
+                document.getElementById('modal-applicant-role').textContent = `${applicant.position} - ${applicant.branch}`;
+                document.getElementById('modal-applicant-about').textContent = applicant.about || 'Not provided.';
+                document.getElementById('modal-applicant-skills').textContent = applicant.skills || 'Not provided.';
+                document.getElementById('modal-applicant-work').textContent = applicant.work || 'Not provided.';
+                applicationDetailsModal.classList.remove('hidden');
+            } catch (error) {
+                console.error("Error fetching applicant data:", error);
+                alert("Could not load applicant data.");
+            }
+        }
+        
+        function openMessageModal(id, name) {
+            messageRecipient.id = id;
+            messageRecipient.name = name;
+            const messageModalTitle = document.getElementById('message-modal-title');
+            const messageModalTextarea = document.getElementById('message-modal-textarea');
+            
+            messageModalTitle.textContent = `Message to: ${name}`;
+            messageModalTextarea.value = '';
+            messageModal.classList.remove('hidden');
+            messageModalTextarea.focus();
+        }
+
+        async function sendMessage() {
+            const messageModalTextarea = document.getElementById('message-modal-textarea');
+            const content = messageModalTextarea.value.trim();
+            if (!content) {
+                alert("Message cannot be empty.");
+                return;
+            }
+            if (!messageRecipient.id || !auth.currentUser) {
+                alert("Error: Recipient or sender not defined.");
+                return;
+            }
+
+            const sendMessageBtn = document.getElementById('send-message-btn');
+            sendMessageBtn.disabled = true;
+            sendMessageBtn.textContent = 'Sending...';
+
+            try {
+                await addDoc(collection(db, "messages"), {
+                    senderId: auth.currentUser.uid,
+                    senderName: currentAdminProfile?.fullName || 'Admin',
+                    recipientId: messageRecipient.id,
+                    content: content,
+                    timestamp: serverTimestamp(),
+                    isRead: false
+                });
+                messageModal.classList.add('hidden');
+            } catch (error) {
+                console.error("Error sending message:", error);
+                alert("Failed to send message.");
+            } finally {
+                sendMessageBtn.disabled = false;
+                sendMessageBtn.textContent = 'Send Message';
+            }
+        }
+        
+        // --- EVENT LISTENERS ---
+
+        function setupEventListeners() {
+            const closeModal = (modal) => modal.classList.add('hidden');
+
+            // Modal Listeners
+            messageModalCloseBtn.addEventListener('click', () => closeModal(messageModal));
+            messageModal.addEventListener('click', (e) => e.target === messageModal && closeModal(messageModal));
+            sendMessageBtn.addEventListener('click', sendMessage);
+
+            modalCloseBtn.addEventListener('click', () => closeModal(applicationDetailsModal));
+            applicationDetailsModal.addEventListener('click', (e) => e.target === applicationDetailsModal && closeModal(applicationDetailsModal));
+
+            editModalCloseBtn.addEventListener('click', () => closeModal(editUserModal));
+            editUserModal.addEventListener('click', (e) => e.target === editUserModal && closeModal(editUserModal));
+            saveChangesBtn.addEventListener('click', saveChanges);
+
+            // Group Buttons Listeners
+            messageGroupBtn.addEventListener('click', () => openMessageModal('all_employees', 'All Employees'));
+            messageGroupBtnMembers.addEventListener('click', () => openMessageModal('all_members', 'All Members'));
+
+            startGroupMeetBtn.addEventListener('click', () => {
+                if (allEmployeeEmails.length > 0) {
+                    const emails = allEmployeeEmails.join(',');
+                    const meetUrl = `https://meet.google.com/new?add=${encodeURIComponent(emails)}`;
+                    window.open(meetUrl, '_blank');
+                } else {
+                    alert("There are no active employees to start a meet with.");
+                }
+            });
+
+            startGroupMeetBtnMembers.addEventListener('click', () => {
+                if (allMemberEmails.length > 0) {
+                    const emails = allMemberEmails.join(',');
+                    const meetUrl = `https://meet.google.com/new?add=${encodeURIComponent(emails)}`;
+                    window.open(meetUrl, '_blank');
+                } else {
+                    alert("There are no members to start a meet with.");
+                }
+            });
+            
+            // Event Delegation for Tables
+            document.body.addEventListener('click', (e) => {
+                const button = e.target.closest('button');
+                if (!button) return;
+
+                const userId = button.dataset.id;
+                
+                // Application and Idea Buttons
+                if (button.classList.contains('grant-btn') || button.classList.contains('reject-btn')) {
+                    if (button.dataset.status) { // This is an Idea button
+                        const ideaId = button.dataset.id;
+                        const status = button.dataset.status;
+                        if (confirm(`Are you sure you want to ${status} this idea?`)) {
+                            updateIdeaStatus(ideaId, status);
+                        }
+                    } else { // This is an Application button
+                        if (button.classList.contains('grant-btn')) {
+                            if (confirm(`Are you sure you want to grant this application?`)) {
+                                grantApplication(userId, button.dataset.name, button.dataset.email);
+                            }
+                        } else if (button.classList.contains('reject-btn')) {
+                            if (confirm(`Are you sure you want to reject this application?`)) {
+                                rejectApplication(userId);
+                            }
+                        }
+                    }
+                } 
+                // Other buttons
+                else if (button.classList.contains('view-btn')) {
+                    openApplicationModal(userId);
+                } else if (button.classList.contains('message-user-btn')) {
+                    openMessageModal(userId, button.dataset.name);
+                } else if (button.classList.contains('edit-btn')) {
+                    openEditModal(userId);
+                }
+            });
+        }
+        
+        // Initial setup
+        setupEventListeners();
+    });
+</script>
+
+</body>
+</html>
+
