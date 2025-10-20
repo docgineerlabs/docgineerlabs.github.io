@@ -68,7 +68,7 @@
                             </div>
                             <div class="flex items-center">
                                 <input id="role-researcher" name="application-role" type="radio" value="Researcher" class="form-radio h-4 w-4 text-black border-gray-300 focus:ring-black">
-                                <label for="role-researcher" class="ml-3 block text-sm font-medium text-gray-700">Researcher</o>
+                                <label for="role-researcher" class="ml-3 block text-sm font-medium text-gray-700">Researcher</label>
                             </div>
                         </div>
                     </fieldset>
@@ -254,7 +254,7 @@
                 if (selectedBranch) branch = selectedBranch.value;
             } else if (role === 'Doctor') {
                 const selectedSpecialization = document.querySelector('input[name="doctor-specialization-option"]:checked');
-                if (selectedSpecialization) branch = selectedSpecialization.value; // Store in 'branch' field for simplicity
+                if (selectedSpecialization) branch = selectedSpecialization.value;
             }
             
             const about = document.getElementById('about').value;
@@ -275,22 +275,23 @@
                     fileUrl = await getDownloadURL(fileRef);
                 }
 
-                // 4. Create user profile in Firestore
+                // 4. Create user profile in Firestore with "pending" status
                 const userDocRef = doc(db, "users", user.uid);
                 await setDoc(userDocRef, {
                     fullName: fullName,
                     email: email,
-                    role: 'employee', // All applicants are employees for now
-                    position: role, // Doctor, Engineer, Researcher
-                    branch: branch, // The specific branch/specialization
+                    role: 'employee', 
+                    position: role, 
+                    branch: branch,
                     about: about,
                     skills: skills,
                     work: work,
-                    workFileUrl: fileUrl, // URL to their uploaded work
-                    qualifications: [] // Can be edited later
+                    workFileUrl: fileUrl,
+                    qualifications: [],
+                    status: 'pending' // KEY CHANGE: Set status to pending
                 });
                 
-                // 5. Send verification email
+                // 5. Send verification email (optional but good practice)
                 await sendEmailVerification(user);
 
                 // 6. Show success message
