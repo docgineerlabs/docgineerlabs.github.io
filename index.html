@@ -575,6 +575,7 @@
                 }
 
                 const userData = userDocSnap.data();
+                console.log("User Status from Firestore:", userData.status);
 
                 // Check user status
                 if (userData.status === 'pending') {
