@@ -356,6 +356,13 @@
                 </svg>
                 <span>Google Meet</span>
             </a>
+            <a href="#" id="view-messages-btn-employee" class="flex items-center px-4 py-3 text-sm text-slate-900 hover:bg-slate-100 transition-colors group" role="menuitem">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-900" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                </svg>
+                <span>Messages</span>
+            </a>
             <div id="settingsMenuItem" class="cursor-pointer group">
                 <div class="flex justify-between items-center px-4 py-3 text-sm text-slate-900 hover:bg-slate-100 transition-colors">
                     <div class="flex items-center">
@@ -389,7 +396,7 @@
             <span>Control Room</span>
         </a>
         </nav>
-        </nav>
+        
 
         <nav id="memberNavLinks" class="hidden flex-grow py-1 overflow-y-auto" role="menu" aria-orientation="vertical">
             <a href="#" class="flex items-center px-4 py-3 text-sm text-slate-900 hover:bg-slate-100 transition-colors group" role="menuitem">
@@ -398,7 +405,13 @@
                 </svg>
                 <span>Google Meet</span>
             </a>
-            
+            <a href="#" id="view-messages-btn-member" class="flex items-center px-4 py-3 text-sm text-slate-900 hover:bg-slate-100 transition-colors group" role="menuitem">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-900" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                </svg>
+                <span>Messages</span>
+            </a>
             <a href="#" id="memberEditProfileBtn" class="flex items-center px-4 py-3 text-sm text-slate-900 hover:bg-slate-100 transition-colors group" role="menuitem">
                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z" />
@@ -424,12 +437,26 @@
         </div>
     </div>
 
+<!-- Message Viewer Modal -->
+<div id="message-viewer-modal" class="fixed inset-0 bg-slate-900 bg-opacity-75 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+        <div class="p-5 border-b border-slate-200 flex justify-between items-center">
+            <h3 class="text-lg font-bold text-slate-900">Messages from Admin</h3>
+            <button id="message-viewer-close-btn" class="text-slate-400 hover:text-slate-600 text-2xl leading-none">&times;</button>
+        </div>
+        <div id="messages-container" class="p-6 space-y-4 overflow-y-auto">
+            <p id="no-messages-text" class="text-slate-500">No messages yet.</p>
+            <!-- Messages will be injected here -->
+        </div>
+    </div>
+</div>
+
 
 <script type="module">
     // Import Firebase modules
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, updateDoc, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, updateDoc, addDoc, collection, query, where, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-storage.js";
     
     // Your web app's Firebase configuration
@@ -511,6 +538,15 @@
 
         // Member Menu
         const memberEditProfileBtn = document.getElementById('memberEditProfileBtn');
+        
+        // Message Modal Elements
+        const messageViewerModal = document.getElementById('message-viewer-modal');
+        const messageViewerCloseBtn = document.getElementById('message-viewer-close-btn');
+        const messagesContainer = document.getElementById('messages-container');
+        const noMessagesText = document.getElementById('no-messages-text');
+        const viewMessagesBtnEmployee = document.getElementById('view-messages-btn-employee');
+        const viewMessagesBtnMember = document.getElementById('view-messages-btn-member');
+
 
         let isEditing = false; 
 
@@ -519,10 +555,56 @@
             if (user) {
                 currentUserId = user.uid;
                 await loadUserProfile(user.uid);
+                loadMessages(user.uid, currentUserRole);
             } else {
                 window.location.href = './index.html';
             }
         });
+        
+        function loadMessages(userId, userRole) {
+            const recipientIds = [userId];
+            if (userRole === 'member') {
+                recipientIds.push('all_members');
+            } else { // Assumes 'employee' or 'ceo' role
+                recipientIds.push('all_employees');
+            }
+
+            const messagesQuery = query(
+                collection(db, "messages"),
+                where("recipientId", "in", recipientIds),
+                orderBy("timestamp", "desc")
+            );
+
+            const unsubscribe = onSnapshot(messagesQuery, (querySnapshot) => {
+                messagesContainer.innerHTML = ''; // Clear previous messages
+                if (querySnapshot.empty) {
+                    messagesContainer.appendChild(noMessagesText);
+                } else {
+                    querySnapshot.forEach((docSnap) => {
+                        const messageData = docSnap.data();
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = 'p-4 bg-slate-50 border border-slate-200 rounded-md shadow-sm';
+
+                        const timestamp = messageData.timestamp
+                            ? new Date(messageData.timestamp.toDate()).toLocaleString()
+                            : 'No date';
+
+                        messageDiv.innerHTML = `
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-semibold text-slate-700">From: ${messageData.senderName || 'Admin'}</span>
+                                <span class="text-xs text-slate-500">${timestamp}</span>
+                            </div>
+                            <p class="text-slate-800 whitespace-pre-wrap">${messageData.content || ''}</p>
+                        `;
+                        messagesContainer.appendChild(messageDiv);
+                    });
+                }
+            }, (error) => {
+                console.error("Error loading messages: ", error);
+                messagesContainer.innerHTML = '<p class="text-red-500">Could not load messages.</p>';
+            });
+            // You might want to store 'unsubscribe' to detach the listener on logout
+        }
 
         // --- *** MODIFIED: USER PROFILE LOADING LOGIC *** ---
         async function loadUserProfile(userId) {
@@ -915,7 +997,25 @@
 
         window.addEventListener('scroll', handleHeaderScroll);
         handleHeaderScroll();
+
+        // --- MESSAGE MODAL LISTENERS ---
+        const openMessageModal = () => {
+            messageViewerModal.classList.remove('hidden');
+        };
+        const closeMessageModal = () => {
+            messageViewerModal.classList.add('hidden');
+        };
+
+        viewMessagesBtnEmployee.addEventListener('click', openMessageModal);
+        viewMessagesBtnMember.addEventListener('click', openMessageModal);
+        messageViewerCloseBtn.addEventListener('click', closeMessageModal);
+        messageViewerModal.addEventListener('click', (e) => {
+            if (e.target === messageViewerModal) {
+                closeMessageModal();
+            }
+        });
     });
 </script>
 </body>
 </html>
+
