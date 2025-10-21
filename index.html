@@ -536,15 +536,25 @@
                     const user = userCredential.user;
                     const userDocRef = doc(db, "users", user.uid);
                     
-                    await setDoc(userDocRef, {
-                        fullName: fullName,
-                        email: email,
-                        role: selectedRole, 
-                        position: 'N/A',
-                        branch: 'N/A',
-                        about: 'This is a new user profile. Please update your information.',
-                        qualifications: []
-                    });
+                    // Prepare the data object
+                    const userDataToSave = {
+                        fullName: fullName,
+                        email: email,
+                        role: selectedRole, // This will be 'member'
+                        position: 'N/A',
+                        branch: 'N/A',
+                        about: 'This is a new member profile. Please update your information.',
+                        qualifications: []
+                    };
+
+                    // --- ADD STATUS FOR MEMBER ---
+                    if (selectedRole === 'member') {
+                        userDataToSave.status = 'active'; // Set status directly for members
+                    }
+                    // ---------------------------
+
+                    // Save the data to Firestore
+                    await setDoc(userDocRef, userDataToSave);
                     
                     sendEmailVerification(user);  
                     alert('Registration successful! Please check your email to verify your account.');
