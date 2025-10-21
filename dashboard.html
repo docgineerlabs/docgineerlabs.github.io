@@ -252,11 +252,11 @@
                 </div>
             </div>
             <div class="mt-12 pt-8 border-t border-slate-200">
-                    <h3 class="text-2xl font-bold text-slate-900 mb-4">Messages from Admin</h3>
-                    <div id="messagesContainer" class="space-y-4 max-h-96 overflow-y-auto pr-2">
-                                                <p id="noMessagesText" class="text-slate-500">No messages yet.</p>
-                    </div>
-                </div>
+    <h3 class="text-2xl font-bold text-slate-900 mb-4">Messages from Admin</h3>
+    <div id="messagesContainerEmployee" class="space-y-4 max-h-96 overflow-y-auto pr-2">
+        <p id="noMessagesTextEmployee" class="text-slate-500">No messages yet.</p>
+    </div>
+</div>
         </div>
     </main>
 <main id="memberContainer" class="hidden">
@@ -325,11 +325,11 @@
                         </div>
                     </form>
                     <div class="mt-12 pt-8 border-t border-slate-200">
-                    <h3 class="text-2xl font-bold text-slate-900 mb-4">Messages from Admin</h3>
-                    <div id="messagesContainer" class="space-y-4 max-h-96 overflow-y-auto pr-2">
-                                                <p id="noMessagesText" class="text-slate-500">No messages yet.</p>
-                    </div>
-                </div>
+    <h3 class="text-2xl font-bold text-slate-900 mb-4">Messages from Admin</h3>
+    <div id="messagesContainerMember" class="space-y-4 max-h-96 overflow-y-auto pr-2">
+        <p id="noMessagesTextMember" class="text-slate-500">No messages yet.</p>
+    </div>
+</div>
                 </div>
             </div>
         </div>
@@ -533,62 +533,70 @@
                 await loadUserProfile(user.uid);
                 // --- FUNCTION TO LOAD AND DISPLAY MESSAGES ---
         function loadMessages(userId, userRole) {
-            // Determine the correct messagesContainer based on which main container is visible
-            const visibleContainer = userRole === 'member' ? memberContainer : employeeContainer;
-            const messagesContainer = visibleContainer.querySelector('#messagesContainer');
-            const noMessagesText = visibleContainer.querySelector('#noMessagesText');
+            // Determine the correct IDs based on the user's role
+            const containerId = userRole === 'member' ? 'messagesContainerMember' : 'messagesContainerEmployee';
+            const noMessagesId = userRole === 'member' ? 'noMessagesTextMember' : 'noMessagesTextEmployee';
+            
+            // Get the specific elements using the determined IDs
+            const messagesContainer = document.getElementById(containerId);
+            const noMessagesText = document.getElementById(noMessagesId);
 
-            if (!messagesContainer || !noMessagesText) {
-                console.error("Could not find message container elements.");
-                return;
-            }
+            // Error handling if elements aren't found (shouldn't happen with correct IDs)
+            if (!messagesContainer || !noMessagesText) {
+                console.error("Could not find message container elements for role:", userRole);
+                return; 
+            }
 
-            const recipientIds = [userId]; // Always include messages sent directly to the user
-            if (userRole === 'member') {
-                recipientIds.push('all_members'); // Members also see group messages for members
-            } else { // Assumes 'employee' role otherwise
-                recipientIds.push('all_employees'); // Employees also see group messages for employees
-            }
+            const recipientIds = [userId]; // Always include messages sent directly to the user
+            if (userRole === 'member') {
+                recipientIds.push('all_members'); // Members also see group messages for members
+            } else { // Assumes 'employee' role otherwise
+                recipientIds.push('all_employees'); // Employees also see group messages for employees
+            }
 
-            const messagesQuery = query(
-                collection(db, "messages"),
-                where("recipientId", "in", recipientIds), // Get messages for user OR their group
-                orderBy("timestamp", "desc") // Show newest messages first
-            );
+            const messagesQuery = query(
+                collection(db, "messages"),
+                where("recipientId", "in", recipientIds), // Get messages for user OR their group
+                orderBy("timestamp", "desc") // Show newest messages first
+            );
 
-            // Listen for real-time updates
-            const unsubscribe = onSnapshot(messagesQuery, (querySnapshot) => {
-                messagesContainer.innerHTML = ''; // Clear previous messages
-                if (querySnapshot.empty) {
-                    messagesContainer.appendChild(noMessagesText); // Show 'No messages' text
-                } else {
-                    querySnapshot.forEach((docSnap) => {
-                        const messageData = docSnap.data();
-                        const messageDiv = document.createElement('div');
-                        messageDiv.className = 'p-4 bg-slate-50 border border-slate-200 rounded-md shadow-sm';
+            // Listen for real-time updates
+            const unsubscribe = onSnapshot(messagesQuery, (querySnapshot) => {
+                messagesContainer.innerHTML = ''; // Clear previous messages
+                if (querySnapshot.empty) {
+                     // Make sure to append the correct 'no messages' element
+                    messagesContainer.appendChild(noMessagesText.cloneNode(true)); 
+                } else {
+                    // Ensure the 'no messages' text is removed if messages exist
+                    if (noMessagesText.parentNode === messagesContainer) {
+                         messagesContainer.removeChild(noMessagesText);
+                    }
+                    querySnapshot.forEach((docSnap) => {
+                        const messageData = docSnap.data();
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = 'p-4 bg-slate-50 border border-slate-200 rounded-md shadow-sm';
 
-                        const timestamp = messageData.timestamp
-                            ? new Date(messageData.timestamp.toDate()).toLocaleString()
-                            : 'No date';
+                        const timestamp = messageData.timestamp
+                            ? new Date(messageData.timestamp.toDate()).toLocaleString()
+                            : 'No date';
 
-                        messageDiv.innerHTML = `
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-sm font-semibold text-slate-700">From: ${messageData.senderName || 'Admin'}</span>
-                                <span class="text-xs text-slate-500">${timestamp}</span>
-                            </div>
-                            <p class="text-slate-800 whitespace-pre-wrap">${messageData.content || ''}</p>
-                        `;
-                        messagesContainer.appendChild(messageDiv);
-                    });
-                }
-            }, (error) => {
-                console.error("Error loading messages: ", error);
-                messagesContainer.innerHTML = '<p class="text-red-500">Could not load messages.</p>';
-            });
+                        messageDiv.innerHTML = `
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-semibold text-slate-700">From: ${messageData.senderName || 'Admin'}</span>
+                                <span class="text-xs text-slate-500">${timestamp}</span>
+                            </div>
+                            <p class="text-slate-800 whitespace-pre-wrap">${messageData.content || ''}</p>
+                        `;
+                        messagesContainer.appendChild(messageDiv);
+                    });
+                }
+            }, (error) => {
+                console.error("Error loading messages: ", error);
+                messagesContainer.innerHTML = '<p class="text-red-500">Could not load messages.</p>';
+            });
 
-            // Optional: You might want to store 'unsubscribe' somewhere if you need to detach the listener later,
-            // e.g., when the user logs out, but for this simple case, it might not be necessary.
-        }
+            // You might want to store 'unsubscribe' if you need to detach the listener on logout
+        }
             } else {
                 window.location.href = './index.html';
             }
