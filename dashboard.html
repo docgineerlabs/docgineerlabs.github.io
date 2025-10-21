@@ -95,10 +95,7 @@
                 </div>
                 <div class="mb-8"><div class="flex items-center border-b-2 border-slate-200 pb-2 mb-4 editable"><h3 class="text-2xl font-bold text-slate-900">About</h3><span class="edit-icon"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg></span></div><div id="aboutContentView"><p id="aboutText" class="text-slate-600 leading-relaxed whitespace-pre-wrap">Loading...</p></div><div id="aboutEditView" class="hidden"><textarea id="aboutTextarea" class="w-full h-32 p-2 border border-slate-300 rounded-md" rows="4"></textarea></div></div>
                 <div class="mb-8"><div class="flex items-center border-b-2 border-slate-200 pb-2 mb-4 editable"><h3 class="text-2xl font-bold text-slate-900">Qualifications</h3><span class="edit-icon"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z"></path></svg></span></div><div id="qualificationsContentView"><ul id="qualificationsList" class="list-disc list-inside space-y-2 text-slate-600"><li>Loading...</li></ul></div><div id="qualificationsEditView" class="hidden"><div id="qualificationsEditList" class="space-y-2"></div><button id="addQualificationBtn" class="edit-control mt-2 text-sm font-medium text-indigo-600 hover:text-indigo-800">+ Add Qualification</button></div></div>
-                <!-- MESSAGE SECTION FOR EMPLOYEES -->
-                <div class="mt-12 pt-8 border-t border-slate-200"><h3 class="text-2xl font-bold text-slate-900 mb-4">Messages from Admin</h3><div id="messagesContainerEmployee" class="space-y-4 max-h-96 overflow-y-auto pr-2"><p id="noMessagesTextEmployee" class="text-slate-500">No messages yet.</p></div></div>
-            </div>
-        </div>
+
     </main>
 
     <!-- Member Dashboard -->
@@ -119,10 +116,7 @@
                     </div>
                 </div>
                 <div class="mb-8"><div class="border-b-2 border-slate-200 pb-2 mb-4"><h3 class="text-2xl font-bold text-slate-900">Submit Your Idea</h3></div><form id="ideaForm" class="space-y-6 max-w-3xl mx-auto mt-8"><div><textarea id="ideaText" name="ideaText" rows="6" class="w-full p-3 border border-slate-300 rounded-md" placeholder="Describe your invention, project, or concept in detail..."></textarea></div><div><button type="submit" id="submitIdeaBtn" class="w-full bg-indigo-600 text-white font-bold py-3 px-6 rounded-md hover:bg-indigo-700">Submit</button></div></form>
-                <!-- MESSAGE SECTION FOR MEMBERS -->
-                <div class="mt-12 pt-8 border-t border-slate-200"><h3 class="text-2xl font-bold text-slate-900 mb-4">Messages from Admin</h3><div id="messagesContainerMember" class="space-y-4 max-h-96 overflow-y-auto pr-2"><p id="noMessagesTextMember" class="text-slate-500">No messages yet.</p></div></div></div>
-            </div>
-        </div>
+        
     </main>
 
     <div id="menuOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 opacity-0 pointer-events-none transition-opacity duration-300"></div>
@@ -197,257 +191,223 @@
             }, 4000);
         }
 
-        function loadMessages(userId, userRole) {
-            const containerId = userRole === 'member' ? 'messagesContainerMember' : 'messagesContainerEmployee';
-            const noMessagesId = userRole === 'member' ? 'noMessagesTextMember' : 'noMessagesTextEmployee';
-            const messagesContainer = document.getElementById(containerId);
-            const noMessagesText = document.getElementById(noMessagesId);
-
-            if (!messagesContainer || !noMessagesText) { return; }
-            
-            const recipientIds = [userId, userRole === 'member' ? 'all_members' : 'all_employees'];
-            const messagesQuery = query(collection(db, "messages"), where("recipientId", "in", recipientIds), orderBy("timestamp", "desc"));
-
-            onSnapshot(messagesQuery, (querySnapshot) => {
-                messagesContainer.innerHTML = ''; 
-                if (querySnapshot.empty) {
-                    messagesContainer.appendChild(noMessagesText.cloneNode(true)); 
-                } else {
-                    querySnapshot.forEach((docSnap) => {
-                        const messageData = docSnap.data();
-                        const messageDiv = document.createElement('div');
-                        messageDiv.className = 'p-4 bg-slate-50 border border-slate-200 rounded-md shadow-sm';
-                        const timestamp = messageData.timestamp ? new Date(messageData.timestamp.toDate()).toLocaleString() : 'No date';
-                        messageDiv.innerHTML = `<div class="flex justify-between items-center mb-2"><span class="text-sm font-semibold text-slate-700">From: ${messageData.senderName || 'Admin'}</span><span class="text-xs text-slate-500">${timestamp}</span></div><p class="text-slate-800 whitespace-pre-wrap">${messageData.content || ''}</p>`;
-                        messagesContainer.appendChild(messageDiv);
-                    });
-                }
-            }, (error) => {
-                console.error("Error loading messages: ", error);
-                messagesContainer.innerHTML = '<p class="text-red-500">Could not load messages.</p>';
-            });
+   onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            currentUserId = user.uid;
+            await loadUserProfile(user.uid);
+        } else {
+            window.location.href = '/index.html';
         }
+    });
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                currentUserId = user.uid;
-                await loadUserProfile(user.uid);
-            } else {
-                window.location.href = '/index.html';
-            }
-        });
-
-        async function loadUserProfile(userId) {
-            const userDocRef = doc(db, "users", userId);
-            try {
-                const userDocSnap = await getDoc(userDocRef);
-                if (userDocSnap.exists()) {
-                    const userData = userDocSnap.data();
-                    currentUserRole = userData.role || 'employee';
-
-                    if (currentUserRole === 'member') {
-                        memberContainer.classList.remove('hidden');
-                        employeeContainer.classList.add('hidden');
-                        memberNavLinks.classList.remove('hidden');
-                        employeeNavLinks.classList.add('hidden');
-                        
-                        document.getElementById('memberName').textContent = userData.fullName || 'User Name';
-                        document.getElementById('memberEmail').textContent = userData.email || 'No email';
-                        document.getElementById('memberContact').textContent = userData.contactPhone || 'N/A';
-                        if (userData.profileImageUrl) document.getElementById('memberProfileImage').src = userData.profileImageUrl;
-                    } else { 
-                        employeeContainer.classList.remove('hidden');
-                        memberContainer.classList.add('hidden');
-                        employeeNavLinks.classList.remove('hidden');
-                        memberNavLinks.classList.add('hidden');
-                        
-                        const controlRoomLink = document.getElementById('controlRoomLink');
-                        if (userData.position === 'Founder and CEO' && controlRoomLink) {
-                            controlRoomLink.classList.remove('hidden');
-                        }
-                    
-                        document.getElementById('userName').textContent = userData.fullName || 'User Name';
-                        document.getElementById('userPosition').textContent = userData.position || 'N/A';
-                        document.getElementById('userBranch').textContent = userData.branch || 'N/A';
-                        document.getElementById('aboutText').textContent = userData.about || 'No information provided.';
-                        if (userData.profileImageUrl) document.getElementById('profileImage').src = userData.profileImageUrl;
-                        if (userData.coverImageUrl) document.getElementById('backgroundImage').src = userData.coverImageUrl;
-
-                        const qualificationsList = document.getElementById('qualificationsList');
-                        qualificationsList.innerHTML = '';
-                        if (userData.qualifications && userData.qualifications.length > 0) {
-                            userData.qualifications.forEach(q => {
-                                const li = document.createElement('li');
-                                li.textContent = q;
-                                qualificationsList.appendChild(li);
-                            });
-                        } else {
-                            qualificationsList.innerHTML = '<li>No qualifications listed.</li>';
-                        }
-                    }
-                    
-                    loadMessages(userId, currentUserRole);
-                    loadingOverlay.style.display = 'none';
-
-                } else { throw new Error("User profile not found in database."); }
-            } catch(error) {
-                console.error("Error loading user profile:", error);
-                loadingOverlay.innerHTML = '<p class="text-red-500">Error loading profile. Redirecting...</p>';
-                setTimeout(() => { window.location.href = '/index.html' }, 3000);
-            }
-        }
-        
-        const ideaForm = document.getElementById('ideaForm');
-        ideaForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (!currentUserId) return;
-            const ideaDescription = document.getElementById('ideaText').value.trim();
-            if (!ideaDescription) { showNotification('Error', 'Please describe your idea before submitting.', true); return; }
-            const submitIdeaBtn = document.getElementById('submitIdeaBtn');
-            submitIdeaBtn.disabled = true; submitIdeaBtn.textContent = 'Submitting...';
-            try {
-                await addDoc(collection(db, "ideaSubmissions"), {
-                    userId: currentUserId,
-                    userName: document.getElementById('memberName').textContent,
-                    userEmail: document.getElementById('memberEmail').textContent,
-                    description: ideaDescription,
-                    submittedAt: serverTimestamp(),
-                    status: 'new'
-                });
-                showNotification('Success', 'Thank you! Your idea has been submitted.');
-                ideaForm.reset();
-            } catch (error) { console.error("Error submitting idea: ", error); showNotification('Error', 'There was an error submitting your idea.', true); } 
-            finally { submitIdeaBtn.disabled = false; submitIdeaBtn.textContent = 'Submit Idea'; }
-        });
-        
-        function handleEditProfile() {
-             if (isEditing) return;
-             isEditing = true;
-             saveProfileBtn.classList.remove('hidden');
-             const activeContainer = currentUserRole === 'member' ? memberContainer : employeeContainer;
-             activeContainer.classList.add('edit-mode');
-
-             if (currentUserRole === 'member') {
-                 document.getElementById('memberName').contentEditable = true;
-                 document.getElementById('memberContact').contentEditable = true;
-             } else {
-                document.getElementById('userName').contentEditable = true;
-                document.getElementById('userBranch').contentEditable = true;
-                document.getElementById('aboutTextarea').value = document.getElementById('aboutText').textContent.trim();
-                document.getElementById('aboutContentView').classList.add('hidden');
-                document.getElementById('aboutEditView').classList.remove('hidden');
-
-                const qualificationsEditList = document.getElementById('qualificationsEditList');
-                qualificationsEditList.innerHTML = '';
-                 document.querySelectorAll('#qualificationsList li').forEach(item => {
-                     if (item.textContent !== 'No qualifications listed.') createQualificationInput(item.textContent);
-                 });
-                document.getElementById('qualificationsContentView').classList.add('hidden');
-                document.getElementById('qualificationsEditView').classList.remove('hidden');
-             }
-        }
-
-        async function handleSaveProfile() {
-            if (!isEditing || !currentUserId) return;
-            saveProfileBtn.disabled = true; saveProfileBtn.textContent = 'Saving...';
-            
-            const profilePicFile = document.getElementById('profilePicInput').files[0];
-            const backgroundPicFile = document.getElementById('backgroundPicInput').files[0];
-
-            try {
-                const updatedData = {};
-                if (profilePicFile) {
-                    const profileImageRef = ref(storage, `profileImages/${currentUserId}`);
-                    await uploadBytes(profileImageRef, profilePicFile);
-                    updatedData.profileImageUrl = await getDownloadURL(profileImageRef);
-                }
+    async function loadUserProfile(userId) {
+        const userDocRef = doc(db, "users", userId);
+        try {
+            const userDocSnap = await getDoc(userDocRef);
+            if (userDocSnap.exists()) {
+                const userData = userDocSnap.data();
+                currentUserRole = userData.role || 'employee';
 
                 if (currentUserRole === 'member') {
-                    updatedData.fullName = document.getElementById('memberName').textContent.trim();
-                    updatedData.contactPhone = document.getElementById('memberContact').textContent.trim();
-                } else {
-                    if (backgroundPicFile) {
-                        const coverImageRef = ref(storage, `coverImages/${currentUserId}`);
-                        await uploadBytes(coverImageRef, backgroundPicFile);
-                        updatedData.coverImageUrl = await getDownloadURL(coverImageRef);
+                    memberContainer.classList.remove('hidden');
+                    employeeContainer.classList.add('hidden');
+                    memberNavLinks.classList.remove('hidden');
+                    employeeNavLinks.classList.add('hidden');
+                    
+                    document.getElementById('memberName').textContent = userData.fullName || 'User Name';
+                    document.getElementById('memberEmail').textContent = userData.email || 'No email';
+                    document.getElementById('memberContact').textContent = userData.contactPhone || 'N/A';
+                    if (userData.profileImageUrl) document.getElementById('memberProfileImage').src = userData.profileImageUrl;
+                } else { 
+                    employeeContainer.classList.remove('hidden');
+                    memberContainer.classList.add('hidden');
+                    employeeNavLinks.classList.remove('hidden');
+                    memberNavLinks.classList.add('hidden');
+                    
+                    const controlRoomLink = document.getElementById('controlRoomLink');
+                    if (userData.position === 'Founder and CEO' && controlRoomLink) {
+                        controlRoomLink.classList.remove('hidden');
                     }
-                    updatedData.fullName = document.getElementById('userName').textContent.trim();
-                    updatedData.branch = document.getElementById('userBranch').textContent.trim();
-                    updatedData.about = document.getElementById('aboutTextarea').value.trim();
-                    updatedData.qualifications = Array.from(document.querySelectorAll('#qualificationsEditList input')).map(input => input.value.trim()).filter(Boolean);
+                
+                    document.getElementById('userName').textContent = userData.fullName || 'User Name';
+                    document.getElementById('userPosition').textContent = userData.position || 'N/A';
+                    document.getElementById('userBranch').textContent = userData.branch || 'N/A';
+                    document.getElementById('aboutText').textContent = userData.about || 'No information provided.';
+                    if (userData.profileImageUrl) document.getElementById('profileImage').src = userData.profileImageUrl;
+                    if (userData.coverImageUrl) document.getElementById('backgroundImage').src = userData.coverImageUrl;
+
+                    const qualificationsList = document.getElementById('qualificationsList');
+                    qualificationsList.innerHTML = '';
+                    if (userData.qualifications && userData.qualifications.length > 0) {
+                        userData.qualifications.forEach(q => {
+                            const li = document.createElement('li');
+                            li.textContent = q;
+                            qualificationsList.appendChild(li);
+                        });
+                    } else {
+                        qualificationsList.innerHTML = '<li>No qualifications listed.</li>';
+                    }
                 }
-
-                await updateDoc(doc(db, "users", currentUserId), updatedData);
-                
-                isEditing = false;
-                saveProfileBtn.classList.add('hidden');
-                const activeContainer = currentUserRole === 'member' ? memberContainer : employeeContainer;
-                activeContainer.classList.remove('edit-mode');
-                document.getElementById('profilePicInput').value = '';
-                document.getElementById('backgroundPicInput').value = '';
-                
-                showNotification('Success', 'Profile updated successfully!');
-                loadUserProfile(currentUserId);
-
-            } catch (error) { console.error("Error updating profile: ", error); showNotification('Error', 'Failed to update profile.', true); } 
-            finally { saveProfileBtn.disabled = false; saveProfileBtn.textContent = 'Save Profile'; }
+                loadingOverlay.style.display = 'none';
+            } else { throw new Error("User profile not found in database."); }
+        } catch(error) {
+            console.error("Error loading user profile:", error);
+            loadingOverlay.innerHTML = '<p class="text-red-500">Error loading profile. Redirecting...</p>';
+            setTimeout(() => { window.location.href = '/index.html' }, 3000);
         }
-        
-        function createQualificationInput(value = '') {
-            const div = document.createElement('div');
-            div.className = 'flex items-center gap-2';
-            const input = document.createElement('input');
-            input.type = 'text'; input.value = value; input.className = 'w-full p-1 border border-slate-300 rounded-md';
-            const removeBtn = document.createElement('button');
-            removeBtn.textContent = '×'; removeBtn.className = 'text-red-500 font-bold text-xl';
-            removeBtn.onclick = () => div.remove();
-            div.appendChild(input); div.appendChild(removeBtn);
-            document.getElementById('qualificationsEditList').appendChild(div);
-        }
+    }
+    
+    const ideaForm = document.getElementById('ideaForm');
+    ideaForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        if (!currentUserId) return;
+        const ideaDescription = document.getElementById('ideaText').value.trim();
+        if (!ideaDescription) { showNotification('Error', 'Please describe your idea before submitting.', true); return; }
+        const submitIdeaBtn = document.getElementById('submitIdeaBtn');
+        submitIdeaBtn.disabled = true; submitIdeaBtn.textContent = 'Submitting...';
+        try {
+            await addDoc(collection(db, "ideaSubmissions"), {
+                userId: currentUserId,
+                userName: document.getElementById('memberName').textContent,
+                userEmail: document.getElementById('memberEmail').textContent,
+                description: ideaDescription,
+                submittedAt: serverTimestamp(),
+                status: 'new'
+            });
+            showNotification('Success', 'Thank you! Your idea has been submitted.');
+            ideaForm.reset();
+        } catch (error) { console.error("Error submitting idea: ", error); showNotification('Error', 'There was an error submitting your idea.', true); } 
+        finally { submitIdeaBtn.disabled = false; submitIdeaBtn.textContent = 'Submit Idea'; }
+    });
+    
+    function handleEditProfile() {
+         if (isEditing) return;
+         isEditing = true;
+         saveProfileBtn.classList.remove('hidden');
+         const activeContainer = currentUserRole === 'member' ? memberContainer : employeeContainer;
+         activeContainer.classList.add('edit-mode');
 
-        document.getElementById('addQualificationBtn').addEventListener('click', () => createQualificationInput());
+         if (currentUserRole === 'member') {
+             document.getElementById('memberName').contentEditable = true;
+             document.getElementById('memberContact').contentEditable = true;
+         } else {
+            document.getElementById('userName').contentEditable = true;
+            document.getElementById('userBranch').contentEditable = true;
+            document.getElementById('aboutTextarea').value = document.getElementById('aboutText').textContent.trim();
+            document.getElementById('aboutContentView').classList.add('hidden');
+            document.getElementById('aboutEditView').classList.remove('hidden');
 
-        const setupImageUpload = (containerId, inputId, isMember) => {
-             const container = document.getElementById(containerId);
-             const input = document.getElementById(inputId);
-             container.addEventListener('click', () => { if(isEditing) input.click() });
-             input.addEventListener('change', (event) => {
-                 if (event.target.files && event.target.files[0]) {
-                     const reader = new FileReader();
-                     reader.onload = (e) => {
-                         const img = isMember ? document.getElementById('memberProfileImage') : document.getElementById('profileImage');
-                         if(img) img.src = e.target.result;
-                     }
-                     reader.readAsDataURL(event.target.files[0]);
-                 }
+            const qualificationsEditList = document.getElementById('qualificationsEditList');
+            qualificationsEditList.innerHTML = '';
+             document.querySelectorAll('#qualificationsList li').forEach(item => {
+                 if (item.textContent !== 'No qualifications listed.') createQualificationInput(item.textContent);
              });
-        };
-        setupImageUpload('profilePicContainer', 'profilePicInput', false);
-        setupImageUpload('memberProfilePicContainer', 'profilePicInput', true);
+            document.getElementById('qualificationsContentView').classList.add('hidden');
+            document.getElementById('qualificationsEditView').classList.remove('hidden');
+         }
+    }
+
+    async function handleSaveProfile() {
+        if (!isEditing || !currentUserId) return;
+        saveProfileBtn.disabled = true; saveProfileBtn.textContent = 'Saving...';
         
-        document.getElementById('changeBackgroundBtn').addEventListener('click', () => { if(isEditing) document.getElementById('backgroundPicInput').click() });
-        document.getElementById('backgroundPicInput').addEventListener('change', (event) => {
+        const profilePicFile = document.getElementById('profilePicInput').files[0];
+        const backgroundPicFile = document.getElementById('backgroundPicInput').files[0];
+
+        try {
+            const updatedData = {};
+            if (profilePicFile) {
+                const profileImageRef = ref(storage, `profileImages/${currentUserId}`);
+                await uploadBytes(profileImageRef, profilePicFile);
+                updatedData.profileImageUrl = await getDownloadURL(profileImageRef);
+            }
+
+            if (currentUserRole === 'member') {
+                updatedData.fullName = document.getElementById('memberName').textContent.trim();
+                updatedData.contactPhone = document.getElementById('memberContact').textContent.trim();
+            } else {
+                if (backgroundPicFile) {
+                    const coverImageRef = ref(storage, `coverImages/${currentUserId}`);
+                    await uploadBytes(coverImageRef, backgroundPicFile);
+                    updatedData.coverImageUrl = await getDownloadURL(coverImageRef);
+                }
+                updatedData.fullName = document.getElementById('userName').textContent.trim();
+                updatedData.branch = document.getElementById('userBranch').textContent.trim();
+                updatedData.about = document.getElementById('aboutTextarea').value.trim();
+                updatedData.qualifications = Array.from(document.querySelectorAll('#qualificationsEditList input')).map(input => input.value.trim()).filter(Boolean);
+            }
+
+            await updateDoc(doc(db, "users", currentUserId), updatedData);
+            
+            isEditing = false;
+            saveProfileBtn.classList.add('hidden');
+            const activeContainer = currentUserRole === 'member' ? memberContainer : employeeContainer;
+            activeContainer.classList.remove('edit-mode');
+            document.getElementById('profilePicInput').value = '';
+            document.getElementById('backgroundPicInput').value = '';
+            
+            showNotification('Success', 'Profile updated successfully!');
+            loadUserProfile(currentUserId);
+
+        } catch (error) { console.error("Error updating profile: ", error); showNotification('Error', 'Failed to update profile.', true); } 
+        finally { saveProfileBtn.disabled = false; saveProfileBtn.textContent = 'Save Profile'; }
+    }
+    
+    function createQualificationInput(value = '') {
+        const div = document.createElement('div');
+        div.className = 'flex items-center gap-2';
+        const input = document.createElement('input');
+        input.type = 'text'; input.value = value; input.className = 'w-full p-1 border border-slate-300 rounded-md';
+        const removeBtn = document.createElement('button');
+        removeBtn.textContent = '×'; removeBtn.className = 'text-red-500 font-bold text-xl';
+        removeBtn.onclick = () => div.remove();
+        div.appendChild(input); div.appendChild(removeBtn);
+        document.getElementById('qualificationsEditList').appendChild(div);
+    }
+
+    document.getElementById('addQualificationBtn').addEventListener('click', () => createQualificationInput());
+
+    const setupImageUpload = (containerId, inputId, isMember) => {
+         const container = document.getElementById(containerId);
+         const input = document.getElementById(inputId);
+         container.addEventListener('click', () => { if(isEditing) input.click() });
+         input.addEventListener('change', (event) => {
              if (event.target.files && event.target.files[0]) {
                  const reader = new FileReader();
-                 reader.onload = (e) => { document.getElementById('backgroundImage').src = e.target.result; }
+                 reader.onload = (e) => {
+                     const img = isMember ? document.getElementById('memberProfileImage') : document.getElementById('profileImage');
+                     if(img) img.src = e.target.result;
+                 }
                  reader.readAsDataURL(event.target.files[0]);
              }
-        });
-
-        function closeMenu() { document.body.classList.remove('menu-is-open'); sideMenu.classList.remove('is-open'); menuOverlay.classList.remove('is-open'); }
-        hamburgerBtn.addEventListener('click', (e) => { e.stopPropagation(); document.body.classList.toggle('menu-is-open'); sideMenu.classList.toggle('is-open'); menuOverlay.classList.toggle('is-open'); });
-        menuOverlay.addEventListener('click', closeMenu);
-        logoutBtn.addEventListener('click', (e) => { e.preventDefault(); signOut(auth).catch((error) => console.error('Logout error:', error)); });
-        memberEditProfileBtn.addEventListener('click', (e) => { e.preventDefault(); closeMenu(); handleEditProfile(); });
-        employeeEditProfileBtn.addEventListener('click', (e) => { e.preventDefault(); closeMenu(); handleEditProfile(); });
-        saveProfileBtn.addEventListener('click', handleSaveProfile);
-
-        window.addEventListener('scroll', () => {
-             if (window.scrollY > 50) header.classList.add('backdrop-blur-sm', 'bg-white/80', 'border-slate-200');
-             else header.classList.remove('backdrop-blur-sm', 'bg-white/80', 'border-slate-200');
-        });
+         });
+    };
+    setupImageUpload('profilePicContainer', 'profilePicInput', false);
+    setupImageUpload('memberProfilePicContainer', 'profilePicInput', true);
+    
+    document.getElementById('changeBackgroundBtn').addEventListener('click', () => { if(isEditing) document.getElementById('backgroundPicInput').click() });
+    document.getElementById('backgroundPicInput').addEventListener('change', (event) => {
+         if (event.target.files && event.target.files[0]) {
+             const reader = new FileReader();
+             reader.onload = (e) => { document.getElementById('backgroundImage').src = e.target.result; }
+             reader.readAsDataURL(event.target.files[0]);
+         }
     });
+
+    function closeMenu() { document.body.classList.remove('menu-is-open'); sideMenu.classList.remove('is-open'); menuOverlay.classList.remove('is-open'); }
+    hamburgerBtn.addEventListener('click', (e) => { e.stopPropagation(); document.body.classList.toggle('menu-is-open'); sideMenu.classList.toggle('is-open'); menuOverlay.classList.toggle('is-open'); });
+    menuOverlay.addEventListener('click', closeMenu);
+    logoutBtn.addEventListener('click', (e) => { e.preventDefault(); signOut(auth).catch((error) => console.error('Logout error:', error)); });
+    memberEditProfileBtn.addEventListener('click', (e) => { e.preventDefault(); closeMenu(); handleEditProfile(); });
+    employeeEditProfileBtn.addEventListener('click', (e) => { e.preventDefault(); closeMenu(); handleEditProfile(); });
+    saveProfileBtn.addEventListener('click', handleSaveProfile);
+
+    window.addEventListener('scroll', () => {
+         if (window.scrollY > 50) header.classList.add('backdrop-blur-sm', 'bg-white/80', 'border-slate-200');
+         else header.classList.remove('backdrop-blur-sm', 'bg-white/80', 'border-slate-200');
+    });
+});
 </script>
 </body>
-</html>
+</html>    
 
