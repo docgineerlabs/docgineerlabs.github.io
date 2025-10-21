@@ -251,6 +251,12 @@
                     </div>
                 </div>
             </div>
+            <div class="mt-12 pt-8 border-t border-slate-200">
+                    <h3 class="text-2xl font-bold text-slate-900 mb-4">Messages from Admin</h3>
+                    <div id="messagesContainer" class="space-y-4 max-h-96 overflow-y-auto pr-2">
+                                                <p id="noMessagesText" class="text-slate-500">No messages yet.</p>
+                    </div>
+                </div>
         </div>
     </main>
 <main id="memberContainer" class="hidden">
@@ -318,6 +324,12 @@
                             </button>
                         </div>
                     </form>
+                    <div class="mt-12 pt-8 border-t border-slate-200">
+                    <h3 class="text-2xl font-bold text-slate-900 mb-4">Messages from Admin</h3>
+                    <div id="messagesContainer" class="space-y-4 max-h-96 overflow-y-auto pr-2">
+                                                <p id="noMessagesText" class="text-slate-500">No messages yet.</p>
+                    </div>
+                </div>
                 </div>
             </div>
         </div>
@@ -429,7 +441,7 @@
     // Import Firebase modules
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, updateDoc, addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, updateDoc, addDoc, collection, query, where, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-storage.js";
     
     // Your web app's Firebase configuration
@@ -519,6 +531,64 @@
             if (user) {
                 currentUserId = user.uid;
                 await loadUserProfile(user.uid);
+                // --- FUNCTION TO LOAD AND DISPLAY MESSAGES ---
+        function loadMessages(userId, userRole) {
+            // Determine the correct messagesContainer based on which main container is visible
+            const visibleContainer = userRole === 'member' ? memberContainer : employeeContainer;
+            const messagesContainer = visibleContainer.querySelector('#messagesContainer');
+            const noMessagesText = visibleContainer.querySelector('#noMessagesText');
+
+            if (!messagesContainer || !noMessagesText) {
+                console.error("Could not find message container elements.");
+                return;
+            }
+
+            const recipientIds = [userId]; // Always include messages sent directly to the user
+            if (userRole === 'member') {
+                recipientIds.push('all_members'); // Members also see group messages for members
+            } else { // Assumes 'employee' role otherwise
+                recipientIds.push('all_employees'); // Employees also see group messages for employees
+            }
+
+            const messagesQuery = query(
+                collection(db, "messages"),
+                where("recipientId", "in", recipientIds), // Get messages for user OR their group
+                orderBy("timestamp", "desc") // Show newest messages first
+            );
+
+            // Listen for real-time updates
+            const unsubscribe = onSnapshot(messagesQuery, (querySnapshot) => {
+                messagesContainer.innerHTML = ''; // Clear previous messages
+                if (querySnapshot.empty) {
+                    messagesContainer.appendChild(noMessagesText); // Show 'No messages' text
+                } else {
+                    querySnapshot.forEach((docSnap) => {
+                        const messageData = docSnap.data();
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = 'p-4 bg-slate-50 border border-slate-200 rounded-md shadow-sm';
+
+                        const timestamp = messageData.timestamp
+                            ? new Date(messageData.timestamp.toDate()).toLocaleString()
+                            : 'No date';
+
+                        messageDiv.innerHTML = `
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-semibold text-slate-700">From: ${messageData.senderName || 'Admin'}</span>
+                                <span class="text-xs text-slate-500">${timestamp}</span>
+                            </div>
+                            <p class="text-slate-800 whitespace-pre-wrap">${messageData.content || ''}</p>
+                        `;
+                        messagesContainer.appendChild(messageDiv);
+                    });
+                }
+            }, (error) => {
+                console.error("Error loading messages: ", error);
+                messagesContainer.innerHTML = '<p class="text-red-500">Could not load messages.</p>';
+            });
+
+            // Optional: You might want to store 'unsubscribe' somewhere if you need to detach the listener later,
+            // e.g., when the user logs out, but for this simple case, it might not be necessary.
+        }
             } else {
                 window.location.href = './index.html';
             }
