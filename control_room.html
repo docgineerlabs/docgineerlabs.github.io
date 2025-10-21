@@ -651,7 +651,7 @@
             const sendMessageBtn = document.getElementById('send-message-btn');
             sendMessageBtn.disabled = true;
             sendMessageBtn.textContent = 'Sending...';
-
+            console.log(`CONTROL ROOM IS SENDING TO recipientId: ${messageRecipient.id}`);
             try {
                 await addDoc(collection(db, "messages"), {
                     senderId: auth.currentUser.uid,

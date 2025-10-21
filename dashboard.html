@@ -546,7 +546,7 @@
                 console.error("Could not find message container elements for role:", userRole);
                 return; 
             }
-
+            console.log(`DASHBOARD IS LISTENING FOR userId: ${userId} and role: ${userRole}`);
             const recipientIds = [userId]; // Always include messages sent directly to the user
             if (userRole === 'member') {
                 recipientIds.push('all_members'); // Members also see group messages for members
