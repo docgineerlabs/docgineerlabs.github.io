@@ -640,17 +640,90 @@
             }
         }
         
-        function openMessageModal(id, name) {
-            messageRecipient.id = id;
-            messageRecipient.name = name;
-            const messageModalTitle = document.getElementById('message-modal-title');
-            const messageModalTextarea = document.getElementById('message-modal-textarea');
-            
-            messageModalTitle.textContent = `Message to: ${name}`;
-            messageModalTextarea.value = '';
-            messageModal.classList.remove('hidden');
-            messageModalTextarea.focus();
+        async function openMessageModal(id, name) {
+    messageRecipient.id = id;
+    messageRecipient.name = name;
+    const messageModalTitle = document.getElementById('message-modal-title');
+    const messageModalTextarea = document.getElementById('message-modal-textarea');
+    const messageHistoryArea = document.getElementById('message-history-area');
+    const fileInput = document.getElementById('message-file-input'); // Get file input to reset
+    const fileNameSpan = document.getElementById('message-file-name'); // Get file name span to reset
+
+    messageModalTitle.textContent = `Message to: ${name}`;
+    messageModalTextarea.value = ''; // Clear textarea
+    fileInput.value = ''; // Clear selected file
+    fileNameSpan.textContent = 'Attach a file (optional)'; // Reset file name display
+
+    // --- ADDED AUTHENTICATION CHECK ---
+    // Ensure Firebase Auth is ready before trying to query
+    if (!auth.currentUser) {
+        console.error("Authentication state not ready in openMessageModal. Cannot load history.");
+        messageHistoryArea.innerHTML = '<p class="text-red-500 text-sm text-center">Could not verify user. Please try closing and reopening the modal.</p>';
+        // Show the modal anyway so the user sees the error
+        messageModal.classList.remove('hidden');
+        messageModalTextarea.focus(); // Focus might still be useful
+        return; // Stop the function here if user isn't ready
+    }
+    // --- END OF CHECK ---
+
+    // --- Load Message History ---
+    messageHistoryArea.innerHTML = '<p class="text-slate-400 text-sm text-center">Loading history...</p>';
+
+    try {
+        // Now we know auth.currentUser is not null here
+        const q = query(
+            collection(db, "messages"),
+            where("senderId", "==", auth.currentUser.uid), // Messages sent BY admin
+            where("recipientId", "==", id),               // Messages sent TO this recipient
+            orderBy("timestamp", "asc")                   // Show oldest first (chat order)
+        );
+        const querySnapshot = await getDocs(q);
+
+        messageHistoryArea.innerHTML = ''; // Clear loading text
+
+        if (querySnapshot.empty) {
+            messageHistoryArea.innerHTML = '<p class="text-slate-400 text-sm text-center">No previous messages found.</p>';
+        } else {
+            querySnapshot.forEach((docSnap) => {
+                const messageData = docSnap.data();
+                const msgDiv = document.createElement('div');
+                msgDiv.className = 'p-2 rounded-md bg-white border border-slate-200'; // Style for individual messages
+
+                const timestamp = messageData.timestamp ? new Date(messageData.timestamp.toDate()).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) + ' on ' + new Date(messageData.timestamp.toDate()).toLocaleDateString() : 'N/A';
+
+                let fileAttachmentHtml = '';
+                // Check if file details exist (for history rendering, even if uploads are disabled now)
+                if (messageData.fileUrl && messageData.fileName) {
+                    fileAttachmentHtml = `
+                        <div class="mt-2 pt-2 border-t border-slate-100">
+                            <a href="${messageData.fileUrl}" target="_blank" class="text-xs font-medium text-indigo-600 hover:text-indigo-800 flex items-center gap-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a3 3 0 006 0V7a1 1 0 112 0v4a5 5 0 01-10 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd" /></svg>
+                                ${messageData.fileName}
+                            </a>
+                        </div>
+                    `;
+                }
+
+                msgDiv.innerHTML = `
+                    <p class="text-sm text-slate-700">${messageData.content}</p>
+                    <p class="text-xs text-slate-400 text-right mt-1">${timestamp}</p>
+                    ${fileAttachmentHtml}
+                `;
+                messageHistoryArea.appendChild(msgDiv);
+            });
+            // Scroll to the bottom of the history
+            messageHistoryArea.scrollTop = messageHistoryArea.scrollHeight;
         }
+
+    } catch (error) {
+        console.error("Error loading message history:", error);
+        messageHistoryArea.innerHTML = '<p class="text-red-500 text-sm text-center">Could not load history.</p>';
+    }
+
+    // --- Show Modal ---
+    messageModal.classList.remove('hidden');
+    messageModalTextarea.focus();
+}
 
         async function sendMessage() {
     const messageModalTextarea = document.getElementById('message-modal-textarea');
