@@ -194,15 +194,31 @@
 
 <!-- Message Modal -->
 <div id="message-modal" class="fixed inset-0 bg-slate-900 bg-opacity-75 z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-lg">
-        <div class="p-5 border-b border-slate-200 flex justify-between items-center">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] flex flex-col">
+        <div class="p-5 border-b border-slate-200 flex justify-between items-center flex-shrink-0">
             <h3 id="message-modal-title" class="text-lg font-bold text-slate-900">Send Message</h3>
             <button id="message-modal-close-btn" class="text-slate-400 hover:text-slate-600 text-2xl leading-none">&times;</button>
         </div>
-        <div class="p-5">
-            <textarea id="message-modal-textarea" rows="6" class="block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3" placeholder="Type your message here..."></textarea>
+        <div class="p-5 space-y-4 overflow-y-auto flex-grow">
+            <!-- Message History Area -->
+            <div id="message-history-area" class="max-h-64 overflow-y-auto border border-slate-200 p-3 rounded-md mb-4 space-y-3 bg-slate-50">
+                <p class="text-slate-400 text-sm text-center">Loading history...</p>
+                <!-- Message history will be loaded here by JavaScript -->
+            </div>
+
+            <!-- Message Input Textarea -->
+            <textarea id="message-modal-textarea" rows="4" class="block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3" placeholder="Type your message here..."></textarea>
+
+            <!-- File Attachment Input -->
+            <div>
+                <label for="message-file-input" class="w-full flex items-center justify-center px-4 py-3 border-2 border-dashed border-slate-300 rounded-md cursor-pointer hover:border-indigo-500 hover:bg-indigo-50 transition-colors">
+                    <svg class="w-6 h-6 text-slate-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    <span id="message-file-name" class="text-slate-500 font-medium text-sm">Attach a file (optional)</span>
+                </label>
+                <input type="file" id="message-file-input" class="hidden">
+            </div>
         </div>
-        <div class="p-5 bg-slate-50 border-t border-slate-200 text-right">
+        <div class="p-5 bg-slate-50 border-t border-slate-200 text-right flex-shrink-0">
             <button id="send-message-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                 Send Message
             </button>
@@ -637,118 +653,191 @@
         }
 
         async function sendMessage() {
-            const messageModalTextarea = document.getElementById('message-modal-textarea');
-            const content = messageModalTextarea.value.trim();
-            if (!content) {
-                alert("Message cannot be empty.");
-                return;
-            }
-            if (!messageRecipient.id || !auth.currentUser) {
-                alert("Error: Recipient or sender not defined.");
-                return;
-            }
+    const messageModalTextarea = document.getElementById('message-modal-textarea');
+    const fileInput = document.getElementById('message-file-input');
+    const messageHistoryArea = document.getElementById('message-history-area');
 
-            const sendMessageBtn = document.getElementById('send-message-btn');
-            sendMessageBtn.disabled = true;
-            sendMessageBtn.textContent = 'Sending...';
-            console.log(`CONTROL ROOM IS SENDING TO recipientId: ${messageRecipient.id}`);
-            try {
-                await addDoc(collection(db, "messages"), {
-                    senderId: auth.currentUser.uid,
-                    senderName: currentAdminProfile?.fullName || 'Admin',
-                    recipientId: messageRecipient.id,
-                    content: content,
-                    timestamp: serverTimestamp(),
-                    isRead: false
-                });
-                messageModal.classList.add('hidden');
-            } catch (error) {
-                console.error("Error sending message:", error);
-                alert("Failed to send message.");
-            } finally {
-                sendMessageBtn.disabled = false;
-                sendMessageBtn.textContent = 'Send Message';
-            }
-        }
+    const content = messageModalTextarea.value.trim();
+    const file = fileInput.files[0]; // Check if a file is selected
+
+    if (!content) {
+        alert("Message content cannot be empty.");
+        return;
+    }
+    if (!messageRecipient.id || !auth.currentUser) {
+        alert("Error: Recipient or sender not defined.");
+        return;
+    }
+
+    // --- Check if a file is attached ---
+    if (file) {
+        // *** TEMPORARY ALERT - Replace this block later ***
+        alert("File attachments are not enabled yet. Please send text only for now.");
+        // Clear the file input so the user doesn't try again immediately
+        fileInput.value = '';
+        document.getElementById('message-file-name').textContent = 'Attach a file (optional)';
+        // Optionally, you could prevent sending the message entirely if a file is attached:
+        // return;
+        // Or, proceed to send the text part only (as implemented below)
+        // *** END OF TEMPORARY BLOCK ***
+    }
+
+    const sendMessageBtn = document.getElementById('send-message-btn');
+    sendMessageBtn.disabled = true;
+    sendMessageBtn.textContent = 'Sending...';
+
+    try {
+        // --- Prepare message data (NO file info for now) ---
+        const messageData = {
+            senderId: auth.currentUser.uid,
+            senderName: currentAdminProfile?.fullName || 'Admin',
+            recipientId: messageRecipient.id,
+            recipientName: messageRecipient.name,
+            content: content,
+            timestamp: serverTimestamp(),
+            isRead: false,
+            // fileUrl and fileName are omitted for now
+        };
+
+        const docRef = await addDoc(collection(db, "messages"), messageData);
+
+        // --- OPTIONAL: Add message instantly to the modal history ---
+        const sentTime = new Date();
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'p-2 rounded-md bg-white border border-slate-200';
+         msgDiv.innerHTML = `
+            <p class="text-sm text-slate-700">${content}</p>
+            <p class="text-xs text-slate-400 text-right mt-1">${sentTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} on ${sentTime.toLocaleDateString()}</p>
+            `; // File attachment HTML is removed here for now
+        const noHistoryText = messageHistoryArea.querySelector('p.text-slate-400.text-sm.text-center');
+        if (noHistoryText) noHistoryText.remove();
+        messageHistoryArea.appendChild(msgDiv);
+        messageHistoryArea.scrollTop = messageHistoryArea.scrollHeight;
+        // --- End of optional instant update ---
+
+    } catch (error) {
+        console.error("Error sending message:", error);
+        alert("Failed to send message.");
+    } finally {
+        // Reset only the input fields
+        messageModalTextarea.value = '';
+        // File input was already cleared if a file was selected,
+        // otherwise it's empty anyway. Ensure display text is reset.
+        fileInput.value = ''; // Ensure it's cleared
+        document.getElementById('message-file-name').textContent = 'Attach a file (optional)';
+        sendMessageBtn.disabled = false;
+        sendMessageBtn.textContent = 'Send Message';
+        messageModalTextarea.focus();
+    }
+}
         
         // --- EVENT LISTENERS ---
 
         function setupEventListeners() {
-            const closeModal = (modal) => modal.classList.add('hidden');
+        const closeModal = (modal) => modal.classList.add('hidden');
 
-            // Modal Listeners
-            messageModalCloseBtn.addEventListener('click', () => closeModal(messageModal));
-            messageModal.addEventListener('click', (e) => e.target === messageModal && closeModal(messageModal));
-            sendMessageBtn.addEventListener('click', sendMessage);
+        // --- Modal Close Buttons & Background Click ---
+        messageModalCloseBtn.addEventListener('click', () => closeModal(messageModal));
+        messageModal.addEventListener('click', (e) => e.target === messageModal && closeModal(messageModal));
 
-            modalCloseBtn.addEventListener('click', () => closeModal(applicationDetailsModal));
-            applicationDetailsModal.addEventListener('click', (e) => e.target === applicationDetailsModal && closeModal(applicationDetailsModal));
+        modalCloseBtn.addEventListener('click', () => closeModal(applicationDetailsModal));
+        applicationDetailsModal.addEventListener('click', (e) => e.target === applicationDetailsModal && closeModal(applicationDetailsModal));
 
-            editModalCloseBtn.addEventListener('click', () => closeModal(editUserModal));
-            editUserModal.addEventListener('click', (e) => e.target === editUserModal && closeModal(editUserModal));
-            saveChangesBtn.addEventListener('click', saveChanges);
+        editModalCloseBtn.addEventListener('click', () => closeModal(editUserModal));
+        editUserModal.addEventListener('click', (e) => e.target === editUserModal && closeModal(editUserModal));
 
-            // Group Buttons Listeners
-            messageGroupBtn.addEventListener('click', () => openMessageModal('all_employees', 'All Employees'));
-            messageGroupBtnMembers.addEventListener('click', () => openMessageModal('all_members', 'All Members'));
+        // --- Modal Action Buttons ---
+        sendMessageBtn.addEventListener('click', sendMessage); // Calls the updated sendMessage function
+        saveChangesBtn.addEventListener('click', saveChanges); // Calls the saveChanges function for the edit modal
 
-            startGroupMeetBtn.addEventListener('click', () => {
-                if (allEmployeeEmails.length > 0) {
-                    const emails = allEmployeeEmails.join(',');
-                    const meetUrl = `https://meet.google.com/new?add=${encodeURIComponent(emails)}`;
-                    window.open(meetUrl, '_blank');
+        // --- File Input Display Listener ---
+        // Handles showing the selected file name in the message modal
+        const fileInput = document.getElementById('message-file-input');
+        const fileNameSpan = document.getElementById('message-file-name');
+        if (fileInput && fileNameSpan) { // Add checks to ensure elements exist
+            fileInput.addEventListener('change', () => {
+                if (fileInput.files.length > 0) {
+                    fileNameSpan.textContent = fileInput.files[0].name;
+                    fileNameSpan.classList.add('text-indigo-600'); // Optional: change color
                 } else {
-                    alert("There are no active employees to start a meet with.");
+                    fileNameSpan.textContent = 'Attach a file (optional)';
+                    fileNameSpan.classList.remove('text-indigo-600'); // Optional: reset color
                 }
             });
-
-            startGroupMeetBtnMembers.addEventListener('click', () => {
-                if (allMemberEmails.length > 0) {
-                    const emails = allMemberEmails.join(',');
-                    const meetUrl = `https://meet.google.com/new?add=${encodeURIComponent(emails)}`;
-                    window.open(meetUrl, '_blank');
-                } else {
-                    alert("There are no members to start a meet with.");
-                }
-            });
-            
-            // Event Delegation for Tables
-            document.body.addEventListener('click', (e) => {
-                const button = e.target.closest('button');
-                if (!button) return;
-
-                const userId = button.dataset.id;
-                
-                // Application and Idea Buttons
-                if (button.classList.contains('grant-btn') || button.classList.contains('reject-btn')) {
-                    if (button.dataset.status) { // This is an Idea button
-                        const ideaId = button.dataset.id;
-                        const status = button.dataset.status;
-                        if (confirm(`Are you sure you want to ${status} this idea?`)) {
-                            updateIdeaStatus(ideaId, status);
-                        }
-                    } else { // This is an Application button
-                        if (button.classList.contains('grant-btn')) {
-                            if (confirm(`Are you sure you want to grant this application?`)) {
-                                grantApplication(userId, button.dataset.name, button.dataset.email);
-                            }
-                        } else if (button.classList.contains('reject-btn')) {
-                            if (confirm(`Are you sure you want to reject this application?`)) {
-                                rejectApplication(userId);
-                            }
-                        }
-                    }
-                } 
-                // Other buttons
-                else if (button.classList.contains('view-btn')) {
-                    openApplicationModal(userId);
-                } else if (button.classList.contains('message-user-btn')) {
-                    openMessageModal(userId, button.dataset.name);
-                } else if (button.classList.contains('edit-btn')) {
-                    openEditModal(userId);
-                }
-            });
+        } else {
+            console.error("Could not find message file input elements.");
         }
+
+
+        // --- Group Action Buttons ---
+        // Opens the message modal pre-filled for sending to all employees
+        messageGroupBtn.addEventListener('click', () => openMessageModal('all_employees', 'All Employees'));
+        // Opens the message modal pre-filled for sending to all members
+        messageGroupBtnMembers.addEventListener('click', () => openMessageModal('all_members', 'All Members'));
+
+        // Opens Google Meet with all employee emails pre-filled
+        startGroupMeetBtn.addEventListener('click', () => {
+            if (allEmployeeEmails.length > 0) {
+                const emails = allEmployeeEmails.join(',');
+                const meetUrl = `https://meet.google.com/new?add=${encodeURIComponent(emails)}`;
+                window.open(meetUrl, '_blank');
+            } else {
+                alert("There are no active employees to start a meet with.");
+            }
+        });
+        // Opens Google Meet with all member emails pre-filled
+        startGroupMeetBtnMembers.addEventListener('click', () => {
+            if (allMemberEmails.length > 0) {
+                const emails = allMemberEmails.join(',');
+                const meetUrl = `https://meet.google.com/new?add=${encodeURIComponent(emails)}`;
+                window.open(meetUrl, '_blank');
+            } else {
+                alert("There are no members to start a meet with.");
+            }
+        });
+
+
+        // --- Event Delegation for Dynamic Buttons in Tables & Idea Cards ---
+        // Listens for clicks on the body, then checks if the clicked element (or its parent) is a button we care about
+        document.body.addEventListener('click', (e) => {
+            const button = e.target.closest('button'); // Find the nearest button ancestor
+            if (!button) return; // Exit if the click wasn't on or inside a button
+
+            const userId = button.dataset.id; // Get user ID if present
+            const ideaId = button.dataset.id; // Also used for idea ID
+
+            // --- Buttons within the Applications Table ---
+            if (button.classList.contains('view-btn')) {
+                if (userId) openApplicationModal(userId); // Check userId exists
+            } else if (button.classList.contains('grant-btn') && button.closest('#applications-table-body')) { // Check it's an application grant btn
+                 if (userId && confirm(`Are you sure you want to grant this application?`)) {
+                     grantApplication(userId, button.dataset.name, button.dataset.email);
+                 }
+            } else if (button.classList.contains('reject-btn') && button.closest('#applications-table-body')) { // Check it's an application reject btn
+                 if (userId && confirm(`Are you sure you want to reject this application?`)) {
+                     rejectApplication(userId);
+                 }
+            }
+            // --- Buttons within the Employee/Member Tables ---
+            else if (button.classList.contains('message-user-btn')) {
+                 if (userId) openMessageModal(userId, button.dataset.name); // Check userId exists
+            } else if (button.classList.contains('edit-btn')) {
+                 if (userId) openEditModal(userId); // Check userId exists
+            }
+            // --- Buttons within the Idea Submission Cards ---
+            else if (button.classList.contains('grant-btn') && button.closest('#members-ideas-container')) { // Check it's an idea grant btn
+                const status = button.dataset.status;
+                if (ideaId && status && confirm(`Are you sure you want to ${status} this idea?`)) {
+                    updateIdeaStatus(ideaId, status);
+                }
+            } else if (button.classList.contains('reject-btn') && button.closest('#members-ideas-container')) { // Check it's an idea reject btn
+                const status = button.dataset.status;
+                 if (ideaId && status && confirm(`Are you sure you want to ${status} this idea?`)) {
+                    updateIdeaStatus(ideaId, status);
+                }
+            }
+        });
+    } // End of setupEventListeners function
         
         // Initial setup
         setupEventListeners();
