@@ -440,14 +440,29 @@
 <!-- Message Viewer Modal -->
 <div id="message-viewer-modal" class="fixed inset-0 bg-slate-900 bg-opacity-75 z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-        <div class="p-5 border-b border-slate-200 flex justify-between items-center">
+        <!-- Modal Header (Keep As Is) -->
+        <div class="p-5 border-b border-slate-200 flex justify-between items-center flex-shrink-0">
             <h3 class="text-lg font-bold text-slate-900">Messages from Admin</h3>
             <button id="message-viewer-close-btn" class="text-slate-400 hover:text-slate-600 text-2xl leading-none">&times;</button>
         </div>
-        <div id="messages-container" class="p-6 space-y-4 overflow-y-auto">
+
+        <!-- Message Display Area (Keep As Is) -->
+        <div id="messages-container" class="p-6 space-y-4 overflow-y-auto flex-grow">
             <p id="no-messages-text" class="text-slate-500">No messages yet.</p>
             <!-- Messages will be injected here -->
         </div>
+
+        <!-- ---> PASTE REPLY SECTION HERE <--- -->
+        <div id="reply-section" class="p-4 border-t border-slate-200 bg-slate-50 flex-shrink-0">
+            <textarea id="reply-textarea" rows="3" class="block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 mb-3" placeholder="Type your reply to the admin here..."></textarea>
+            <div class="text-right">
+                <button id="send-reply-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Send Reply
+                </button>
+            </div>
+        </div>
+        <!-- ---> END OF REPLY SECTION <--- -->
+
     </div>
 </div>
 
@@ -456,7 +471,7 @@
     // Import Firebase modules
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, updateDoc, addDoc, collection, query, where, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, updateDoc, addDoc, collection, query, where, orderBy, onSnapshot, serverTimestamp, deleteDoc, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-storage.js";
     
     // Your web app's Firebase configuration
@@ -480,7 +495,7 @@
         const loadingOverlay = document.getElementById('loading-overlay');
         let currentUserRole = 'employee';
         let currentUserId = null;
-
+        let ceoUserId = null;
         // --- EMPLOYEE DASHBOARD ELEMENTS ---
         const employeeContainer = document.getElementById('mainContainer');
         const profilePicContainer = document.getElementById('profilePicContainer');
@@ -556,6 +571,7 @@
                 currentUserId = user.uid;
                 await loadUserProfile(user.uid);
                 loadMessages(user.uid, currentUserRole);
+                await findCEOUserId();
             } else {
                 window.location.href = './index.html';
             }
@@ -605,7 +621,85 @@
             });
             // You might want to store 'unsubscribe' to detach the listener on logout
         }
+        // Add this function definition alongside others
+        // --- Add function to find CEO ---
+    async function findCEOUserId() {
+        if (ceoUserId) return ceoUserId; // Return cached ID if already found
 
+        try {
+            // Query users collection for the document where position is 'Founder and CEO'
+            // Ensure you have imported: query, collection, where, limit, getDocs from Firestore
+            const q = query(collection(db, "users"), where("position", "==", "Founder and CEO"), limit(1));
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+                ceoUserId = querySnapshot.docs[0].id; // Get the ID of the first match
+                console.log("Found CEO User ID:", ceoUserId);
+                return ceoUserId;
+            } else {
+                console.error("Could not find user with position 'Founder and CEO'. Cannot send messages to admin.");
+                // Avoid alerting every time, maybe just log or handle differently
+                // alert("Error: Admin user not found. Cannot send message.");
+                return null;
+            }
+        } catch (error) {
+            console.error("Error finding CEO:", error);
+            // alert("Error finding admin user. Cannot send message.");
+            return null;
+        }
+    }
+async function sendReplyToCEO() {
+    const replyTextarea = document.getElementById('reply-textarea');
+    const content = replyTextarea.value.trim();
+
+    if (!content) {
+        alert("Reply message cannot be empty.");
+        return;
+    }
+    // Ensure CEO ID is found before trying to send
+    if (!ceoUserId) {
+        alert("Cannot send reply: Admin user ID not found. Trying to find it now...");
+        if (!await findCEOUserId()) { // Try finding it again
+             alert("Still could not find Admin ID. Please try again later.");
+             return;
+        }
+    }
+    if (!currentUserId) {
+         alert("Cannot send reply: Your user ID not found. Please re-login.");
+         return;
+    }
+
+    const sendReplyBtn = document.getElementById('send-reply-btn');
+    sendReplyBtn.disabled = true;
+    sendReplyBtn.textContent = 'Sending...';
+
+    // Get sender's name from dashboard elements
+    const senderNameElement = document.getElementById('userName') || document.getElementById('memberName');
+    const senderName = senderNameElement ? senderNameElement.textContent : 'Unknown User';
+
+    try {
+        await addDoc(collection(db, "messages"), {
+            senderId: currentUserId,
+            senderName: senderName,
+            recipientId: ceoUserId, // Send specifically to CEO
+            recipientName: "Admin/CEO", // Optional: For CEO's history
+            content: content,
+            timestamp: serverTimestamp(),
+            isRead: false // CEO hasn't read it yet
+        });
+        replyTextarea.value = ''; // Clear textarea after sending
+        alert("Reply sent successfully to Admin!");
+        // Optionally close the modal after sending, or keep it open
+        // messageViewerModal.classList.add('hidden');
+
+    } catch (error) {
+        console.error("Error sending reply to CEO:", error);
+        alert("Failed to send reply.");
+    } finally {
+        sendReplyBtn.disabled = false;
+        sendReplyBtn.textContent = 'Send Reply';
+    }
+}
         // --- *** MODIFIED: USER PROFILE LOADING LOGIC *** ---
         async function loadUserProfile(userId) {
             const userDocRef = doc(db, "users", userId);
@@ -998,7 +1092,7 @@
         window.addEventListener('scroll', handleHeaderScroll);
         handleHeaderScroll();
 
-        // --- MESSAGE MODAL LISTENERS ---
+      // --- MESSAGE MODAL LISTENERS ---
         const openMessageModal = () => {
             messageViewerModal.classList.remove('hidden');
         };
@@ -1013,6 +1107,15 @@
             if (e.target === messageViewerModal) {
                 closeMessageModal();
             }
+            // ---> PASTE THE REPLY BUTTON LISTENER BLOCK HERE (Starts Line 1110) <---
+        const replyTextarea = document.getElementById('reply-textarea'); // Get reply elements
+        const sendReplyBtn = document.getElementById('send-reply-btn');
+
+        if (sendReplyBtn) {
+            sendReplyBtn.addEventListener('click', sendReplyToCEO); // Attach the function
+        } else {
+            console.error("Send Reply button not found.");
+        }
         });
     });
 </script>
