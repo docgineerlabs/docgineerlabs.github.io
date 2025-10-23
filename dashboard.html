@@ -1016,8 +1016,8 @@ function listenForMeetingSignal(userId) {
 
     const signalDocRef = doc(db, "meetingSignals", userId);
     // *** IMPORTANT: Adjust these selectors or add IDs like id="meet-link-employee" ***
-    const meetLinkElementEmployee = employeeNavLinks.querySelector('a[href="#google-meet"]'); // EXAMPLE: Use a more specific href or add an ID
-    const meetLinkElementMember = memberNavLinks.querySelector('a[href="#google-meet"]');   // EXAMPLE: Use a more specific href or add an ID
+    const meetLinkElementEmployee = document.getElementById('google-meet-link-employee'); // EXAMPLE: Use a more specific href or add an ID
+    const meetLinkElementMember = document.getElementById('google-meet-link-member');   // EXAMPLE: Use a more specific href or add an ID
     const meetLinkElement = (currentUserRole === 'member') ? meetLinkElementMember : meetLinkElementEmployee;
 
     if (!meetLinkElement) {
@@ -1070,8 +1070,8 @@ const handleMeetLinkClick = async (event) => {
 // ---> PASTE START: Attaching the Click Handler <---
 // Attach the handler to the links (adjust selectors/IDs as needed)
 // *** IMPORTANT: Make sure these selectors correctly target your Meet links ***
-const meetLinkEmployee = document.querySelector('#employeeNavLinks a[href="#google-meet"]'); // EXAMPLE: Use a specific href or ID
-const meetLinkMember = document.querySelector('#memberNavLinks a[href="#google-meet"]'); // EXAMPLE: Use a specific href or ID
+const meetLinkEmployee = document.getElementById('google-meet-link-employee'); // EXAMPLE: Use a specific href or ID
+const meetLinkMember = document.getElementById('google-meet-link-member'); // EXAMPLE: Use a specific href or ID
 
 if (meetLinkEmployee) {
     meetLinkEmployee.addEventListener('click', handleMeetLinkClick);
