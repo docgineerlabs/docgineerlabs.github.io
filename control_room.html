@@ -822,6 +822,7 @@ async function initiateMeetAndSendMessage(recipientId, recipientEmails, recipien
     // --- Create the meeting signal in Firestore ---
     try {
         const signalDocRef = doc(db, "meetingSignals", recipientId);
+        console.log(`Attempting to set signal for recipientId: ${recipientId}`, signalDocRef); // <-- ADD LOG
         await setDoc(signalDocRef, {
             initiatorId: auth.currentUser.uid,
             initiatorName: currentAdminProfile?.fullName || 'Admin', // Use stored admin profile
