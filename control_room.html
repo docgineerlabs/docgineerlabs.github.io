@@ -265,7 +265,7 @@
     // Import Firebase modules
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
-   import { getFirestore, doc, getDoc, collection, getDocs, updateDoc, query, where, addDoc, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+   import { getFirestore, doc, getDoc, collection, getDocs, updateDoc, query, where, addDoc, serverTimestamp, orderBy, setDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
 
 
     // Your Firebase configuration
@@ -439,6 +439,7 @@
                     const user = docSnap.data();
                     allEmployeeEmails.push(user.email);
                     const tr = document.createElement('tr');
+                    tr.dataset.userId = docSnap.id;
                     tr.innerHTML = `
                         <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-medium text-slate-900">${user.fullName}</div><div class="text-sm text-slate-500">${user.email}</div></td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">${user.branch}</td>
@@ -483,6 +484,7 @@
                     const user = docSnap.data();
                     allMemberEmails.push(user.email);
                     const tr = document.createElement('tr');
+                    tr.dataset.userId = docSnap.id;
                     tr.innerHTML = `
                         <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-medium text-slate-900">${user.fullName}</div></td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">${user.email}</td>
@@ -803,6 +805,71 @@
         sendMessageBtn.textContent = 'Send Message';
         messageModalTextarea.focus();
     }
+}// Replace the old initiateMeetAndSendMessage function with this
+async function initiateMeetAndSendMessage(recipientId, recipientEmails, recipientName) {
+    // Prevent signaling groups for now
+    if (recipientId === 'all_employees' || recipientId === 'all_members') {
+         alert("Group meeting signaling not implemented yet. Opening Meet tab only.");
+         window.open('https://meet.google.com/new', '_blank');
+         return;
+    }
+
+    if (!auth.currentUser) {
+        alert("Error: You seem to be logged out. Please log in again.");
+        return;
+    }
+
+    // --- Create the meeting signal in Firestore ---
+    try {
+        const signalDocRef = doc(db, "meetingSignals", recipientId);
+        await setDoc(signalDocRef, {
+            initiatorId: auth.currentUser.uid,
+            initiatorName: currentAdminProfile?.fullName || 'Admin', // Use stored admin profile
+            timestamp: serverTimestamp()
+        });
+        console.log(`Meeting signal sent for user: ${recipientId}`);
+    } catch (error) {
+        console.error("Error sending meeting signal:", error);
+        alert(`Could not send meeting notification signal to ${recipientName}. Proceeding to open Meet and prompt for link.`);
+        // Continue even if signaling fails, so CEO can still send link manually
+    }
+    // --- End of signal creation ---
+
+
+    // Construct the URL to open Google Meet
+    let meetUrl = 'https://meet.google.com/new';
+    if (recipientEmails) {
+        meetUrl += `?add=${encodeURIComponent(recipientEmails)}`;
+    }
+
+    // Open Google Meet in a new tab
+    const meetWindow = window.open(meetUrl, '_blank');
+    if (!meetWindow) {
+        alert("Could not open Google Meet. Please check your pop-up blocker settings.");
+        // Consider if you want to delete the signal if Meet fails to open
+        // await deleteDoc(doc(db, "meetingSignals", recipientId)); // Optional cleanup
+        return;
+    }
+
+    // Prompt the CEO AFTER opening the tab
+    setTimeout(() => {
+        const pastedLink = prompt(`A meeting signal has been sent to ${recipientName}.\n\nA new tab has opened for Google Meet. Please start the meeting, then copy the meeting link (e.g., https://meet.google.com/abc-defg-hij) and paste it here to send as a message:`);
+
+        if (pastedLink && pastedLink.trim() !== '') {
+            if (pastedLink.includes("meet.google.com/")) {
+                // Send the link via the regular message system
+                sendMeetLinkMessage(recipientId, recipientName, pastedLink.trim());
+            } else {
+                alert("Invalid Google Meet link provided. The signal was sent, but the message link was not. Please send the link manually.");
+                 // Consider if you want to delete the signal if link sending fails
+                 // deleteDoc(doc(db, "meetingSignals", recipientId)); // Optional cleanup
+            }
+        } else {
+            alert(`Meet link invitation cancelled. The meeting signal was sent to ${recipientName}. You may want to delete it manually or inform them.`);
+             // Consider if you want to delete the signal if CEO cancels
+             // deleteDoc(doc(db, "meetingSignals", recipientId)); // Optional cleanup
+        }
+    }, 500); // Delay
 }
         
         // --- EVENT LISTENERS ---
