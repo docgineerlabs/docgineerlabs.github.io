@@ -33,25 +33,34 @@
             <form id="applicationForm" class="space-y-8">
                 
                 <div class="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                    <div class="col-span-full">
-                        <label for="full-name" class="block text-base font-semibold text-gray-900">Full Name</label>
-                        <div class="mt-2">
-                           <input type="text" name="full-name" id="full-name" required class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3">
-                        </div>
-                    </div>
-                    <div class="sm:col-span-3">
-                        <label for="email" class="block text-base font-semibold text-gray-900">Email address</label>
-                        <div class="mt-2">
-                            <input id="email" name="email" type="email" autocomplete="email" required class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3">
-                        </div>
-                    </div>
-                    <div class="sm:col-span-3">
-                        <label for="password" class="block text-base font-semibold text-gray-900">Password</label>
-                        <div class="mt-2">
-                            <input type="password" name="password" id="password" required class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3">
-                        </div>
-                    </div>
-                </div>
+    <div class="col-span-full">
+        <label for="full-name" class="block text-base font-semibold text-gray-900">Full Name</label>
+        <div class="mt-2">
+            <input type="text" name="full-name" id="full-name" required class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3">
+        </div>
+    </div>
+    
+    <div class="sm:col-span-full"> 
+        <label for="email" class="block text-base font-semibold text-gray-900">Email address</label>
+        <div class="mt-2">
+            <input id="email" name="email" type="email" autocomplete="email" required class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3">
+        </div>
+    </div>
+    
+    <div class="sm:col-span-3">
+        <label for="password" class="block text-base font-semibold text-gray-900">Password</label>
+        <div class="mt-2">
+            <input type="password" name="password" id="password" required class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3">
+        </div>
+    </div>
+
+    <div class="sm:col-span-3">
+        <label for="re-enter-password" class="block text-base font-semibold text-gray-900">Re-enter Password</label>
+        <div class="mt-2">
+            <input type="password" name="re-enter-password" id="re-enter-password" required class="block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3">
+        </div>
+    </div>
+</div>
 
 
                 <div>
@@ -247,6 +256,15 @@
             const fullName = document.getElementById('full-name').value;
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+            const rePassword = document.getElementById('re-enter-password').value;
+
+// Check if passwords match
+if (password !== rePassword) {
+    alert('Passwords do not match. Please try again.');
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit Application';
+    return; // Stop the form submission
+}
             const role = document.querySelector('input[name="application-role"]:checked').value;
             
             let branch = 'N/A';
