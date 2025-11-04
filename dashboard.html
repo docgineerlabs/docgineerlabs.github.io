@@ -605,7 +605,7 @@
             const messagesQuery = query(
                 collection(db, "messages"),
                 where("recipientId", "in", recipientIds),
-                orderBy("timestamp", "desc")
+                orderBy("timestamp", "asc")
             );
 
             const unsubscribe = onSnapshot(messagesQuery, (querySnapshot) => {
@@ -650,6 +650,7 @@ querySnapshot.forEach((docSnap) => {
     messageWrapper.appendChild(messageDiv);
     messagesContainer.appendChild(messageWrapper);
 });
+messagesContainer.scrollTop = messagesContainer.scrollHeight;
 // --- END OF NEW CODE ---
                 }
             }, (error) => {
