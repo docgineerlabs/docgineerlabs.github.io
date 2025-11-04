@@ -110,7 +110,11 @@
         main.edit-mode .edit-icon {
             display: inline-block;
         }
-        
+        #reply-textarea {
+            resize: none;
+            overflow-y: hidden;
+            max-height: 120px; /* Limit max height */
+        }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800">
@@ -447,21 +451,34 @@
         </div>
 
         <!-- Message Display Area (Keep As Is) -->
-        <div id="messages-container" class="p-6 space-y-4 overflow-y-auto flex-grow">
+        <div id="messages-container" class="p-4 space-y-3 overflow-y-auto flex-grow flex flex-col">
             <p id="no-messages-text" class="text-slate-500">No messages yet.</p>
             <!-- Messages will be injected here -->
         </div>
 
-        <!-- ---> PASTE REPLY SECTION HERE <--- -->
-        <div id="reply-section" class="p-4 border-t border-slate-200 bg-slate-50 flex-shrink-0">
-            <textarea id="reply-textarea" rows="3" class="block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3 mb-3" placeholder="Type your reply to the admin here..."></textarea>
-            <div class="text-right">
-                <button id="send-reply-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Send Reply
-                </button>
+        <div id="reply-section" class="p-3 border-t border-slate-200 bg-white flex-shrink-0 flex items-center gap-2">
+
+            <button id="attach-file-btn" title="Attach file" class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full text-slate-500 hover:bg-slate-200 hover:text-slate-700 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.414a4 4 0 00-5.656-5.656l-6.415 6.415a6 6 0 008.485 8.485l6.586-6.586"></path></svg>
+            </button>
+
+            <button id="camera-btn" title="Use camera" class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full text-slate-500 hover:bg-slate-200 hover:text-slate-700 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            </button>
+
+            <div class="flex-grow relative">
+                <textarea id="reply-textarea" rows="1" class="block w-full rounded-2xl border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4" placeholder="Type a message..." oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px'"></textarea>
             </div>
+
+            <button id="mic-btn" title="Record voice" class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full text-slate-500 hover:bg-slate-200 hover:text-slate-700 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+            </button>
+
+            <button id="send-reply-btn" title="Send message" class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-indigo-600 text-white hover:bg-indigo-700 transition-colors">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 16.571V11.5a1 1 0 012 0v5.071a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
+            </button>
         </div>
-        <!-- ---> END OF REPLY SECTION <--- -->
+        ```
 
     </div>
 </div>
@@ -596,24 +613,44 @@
                 if (querySnapshot.empty) {
                     messagesContainer.appendChild(noMessagesText);
                 } else {
-                    querySnapshot.forEach((docSnap) => {
-                        const messageData = docSnap.data();
-                        const messageDiv = document.createElement('div');
-                        messageDiv.className = 'p-4 bg-slate-50 border border-slate-200 rounded-md shadow-sm';
+                    // --- PASTE THIS NEW CODE ---
+querySnapshot.forEach((docSnap) => {
+    const messageData = docSnap.data();
 
-                        const timestamp = messageData.timestamp
-                            ? new Date(messageData.timestamp.toDate()).toLocaleString()
-                            : 'No date';
+    // Check if the message is from the currently logged-in user
+    // currentUserId is defined in your onAuthStateChanged
+    const isMyMessage = messageData.senderId === currentUserId; 
 
-                        messageDiv.innerHTML = `
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-sm font-semibold text-slate-700">From: ${messageData.senderName || 'Admin'}</span>
-                                <span class="text-xs text-slate-500">${timestamp}</span>
-                            </div>
-                            <p class="text-slate-800 whitespace-pre-wrap">${messageData.content || ''}</p>
-                        `;
-                        messagesContainer.appendChild(messageDiv);
-                    });
+    // 1. Create the outer wrapper for alignment
+    const messageWrapper = document.createElement('div');
+    messageWrapper.className = `flex ${isMyMessage ? 'justify-end' : 'justify-start'} w-full`;
+
+    // 2. Create the bubble itself
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `max-w-xs md:max-w-md p-3 rounded-xl shadow-sm ${isMyMessage ? 'bg-indigo-600 text-white' : 'bg-white text-slate-900 border border-slate-200'}`;
+
+    const timestamp = messageData.timestamp
+        ? new Date(messageData.timestamp.toDate()).toLocaleString()
+        : 'No date';
+
+    // 3. Create the bubble's content
+    // Only show "From" if it's NOT my message
+    let senderNameHTML = '';
+    if (!isMyMessage) {
+        senderNameHTML = `<div class="text-xs font-bold text-indigo-600 mb-1">${messageData.senderName || 'Admin'}</div>`;
+    }
+
+    messageDiv.innerHTML = `
+        ${senderNameHTML}
+        <p class="text-sm whitespace-pre-wrap">${messageData.content || ''}</p>
+        <div class="text-xs text-right mt-1 ${isMyMessage ? 'text-indigo-200' : 'text-slate-500'}">${timestamp}</div>
+    `;
+
+    // 4. Append the bubble to the wrapper, and the wrapper to the container
+    messageWrapper.appendChild(messageDiv);
+    messagesContainer.appendChild(messageWrapper);
+});
+// --- END OF NEW CODE ---
                 }
             }, (error) => {
                 console.error("Error loading messages: ", error);
