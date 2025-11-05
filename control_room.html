@@ -13,6 +13,11 @@
             font-family: 'Inter', sans-serif;
             background-color: #f1f5f9; /* slate-100 */
         }
+        #reply-textarea {
+    resize: none;
+    overflow-y: hidden;
+    max-height: 120px; /* Limit max height */
+}
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800">
@@ -192,39 +197,59 @@
     </div>
 </div>
 
-<!-- Message Modal -->
+<!-- 
+  --- NEW MESSAGE MODAL ---
+  (Replaces the old one)
+-->
 <div id="message-modal" class="fixed inset-0 bg-slate-900 bg-opacity-75 z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] flex flex-col">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+        
+        <!-- Modal Header -->
         <div class="p-5 border-b border-slate-200 flex justify-between items-center flex-shrink-0">
             <h3 id="message-modal-title" class="text-lg font-bold text-slate-900">Send Message</h3>
             <button id="message-modal-close-btn" class="text-slate-400 hover:text-slate-600 text-2xl leading-none">&times;</button>
         </div>
-        <div class="p-5 space-y-4 overflow-y-auto flex-grow">
-            <!-- Message History Area -->
-            <div id="message-history-area" class="max-h-64 overflow-y-auto border border-slate-200 p-3 rounded-md mb-4 space-y-3 bg-slate-50">
-                <p class="text-slate-400 text-sm text-center">Loading history...</p>
-                <!-- Message history will be loaded here by JavaScript -->
-            </div>
 
-            <!-- Message Input Textarea -->
-            <textarea id="message-modal-textarea" rows="4" class="block w-full rounded-md border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-3" placeholder="Type your message here..."></textarea>
-
-            <!-- File Attachment Input -->
-            <div>
-                <label for="message-file-input" class="w-full flex items-center justify-center px-4 py-3 border-2 border-dashed border-slate-300 rounded-md cursor-pointer hover:border-indigo-500 hover:bg-indigo-50 transition-colors">
-                    <svg class="w-6 h-6 text-slate-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                    <span id="message-file-name" class="text-slate-500 font-medium text-sm">Attach a file (optional)</span>
-                </label>
-                <input type="file" id="message-file-input" class="hidden">
-            </div>
+        <!-- Message Display Area (Chat Bubbles) -->
+        <div id="messages-container" class="p-4 space-y-3 overflow-y-auto flex-grow flex flex-col bg-slate-50">
+            <!-- Messages will be injected here -->
+            <p id="no-messages-text" class="text-slate-500 text-center">No messages yet.</p>
         </div>
-        <div class="p-5 bg-slate-50 border-t border-slate-200 text-right flex-shrink-0">
-            <button id="send-message-btn" class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                Send Message
+
+        <!-- New Reply Bar -->
+        <div id="reply-section" class="p-3 border-t border-slate-200 bg-white flex-shrink-0 flex items-center gap-2">
+    
+            <!-- Attach Options (Paperclip) -->
+            <button id="attach-file-btn" title="Attach file" class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full text-slate-500 hover:bg-slate-200 hover:text-slate-700 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.414a4 4 0 00-5.656-5.656l-6.415 6.415a6 6 0 008.485 8.485l6.586-6.586"></path></svg>
+            </button>
+            
+            <!-- Camera Option -->
+            <button id="camera-btn" title="Use camera" class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full text-slate-500 hover:bg-slate-200 hover:text-slate-700 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            </button>
+        
+            <!-- Text Input Area (Resizes) -->
+            <div class="flex-grow relative">
+                <!-- Note: The ID is now 'reply-textarea' -->
+                <textarea id="reply-textarea" rows="1" class="block w-full rounded-2xl border-slate-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm py-2.5 px-4" placeholder="Type a message..." oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px'"></textarea>
+            </div>
+        
+            <!-- Voice Recording (Mic) -->
+            <button id="mic-btn" title="Record voice" class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full text-slate-500 hover:bg-slate-200 hover:text-slate-700 transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+            </button>
+        
+            <!-- Send Button (Icon) -->
+            <!-- Note: The ID is now 'send-message-btn' -->
+            <button id="send-message-btn" title="Send message" class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-indigo-600 text-white hover:bg-indigo-700 transition-colors">
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 16.571V11.5a1 1 0 012 0v5.071a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>
             </button>
         </div>
+
     </div>
 </div>
+<!-- --- END OF NEW MESSAGE MODAL --- -->
 
 
 <!-- Application Details Modal -->
@@ -641,169 +666,196 @@
             }
         }
         
-        async function openMessageModal(id, name) {
-    messageRecipient.id = id;
-    messageRecipient.name = name;
-    const messageModalTitle = document.getElementById('message-modal-title');
-    const messageModalTextarea = document.getElementById('message-modal-textarea');
-    const messageHistoryArea = document.getElementById('message-history-area');
-    const fileInput = document.getElementById('message-file-input'); // Get file input to reset
-    const fileNameSpan = document.getElementById('message-file-name'); // Get file name span to reset
+      // --- REPLACE THE OLD openMessageModal FUNCTION WITH THIS ---
+        async function openMessageModal(id, name) {
+            messageRecipient.id = id;
+            messageRecipient.name = name;
+            
+            // Get new UI elements
+            const messageModalTitle = document.getElementById('message-modal-title');
+            const messagesContainer = document.getElementById('messages-container');
+            const replyTextarea = document.getElementById('reply-textarea');
+            const noMessagesText = document.getElementById('no-messages-text');
 
-    messageModalTitle.textContent = `Message to: ${name}`;
-    messageModalTextarea.value = ''; // Clear textarea
-    fileInput.value = ''; // Clear selected file
-    fileNameSpan.textContent = 'Attach a file (optional)'; // Reset file name display
+            // Reset UI
+            messageModalTitle.textContent = `Chat with: ${name}`;
+            replyTextarea.value = '';
+            replyTextarea.style.height = 'auto'; // Reset textarea height
+            messagesContainer.innerHTML = ''; // Clear old messages
+            messagesContainer.appendChild(noMessagesText); // Add "No messages" text
+            noMessagesText.textContent = 'Loading history...'; // Set loading text
 
-    // --- ADDED AUTHENTICATION CHECK ---
-    // Ensure Firebase Auth is ready before trying to query
-    if (!auth.currentUser) {
-        console.error("Authentication state not ready in openMessageModal. Cannot load history.");
-        messageHistoryArea.innerHTML = '<p class="text-red-500 text-sm text-center">Could not verify user. Please try closing and reopening the modal.</p>';
-        // Show the modal anyway so the user sees the error
-        messageModal.classList.remove('hidden');
-        messageModalTextarea.focus(); // Focus might still be useful
-        return; // Stop the function here if user isn't ready
-    }
-    // --- END OF CHECK ---
+            if (!auth.currentUser) {
+                console.error("Authentication state not ready.");
+                noMessagesText.textContent = "Could not verify user.";
+                messageModal.classList.remove('hidden');
+                return;
+            }
 
-    // --- Load Message History ---
-    messageHistoryArea.innerHTML = '<p class="text-slate-400 text-sm text-center">Loading history...</p>';
+            // --- Load Full Chat History ---
+            const adminId = auth.currentUser.uid;
+            const userId = id; // This is the recipient's ID
 
-    try {
-        // Now we know auth.currentUser is not null here
-        const q = query(
-            collection(db, "messages"),
-            where("senderId", "==", auth.currentUser.uid), // Messages sent BY admin
-            where("recipientId", "==", id),               // Messages sent TO this recipient
-            orderBy("timestamp", "asc")                   // Show oldest first (chat order)
-        );
-        const querySnapshot = await getDocs(q);
+            try {
+                // Query 1: Messages FROM Admin TO User
+                const q1 = query(
+                    collection(db, "messages"),
+                    where("senderId", "==", adminId),
+                    where("recipientId", "==", userId)
+                );
+                // Query 2: Messages FROM User TO Admin
+                const q2 = query(
+                    collection(db, "messages"),
+                    where("senderId", "==", userId),
+                    where("recipientId", "==", adminId)
+                );
 
-        messageHistoryArea.innerHTML = ''; // Clear loading text
+                // Get both sets of messages
+                const [snapshot1, snapshot2] = await Promise.all([getDocs(q1), getDocs(q2)]);
+                const allMessages = [...snapshot1.docs, ...snapshot2.docs];
 
-        if (querySnapshot.empty) {
-            messageHistoryArea.innerHTML = '<p class="text-slate-400 text-sm text-center">No previous messages found.</p>';
-        } else {
-            querySnapshot.forEach((docSnap) => {
-                const messageData = docSnap.data();
-                const msgDiv = document.createElement('div');
-                msgDiv.className = 'p-2 rounded-md bg-white border border-slate-200'; // Style for individual messages
+                if (allMessages.length === 0) {
+                    noMessagesText.textContent = 'No messages found.';
+                    messageModal.classList.remove('hidden');
+                    replyTextarea.focus();
+                    return;
+                }
 
-                const timestamp = messageData.timestamp ? new Date(messageData.timestamp.toDate()).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) + ' on ' + new Date(messageData.timestamp.toDate()).toLocaleDateString() : 'N/A';
+                // Sort all messages by timestamp
+                allMessages.sort((a, b) => {
+                    const timeA = a.data().timestamp ? a.data().timestamp.toMillis() : 0;
+                    const timeB = b.data().timestamp ? b.data().timestamp.toMillis() : 0;
+                    return timeA - timeB; // Sort ascending (oldest first)
+                });
 
-                let fileAttachmentHtml = '';
-                // Check if file details exist (for history rendering, even if uploads are disabled now)
-                if (messageData.fileUrl && messageData.fileName) {
-                    fileAttachmentHtml = `
-                        <div class="mt-2 pt-2 border-t border-slate-100">
-                            <a href="${messageData.fileUrl}" target="_blank" class="text-xs font-medium text-indigo-600 hover:text-indigo-800 flex items-center gap-1">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a3 3 0 006 0V7a1 1 0 112 0v4a5 5 0 01-10 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd" /></svg>
-                                ${messageData.fileName}
-                            </a>
-                        </div>
-                    `;
-                }
+                // --- Render messages with new bubble logic ---
+                messagesContainer.innerHTML = ''; // Clear loading text
 
-                msgDiv.innerHTML = `
-                    <p class="text-sm text-slate-700">${messageData.content}</p>
-                    <p class="text-xs text-slate-400 text-right mt-1">${timestamp}</p>
-                    ${fileAttachmentHtml}
-                `;
-                messageHistoryArea.appendChild(msgDiv);
-            });
-            // Scroll to the bottom of the history
-            messageHistoryArea.scrollTop = messageHistoryArea.scrollHeight;
-        }
+                allMessages.forEach((docSnap) => {
+                    const messageData = docSnap.data();
+                    
+                    // Admin's message will have senderId === adminId
+                    const isMyMessage = messageData.senderId === adminId;
 
-    } catch (error) {
-        console.error("Error loading message history:", error);
-        messageHistoryArea.innerHTML = '<p class="text-red-500 text-sm text-center">Could not load history.</p>';
-    }
+                    const messageWrapper = document.createElement('div');
+                    messageWrapper.className = `flex ${isMyMessage ? 'justify-end' : 'justify-start'} w-full`;
 
-    // --- Show Modal ---
-    messageModal.classList.remove('hidden');
-    messageModalTextarea.focus();
-}
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `max-w-xs md:max-w-md p-3 rounded-xl shadow-sm ${isMyMessage ? 'bg-indigo-600 text-white' : 'bg-white text-slate-900 border border-slate-200'}`;
 
-        async function sendMessage() {
-    const messageModalTextarea = document.getElementById('message-modal-textarea');
-    const fileInput = document.getElementById('message-file-input');
-    const messageHistoryArea = document.getElementById('message-history-area');
+                    const timestamp = messageData.timestamp
+                        ? new Date(messageData.timestamp.toDate()).toLocaleString()
+                        : 'No date';
 
-    const content = messageModalTextarea.value.trim();
-    const file = fileInput.files[0]; // Check if a file is selected
+                    let senderNameHTML = '';
+                    if (!isMyMessage) {
+                        // Show the user's name on their bubbles
+                        senderNameHTML = `<div class="text-xs font-bold text-indigo-600 mb-1">${messageData.senderName || name}</div>`;
+                    }
+                    
+                    messageDiv.innerHTML = `
+                        ${senderNameHTML}
+                        <p class="text-sm whitespace-pre-wrap">${messageData.content || ''}</p>
+                        <div class="text-xs text-right mt-1 ${isMyMessage ? 'text-indigo-200' : 'text-slate-500'}">${timestamp}</div>
+                    `;
 
-    if (!content) {
-        alert("Message content cannot be empty.");
-        return;
-    }
-    if (!messageRecipient.id || !auth.currentUser) {
-        alert("Error: Recipient or sender not defined.");
-        return;
-    }
+                    messageWrapper.appendChild(messageDiv);
+                    messagesContainer.appendChild(messageWrapper);
+                });
+                 
+                // Scroll to the bottom
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-    // --- Check if a file is attached ---
-    if (file) {
-        // *** TEMPORARY ALERT - Replace this block later ***
-        alert("File attachments are not enabled yet. Please send text only for now.");
-        // Clear the file input so the user doesn't try again immediately
-        fileInput.value = '';
-        document.getElementById('message-file-name').textContent = 'Attach a file (optional)';
-        // Optionally, you could prevent sending the message entirely if a file is attached:
-        // return;
-        // Or, proceed to send the text part only (as implemented below)
-        // *** END OF TEMPORARY BLOCK ***
-    }
+            } catch (error) {
+                console.error("Error loading message history:", error);
+                noMessagesText.textContent = "Could not load history. You may need to create a Firestore index.";
+                // Show the error in the console with the link
+                if (error.message.includes("requires an index")) {
+                    console.error("Index required! Create it here: " + error.message.substring(error.message.indexOf("https")));
+                }
+            }
 
-    const sendMessageBtn = document.getElementById('send-message-btn');
-    sendMessageBtn.disabled = true;
-    sendMessageBtn.textContent = 'Sending...';
+            // Show Modal
+            messageModal.classList.remove('hidden');
+Read-only
+            replyTextarea.focus();
+        }
+        // --- END OF REPLACED FUNCTION ---
 
-    try {
-        // --- Prepare message data (NO file info for now) ---
-        const messageData = {
-            senderId: auth.currentUser.uid,
-            senderName: currentAdminProfile?.fullName || 'Admin',
-            recipientId: messageRecipient.id,
-            recipientName: messageRecipient.name,
-            content: content,
-            timestamp: serverTimestamp(),
-            isRead: false,
-            // fileUrl and fileName are omitted for now
-        };
+       // --- REPLACE THE OLD sendMessage FUNCTION WITH THIS ---
+        async function sendMessage() {
+            // Get new element IDs
+            const messageModalTextarea = document.getElementById('reply-textarea'); 
+            const messagesContainer = document.getElementById('messages-container');
 
-        const docRef = await addDoc(collection(db, "messages"), messageData);
+            const content = messageModalTextarea.value.trim();
+            // File logic is not implemented for these buttons yet
 
-        // --- OPTIONAL: Add message instantly to the modal history ---
-        const sentTime = new Date();
-        const msgDiv = document.createElement('div');
-        msgDiv.className = 'p-2 rounded-md bg-white border border-slate-200';
-         msgDiv.innerHTML = `
-            <p class="text-sm text-slate-700">${content}</p>
-            <p class="text-xs text-slate-400 text-right mt-1">${sentTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} on ${sentTime.toLocaleDateString()}</p>
-            `; // File attachment HTML is removed here for now
-        const noHistoryText = messageHistoryArea.querySelector('p.text-slate-400.text-sm.text-center');
-        if (noHistoryText) noHistoryText.remove();
-        messageHistoryArea.appendChild(msgDiv);
-        messageHistoryArea.scrollTop = messageHistoryArea.scrollHeight;
-        // --- End of optional instant update ---
+            if (!content) {
+                // No alert, just don't send an empty message
+                return;
+            }
+            if (!messageRecipient.id || !auth.currentUser) {
+                alert("Error: Recipient or sender not defined.");
+                return;
+            }
 
-    } catch (error) {
-        console.error("Error sending message:", error);
-        alert("Failed to send message.");
-    } finally {
-        // Reset only the input fields
-        messageModalTextarea.value = '';
-        // File input was already cleared if a file was selected,
-        // otherwise it's empty anyway. Ensure display text is reset.
-        fileInput.value = ''; // Ensure it's cleared
-        document.getElementById('message-file-name').textContent = 'Attach a file (optional)';
-        sendMessageBtn.disabled = false;
-        sendMessageBtn.textContent = 'Send Message';
-        messageModalTextarea.focus();
-    }
-}
+            const sendMessageBtn = document.getElementById('send-message-btn');
+            sendMessageBtn.disabled = true;
+            // Don't change text content of an icon button
+
+            try {
+                // Prepare message data
+                const messageData = {
+                    senderId: auth.currentUser.uid,
+                    senderName: currentAdminProfile?.fullName || 'Admin',
+                    recipientId: messageRecipient.id,
+                    recipientName: messageRecipient.name,
+                    content: content,
+                    timestamp: serverTimestamp(),
+                    isRead: false,
+                };
+
+                const docRef = await addDoc(collection(db, "messages"), messageData);
+
+              // --- Add message instantly to the modal history ---
+                const sentTime = new Date();
+                
+                // Add bubble logic to instant update
+                const messageWrapper = document.createElement('div');
+                messageWrapper.className = 'flex justify-end w-full'; // Admin's message
+
+                const msgDiv = document.createElement('div');
+                msgDiv.className = 'max-w-xs md:max-w-md p-3 rounded-xl shadow-sm bg-indigo-600 text-white'; // Admin's bubble color
+                
+                msgDiv.innerHTML = `
+                    <p class="text-sm whitespace-pre-wrap">${content}</p>
+                    <p class="text-xs text-right mt-1 text-indigo-200">${sentTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} on ${sentTime.toLocaleDateString()}</p>
+             `;
+                
+                messageWrapper.appendChild(msgDiv);
+                
+                // Find and remove the "No messages" text
+                const noHistoryText = messagesContainer.querySelector('#no-messages-text');
+                if (noHistoryText) noHistoryText.remove();
+Code (blocks)
+                
+                messagesContainer.appendChild(messageWrapper);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                // --- End of instant update ---
+
+            } catch (error) {
+                console.error("Error sending message:", error);
+               alert("Failed to send message.");
+            } finally {
+                // Reset only the input fields
+                messageModalTextarea.value = '';
+                messageModalTextarea.style.height = 'auto'; // Reset height
+                sendMessageBtn.disabled = false;
+                messageModalTextarea.focus();
+            }
+        }
+        // --- END OF REPLACED FUNCTION ---
         
         // --- EVENT LISTENERS ---
 
