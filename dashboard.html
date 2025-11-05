@@ -507,7 +507,7 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
     const storage = getStorage(app);
-    const ADMIN_USER_ID = "OVWZezTGJyMGiirOv7Hg5kt2K813";
+
     document.addEventListener('DOMContentLoaded', () => {
         const loadingOverlay = document.getElementById('loading-overlay');
         let currentUserRole = 'employee';
@@ -588,7 +588,7 @@
                 currentUserId = user.uid;
                 await loadUserProfile(user.uid);
                 loadMessages(user.uid, currentUserRole);
-               
+                await findCEOUserId();
             } else {
                 window.location.href = './index.html';
             }
@@ -661,77 +661,83 @@ messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
         // Add this function definition alongside others
         // --- Add function to find CEO ---
-    
-// --- CLEAN sendReplyToCEO FUNCTION ---
-        async function sendReplyToCEO() {
-            const replyTextarea = document.getElementById('reply-textarea');
-            const content = replyTextarea.value.trim();
+    async function findCEOUserId() {
+        if (ceoUserId) return ceoUserId; // Return cached ID if already found
 
-            if (!content) {
-                // Don't send empty messages
-                return;
-            }
-            if (!currentUserId) {
-                alert("Cannot send reply: Your user ID not found. Please re-login.");
-                return;
-            }
+        try {
+            // Query users collection for the document where position is 'Founder and CEO'
+            // Ensure you have imported: query, collection, where, limit, getDocs from Firestore
+            const q = query(collection(db, "users"), where("position", "==", "Founder and CEO"), limit(1));
+            const querySnapshot = await getDocs(q);
 
-            const sendReplyBtn = document.getElementById('send-reply-btn');
-            sendReplyBtn.disabled = true;
+            if (!querySnapshot.empty) {
+                ceoUserId = querySnapshot.docs[0].id; // Get the ID of the first match
+                console.log("Found CEO User ID:", ceoUserId);
+                return ceoUserId;
+            } else {
+                console.error("Could not find user with position 'Founder and CEO'. Cannot send messages to admin.");
+                // Avoid alerting every time, maybe just log or handle differently
+                // alert("Error: Admin user not found. Cannot send message.");
+                return null;
+            }
+        } catch (error) {
+            console.error("Error finding CEO:", error);
+            // alert("Error finding admin user. Cannot send message.");
+            return null;
+        }
+    }
+async function sendReplyToCEO() {
+    const replyTextarea = document.getElementById('reply-textarea');
+    const content = replyTextarea.value.trim();
 
-            // Get sender's name from dashboard elements
-            const senderNameElement = document.getElementById('userName') || document.getElementById('memberName');
-            const senderName = senderNameElement ? senderNameElement.textContent : 'Unknown User';
+    if (!content) {
+        alert("Reply message cannot be empty.");
+        return;
+    }
+    // Ensure CEO ID is found before trying to send
+    if (!ceoUserId) {
+        alert("Cannot send reply: Admin user ID not found. Trying to find it now...");
+        if (!await findCEOUserId()) { // Try finding it again
+             alert("Still could not find Admin ID. Please try again later.");
+             return;
+        }
+    }
+    if (!currentUserId) {
+         alert("Cannot send reply: Your user ID not found. Please re-login.");
+         return;
+    }
 
-            try {
-                await addDoc(collection(db, "messages"), {
-                    senderId: currentUserId,
-                    senderName: senderName,
-                    recipientId: ADMIN_USER_ID, // Use the constant
-                    recipientName: "Admin/CEO",
-                    content: content,
-                    timestamp: serverTimestamp(),
-                    isRead: false 
-                });
-                
-                // --- ADDED INSTANT BUBBLE ---
-                const messagesContainer = document.getElementById('messages-container');
-                const sentTime = new Date();
-                
-                // Add bubble logic (this is the user's message, so it's 'isMyMessage')
-                const messageWrapper = document.createElement('div');
-                messageWrapper.className = 'flex justify-end w-full'; // User's message
+    const sendReplyBtn = document.getElementById('send-reply-btn');
+    sendReplyBtn.disabled = true;
+    sendReplyBtn.textContent = 'Sending...';
 
-                const msgDiv = document.createElement('div');
-                msgDiv.className = 'max-w-xs md:max-w-md p-3 rounded-xl shadow-sm bg-indigo-600 text-white'; // User's bubble color
-                
-                msgDiv.innerHTML = `
-                    <p class="text-sm whitespace-pre-wrap">${content}</p>
-                    <p class="text-xs text-right mt-1 text-indigo-200">${sentTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} on ${sentTime.toLocaleDateString()}</p>
-                `;
-              
-                messageWrapper.appendChild(msgDiv);
-                
-                // Find and remove the "No messages" text
-                const noHistoryText = messagesContainer.querySelector('#no-messages-text');
-                if (noHistoryText) noHistoryText.remove();
-                
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                
-                // --- NO MORE ALERT ---
-                // alert("Reply sent successfully to Admin!"); // <-- REMOVED
-                
-block             // Reset text area
-                replyTextarea.value = ''; 
-                replyTextarea.style.height = 'auto';
+    // Get sender's name from dashboard elements
+    const senderNameElement = document.getElementById('userName') || document.getElementById('memberName');
+    const senderName = senderNameElement ? senderNameElement.textContent : 'Unknown User';
 
-            } catch (error) {
-                console.error("Error sending reply to CEO:", error);
-                alert("Failed to send reply.");
-            } finally {
-                sendReplyBtn.disabled = false;
-            }
-        }
+    try {
+        await addDoc(collection(db, "messages"), {
+            senderId: currentUserId,
+            senderName: senderName,
+            recipientId: ceoUserId, // Send specifically to CEO
+            recipientName: "Admin/CEO", // Optional: For CEO's history
+            content: content,
+            timestamp: serverTimestamp(),
+            isRead: false // CEO hasn't read it yet
+        });
+        replyTextarea.value = ''; // Clear textarea after sending
+        alert("Reply sent successfully to Admin!");
+        // Optionally close the modal after sending, or keep it open
+        // messageViewerModal.classList.add('hidden');
+
+    } catch (error) {
+        console.error("Error sending reply to CEO:", error);
+        alert("Failed to send reply.");
+    } finally {
+        sendReplyBtn.disabled = false;
+        sendReplyBtn.textContent = 'Send Reply';
+    }
+}
         // --- *** MODIFIED: USER PROFILE LOADING LOGIC *** ---
         async function loadUserProfile(userId) {
             const userDocRef = doc(db, "users", userId);
