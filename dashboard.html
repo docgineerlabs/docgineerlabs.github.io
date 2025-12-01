@@ -354,7 +354,7 @@
                     <a href="#" class="block pl-12 pr-4 py-2 text-sm text-slate-900 hover:bg-slate-100 transition-colors">Future Project</a>
                 </div>
             </div>
-            <a href="#" class="flex items-center px-4 py-3 text-sm text-slate-900 hover:bg-slate-100 transition-colors group" role="menuitem">
+            <a href="#" id="employee-meet-btn" class="flex items-center px-4 py-3 text-sm text-slate-900 hover:bg-slate-100 transition-colors group" role="menuitem">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-900" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M17 10.5V7c0-1.66-1.34-3-3-3H7c-1.66 0-3 1.34-3 3v10c0 1.66 1.34 3 3 3h7c1.66 0 3-1.34 3-3v-3.5l4 4v-11l-4 4z"/>
                 </svg>
@@ -403,7 +403,7 @@
         
 
         <nav id="memberNavLinks" class="hidden flex-grow py-1 overflow-y-auto" role="menu" aria-orientation="vertical">
-            <a href="#" class="flex items-center px-4 py-3 text-sm text-slate-900 hover:bg-slate-100 transition-colors group" role="menuitem">
+            <a href="#" id="member-meet-btn" class="flex items-center px-4 py-3 text-sm text-slate-900 hover:bg-slate-100 transition-colors group" role="menuitem">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-slate-900" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M17 10.5V7c0-1.66-1.34-3-3-3H7c-1.66 0-3 1.34-3 3v10c0 1.66 1.34 3 3 3h7c1.66 0 3-1.34 3-3v-3.5l4 4v-11l-4 4z"/>
                 </svg>
@@ -482,7 +482,25 @@
 
     </div>
 </div>
+<div id="meet-modal" class="fixed inset-0 bg-slate-900 bg-opacity-75 z-[60] flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-sm text-center p-6">
+        <div class="mb-4">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+                <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+            </div>
+            <h3 class="text-lg font-bold text-slate-900 mt-2">Join Video Meeting</h3>
+        </div>
+        
+        <div id="meet-status-content" class="mb-6">
+            <p class="text-slate-500">Checking for active meetings...</p>
+        </div>
 
+        <div class="flex justify-center gap-2">
+            <button id="close-meet-modal" class="text-slate-500 hover:text-slate-700 px-4 py-2 text-sm">Close</button>
+            <a id="join-meet-btn" href="#" target="_blank" class="hidden bg-green-600 text-white px-6 py-2 rounded-md text-sm font-bold hover:bg-green-700">Join Now</a>
+        </div>
+    </div>
+</div>
 
 <script type="module">
     // Import Firebase modules
@@ -1159,6 +1177,59 @@ if (sendReplyBtn) {
 } else {
     console.error("Send Reply button not found.");
 }
+// --- NEW GOOGLE MEET VIEWER LOGIC ---
+        const meetModal = document.getElementById('meet-modal');
+        const meetStatusContent = document.getElementById('meet-status-content');
+        const joinMeetBtn = document.getElementById('join-meet-btn');
+        const closeMeetModal = document.getElementById('close-meet-modal');
+        
+        // Buttons with the IDs we just added
+        const employeeMeetBtn = document.getElementById('employee-meet-btn');
+        const memberMeetBtn = document.getElementById('member-meet-btn');
+
+        const openMeetModal = async (e) => {
+            e.preventDefault(); // Stop it from acting like a link
+            meetModal.classList.remove('hidden');
+            meetStatusContent.innerHTML = '<p class="text-slate-500">Checking for active meetings...</p>';
+            joinMeetBtn.classList.add('hidden');
+
+            try {
+                // Check the system/meeting document
+                const docRef = doc(db, "system", "meeting");
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists() && docSnap.data().isActive) {
+                    const data = docSnap.data();
+                    const startTime = data.startedAt ? new Date(data.startedAt.toDate()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+                    
+                    meetStatusContent.innerHTML = `
+                        <p class="text-slate-800 font-medium text-lg mb-1">Meeting in Progress</p>
+                        <p class="text-sm text-slate-500">Host: ${data.host || 'Admin'}</p>
+                        <p class="text-xs text-slate-400 mt-1">Started at ${startTime}</p>
+                    `;
+                    
+                    // Set the link and show button
+                    joinMeetBtn.href = data.activeLink;
+                    joinMeetBtn.classList.remove('hidden');
+                } else {
+                    meetStatusContent.innerHTML = `
+                        <p class="text-slate-800 font-medium">No Active Meeting</p>
+                        <p class="text-sm text-slate-500 mt-1">The admin has not started a group session yet.</p>
+                    `;
+                }
+            } catch (error) {
+                console.error("Error checking meeting:", error);
+                meetStatusContent.innerHTML = '<p class="text-red-500">Error connecting to server.</p>';
+            }
+        };
+
+        // Attach listeners if the buttons exist
+        if(employeeMeetBtn) employeeMeetBtn.addEventListener('click', openMeetModal);
+        if(memberMeetBtn) memberMeetBtn.addEventListener('click', openMeetModal);
+        
+        closeMeetModal.addEventListener('click', () => {
+            meetModal.classList.add('hidden');
+        });
     });
 </script>
 </body>

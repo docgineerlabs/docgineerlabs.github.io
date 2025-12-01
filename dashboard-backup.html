@@ -686,6 +686,10 @@ messagesContainer.scrollTop = messagesContainer.scrollHeight;
             return null;
         }
     }
+// PASTE THIS NEW VARIABLE near the top of your script (e.g., around line 550)
+const sendIconSVG = `<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 16.571V11.5a1 1 0 012 0v5.071a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path></svg>`;
+
+// PASTE THIS to REPLACE your entire "async function sendReplyToCEO()"
 async function sendReplyToCEO() {
     const replyTextarea = document.getElementById('reply-textarea');
     const content = replyTextarea.value.trim();
@@ -694,22 +698,23 @@ async function sendReplyToCEO() {
         alert("Reply message cannot be empty.");
         return;
     }
-    // Ensure CEO ID is found before trying to send
+    
     if (!ceoUserId) {
         alert("Cannot send reply: Admin user ID not found. Trying to find it now...");
         if (!await findCEOUserId()) { // Try finding it again
-             alert("Still could not find Admin ID. Please try again later.");
-             return;
+            alert("Still could not find Admin ID. Please try again later.");
+            return;
         }
     }
+    
     if (!currentUserId) {
-         alert("Cannot send reply: Your user ID not found. Please re-login.");
-         return;
+        alert("Cannot send reply: Your user ID not found. Please re-login.");
+        return;
     }
 
     const sendReplyBtn = document.getElementById('send-reply-btn');
     sendReplyBtn.disabled = true;
-    sendReplyBtn.textContent = 'Sending...';
+    sendReplyBtn.innerHTML = '...'; // Show a simple loading state
 
     // Get sender's name from dashboard elements
     const senderNameElement = document.getElementById('userName') || document.getElementById('memberName');
@@ -725,17 +730,16 @@ async function sendReplyToCEO() {
             timestamp: serverTimestamp(),
             isRead: false // CEO hasn't read it yet
         });
+        
         replyTextarea.value = ''; // Clear textarea after sending
-        alert("Reply sent successfully to Admin!");
-        // Optionally close the modal after sending, or keep it open
-        // messageViewerModal.classList.add('hidden');
+        // alert("Reply sent successfully to Admin!"); // Optional: remove alert for better UX
 
     } catch (error) {
         console.error("Error sending reply to CEO:", error);
         alert("Failed to send reply.");
     } finally {
         sendReplyBtn.disabled = false;
-        sendReplyBtn.textContent = 'Send Reply';
+        sendReplyBtn.innerHTML = sendIconSVG; // Restore the SVG icon
     }
 }
         // --- *** MODIFIED: USER PROFILE LOADING LOGIC *** ---
@@ -1141,20 +1145,20 @@ async function sendReplyToCEO() {
         viewMessagesBtnEmployee.addEventListener('click', openMessageModal);
         viewMessagesBtnMember.addEventListener('click', openMessageModal);
         messageViewerCloseBtn.addEventListener('click', closeMessageModal);
-        messageViewerModal.addEventListener('click', (e) => {
-            if (e.target === messageViewerModal) {
-                closeMessageModal();
-            }
-            // ---> PASTE THE REPLY BUTTON LISTENER BLOCK HERE (Starts Line 1110) <---
-        const replyTextarea = document.getElementById('reply-textarea'); // Get reply elements
-        const sendReplyBtn = document.getElementById('send-reply-btn');
+        // PASTE THIS to REPLACE the block you just found
+messageViewerModal.addEventListener('click', (e) => {
+    if (e.target === messageViewerModal) {
+        closeMessageModal();
+    }
+});
 
-        if (sendReplyBtn) {
-            sendReplyBtn.addEventListener('click', sendReplyToCEO); // Attach the function
-        } else {
-            console.error("Send Reply button not found.");
-        }
-        });
+// This block correctly activates the SEND button when the page loads
+const sendReplyBtn = document.getElementById('send-reply-btn');
+if (sendReplyBtn) {
+    sendReplyBtn.addEventListener('click', sendReplyToCEO); // Attach the function
+} else {
+    console.error("Send Reply button not found.");
+}
     });
 </script>
 </body>
