@@ -1188,38 +1188,35 @@ if (sendReplyBtn) {
         const memberMeetBtn = document.getElementById('member-meet-btn');
 
         const openMeetModal = async (e) => {
-            e.preventDefault(); // Stop it from acting like a link
+            e.preventDefault();
             meetModal.classList.remove('hidden');
-            meetStatusContent.innerHTML = '<p class="text-slate-500">Checking for active meetings...</p>';
+            meetStatusContent.innerHTML = '<p class="text-slate-500">Connecting to meeting room...</p>';
             joinMeetBtn.classList.add('hidden');
 
             try {
-                // Check the system/meeting document
+                // Fetch the static link
                 const docRef = doc(db, "system", "meeting");
                 const docSnap = await getDoc(docRef);
 
-                if (docSnap.exists() && docSnap.data().isActive) {
-                    const data = docSnap.data();
-                    const startTime = data.startedAt ? new Date(data.startedAt.toDate()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+                if (docSnap.exists() && docSnap.data().staticLink) {
+                    const link = docSnap.data().staticLink;
                     
                     meetStatusContent.innerHTML = `
-                        <p class="text-slate-800 font-medium text-lg mb-1">Meeting in Progress</p>
-                        <p class="text-sm text-slate-500">Host: ${data.host || 'Admin'}</p>
-                        <p class="text-xs text-slate-400 mt-1">Started at ${startTime}</p>
+                        <p class="text-slate-800 font-medium text-lg mb-1">Docgineer Labs Conference Room</p>
+                        <p class="text-sm text-slate-500">Click below to join the permanent video session.</p>
                     `;
                     
-                    // Set the link and show button
-                    joinMeetBtn.href = data.activeLink;
+                    joinMeetBtn.href = link;
                     joinMeetBtn.classList.remove('hidden');
                 } else {
                     meetStatusContent.innerHTML = `
-                        <p class="text-slate-800 font-medium">No Active Meeting</p>
-                        <p class="text-sm text-slate-500 mt-1">The admin has not started a group session yet.</p>
+                        <p class="text-slate-800 font-medium">Room Not Configured</p>
+                        <p class="text-sm text-slate-500 mt-1">The admin has not set up the meeting link yet.</p>
                     `;
                 }
             } catch (error) {
-                console.error("Error checking meeting:", error);
-                meetStatusContent.innerHTML = '<p class="text-red-500">Error connecting to server.</p>';
+                console.error("Error fetching meeting link:", error);
+                meetStatusContent.innerHTML = '<p class="text-red-500">Connection Error.</p>';
             }
         };
 

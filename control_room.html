@@ -44,25 +44,34 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
         
         <!-- Employees Section -->
-        <section id="employees-section">
-            <div class="flex justify-between items-center mb-6">
-                 <h2 class="text-3xl font-bold text-slate-800">Active Employees</h2>
-                 <div class="flex items-center gap-4">
-                    <button id="message-group-btn" class="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-600 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                          <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                          <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                        </svg>
-                        <span>Message Group</span>
-                    </button>
-                    <button id="start-group-meet-btn" class="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-600 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M17 10.5V7c0-1.66-1.34-3-3-3H7c-1.66 0-3 1.34-3 3v10c0 1.66 1.34 3 3 3h7c1.66 0 3-1.34 3-3v-3.5l4 4v-11l-4 4z"/>
-                        </svg>
-                        <span>Start Group Meet</span>
-                    </button>
-                 </div>
-            </div>
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+    <h2 class="text-3xl font-bold text-slate-800">Active Employees</h2>
+    
+    <div class="flex flex-col gap-2 bg-white p-3 rounded-lg shadow-sm border border-slate-200">
+        <label class="text-xs font-bold text-slate-500 uppercase">Permanent Meet Link</label>
+        <div class="flex gap-2">
+            <input type="text" id="permanent-link-input" placeholder="Paste Google Meet URL here" class="text-sm border-slate-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 w-64 p-1 border">
+            <button id="save-link-btn" class="bg-slate-800 text-white px-3 py-1 rounded-md text-xs font-bold hover:bg-black">SAVE</button>
+        </div>
+    </div>
+
+    <div class="flex items-center gap-4">
+        <button id="message-group-btn" class="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-600 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+            </svg>
+            <span>Message Group</span>
+        </button>
+        
+        <button id="start-group-meet-btn" class="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M17 10.5V7c0-1.66-1.34-3-3-3H7c-1.66 0-3 1.34-3 3v10c0 1.66 1.34 3 3 3h7c1.66 0 3-1.34 3-3v-3.5l4 4v-11l-4 4z"/>
+            </svg>
+            <span>Enter Room</span>
+        </button>
+    </div>
+</div>
 
             <!-- Employee User Management -->
             <div id="employees-user-management">
@@ -898,59 +907,62 @@
             // Opens the message modal pre-filled for sending to all members
             messageGroupBtnMembers.addEventListener('click', () => openMessageModal('all_members', 'All Members'));
 
-            // --- NEW BROADCAST LOGIC ---
-            const broadcastModal = document.getElementById('broadcast-modal');
-            const meetLinkInput = document.getElementById('meet-link-input');
-            const confirmBroadcastBtn = document.getElementById('confirm-broadcast-btn');
-            const cancelBroadcastBtn = document.getElementById('cancel-broadcast-btn');
+           // --- PERMANENT LINK LOGIC ---
+            const saveLinkBtn = document.getElementById('save-link-btn');
+            const permanentLinkInput = document.getElementById('permanent-link-input');
+            let currentMeetLink = null;
 
-            // Function to handle the start of a meet
-            const handleStartMeet = () => {
-                // 1. Open the Meet window
-                window.open('https://meet.google.com/new', '_blank');
-                
-                // 2. Open our Broadcast Modal
-                broadcastModal.classList.remove('hidden');
-                meetLinkInput.value = ''; // Clear previous
-                meetLinkInput.focus();
-            };
+            // 1. Load the saved link on page load
+            async function loadMeetingSettings() {
+                try {
+                    const docSnap = await getDoc(doc(db, "system", "meeting"));
+                    if (docSnap.exists() && docSnap.data().staticLink) {
+                        currentMeetLink = docSnap.data().staticLink;
+                        permanentLinkInput.value = currentMeetLink;
+                    }
+                } catch (e) {
+                    console.error("Error loading link settings:", e);
+                }
+            }
+            loadMeetingSettings(); // Call immediately
 
-            // Attach to both buttons (Employee & Member sections)
-            startGroupMeetBtn.addEventListener('click', handleStartMeet);
-            startGroupMeetBtnMembers.addEventListener('click', handleStartMeet);
-
-            // Cancel Button
-            cancelBroadcastBtn.addEventListener('click', () => {
-                broadcastModal.classList.add('hidden');
-            });
-
-            // Confirm/Send Button
-            confirmBroadcastBtn.addEventListener('click', async () => {
-                const link = meetLinkInput.value.trim();
-                if(!link) {
-                    alert("Please paste the link first.");
+            // 2. Save the link when Admin clicks "SAVE"
+            saveLinkBtn.addEventListener('click', async () => {
+                const newLink = permanentLinkInput.value.trim();
+                if (!newLink.startsWith('http')) {
+                    alert("Please enter a valid URL (starting with http/https)");
                     return;
                 }
-
-                confirmBroadcastBtn.textContent = "Broadcasting...";
+                
+                saveLinkBtn.textContent = "...";
                 try {
-                    // Save to a specific document 'system/meeting'
                     await setDoc(doc(db, "system", "meeting"), {
-                        activeLink: link,
-                        isActive: true,
-                        startedAt: serverTimestamp(),
-                        host: currentAdminProfile.fullName
-                    });
+                        staticLink: newLink,
+                        updatedAt: serverTimestamp()
+                    }, { merge: true });
                     
-                    alert("Meeting link broadcasted to dashboard!");
-                    broadcastModal.classList.add('hidden');
-                } catch(e) {
-                    console.error("Error broadcasting:", e);
-                    alert("Failed to broadcast link.");
+                    currentMeetLink = newLink;
+                    alert("Permanent Meeting Link Saved!");
+                } catch (e) {
+                    console.error("Error saving link:", e);
+                    alert("Failed to save link.");
                 } finally {
-                    confirmBroadcastBtn.textContent = "Broadcast Link";
+                    saveLinkBtn.textContent = "SAVE";
                 }
             });
+
+            // 3. "Enter Room" Button Logic
+            const handleEnterRoom = () => {
+                if (currentMeetLink) {
+                    window.open(currentMeetLink, '_blank');
+                } else {
+                    alert("No meeting link set! Please paste a Google Meet URL in the settings box above and click SAVE.");
+                    permanentLinkInput.focus();
+                }
+            };
+
+            startGroupMeetBtn.addEventListener('click', handleEnterRoom);
+            startGroupMeetBtnMembers.addEventListener('click', handleEnterRoom);
 
             // --- Event Delegation for Dynamic Buttons in Tables & Idea Cards ---
             document.body.addEventListener('click', (e) => {
