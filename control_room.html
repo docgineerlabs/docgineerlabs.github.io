@@ -565,7 +565,7 @@
                     const tr = document.createElement('tr');
                    tr.innerHTML = `
                         <td class="px-6 py-4">
-                            <div class="font-medium text-slate-900">${user.name}</div>
+                            <div class="font-medium text-slate-900">${user.fullName || user.name || 'Member'}</div>
                             <div class="text-xs text-slate-500">${user.email}</div>
                         </td>
                         <td class="px-6 py-4 text-sm text-slate-600">${user.contact || '-'}</td>
