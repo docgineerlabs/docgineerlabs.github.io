@@ -88,13 +88,13 @@
                         <table class="min-w-full divide-y divide-slate-200">
                             <thead class="bg-slate-50">
                                 <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Name</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Branch</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Position</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Message</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Meet</th>
-                                    <th scope="col" class="relative px-6 py-3"><span class="sr-only">Edit</span></th>
-                                </tr>
+                                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Name & Email</th>
+                                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Branch</th>
+                                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Position</th>
+                                  <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-slate-500 uppercase tracking-wider">Message</th>
+                                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Private Meet</th>
+                                  <th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span>
+                                  </th>
                             </thead>
                             <tbody id="employees-table-body" class="bg-white divide-y divide-slate-200">
                                 <!-- Employee rows will be dynamically inserted here -->
@@ -134,12 +134,12 @@
                         <table class="min-w-full divide-y divide-slate-200">
                             <thead class="bg-slate-50">
                                 <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Name</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Email ID</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Name & Email</th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Contact</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Message</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Meet</th>
-                                    <th scope="col" class="relative px-6 py-3"><span class="sr-only">Edit</span></th>
+                                    <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-slate-500 uppercase tracking-wider">Message</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Private Meet</th>
+                                    <th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span>
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody id="members-table-body" class="bg-white divide-y divide-slate-200">
@@ -499,13 +499,33 @@
                     const user = docSnap.data();
                     allEmployeeEmails.push(user.email);
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-medium text-slate-900">${user.fullName}</div><div class="text-sm text-slate-500">${user.email}</div></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">${user.branch}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">${user.position}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-center"><button class="message-user-btn text-blue-600 hover:text-blue-900" data-id="${docSnap.id}" data-name="${user.fullName}"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-auto" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg></button></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-center"><a href="https://meet.google.com/new?add=${encodeURIComponent(user.email)}" target="_blank" class="inline-block text-green-600 hover:text-green-900"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17 10.5V7c0-1.66-1.34-3-3-3H7c-1.66 0-3 1.34-3 3v10c0 1.66 1.34 3 3 3h7c1.66 0 3-1.34 3-3v-3.5l4 4v-11l-4 4z"/></svg></a></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"><button class="edit-btn text-indigo-600 hover:text-indigo-900" data-id="${docSnap.id}" data-role="employee">Edit</button></td>
+                   tr.innerHTML = `
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-slate-900">${user.fullName || user.name}</div>
+                            <div class="text-xs text-slate-500">${user.email}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">${user.branch || '-'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">${user.position || 'Employee'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-center">
+                            <button class="message-user-btn text-blue-600 hover:text-blue-900" data-id="${docSnap.id}" data-name="${user.fullName || user.name}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                </svg>
+                            </button>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center gap-2">
+                                <input type="text" id="meet-input-${docSnap.id}" placeholder="Private Link..." class="text-xs border border-slate-300 rounded px-2 py-1 w-32 focus:w-48 transition-all focus:ring-2 focus:ring-green-500 focus:outline-none">
+                                <button class="private-meet-btn text-green-600 hover:text-green-800 bg-green-50 hover:bg-green-100 p-1.5 rounded-full transition-colors" data-id="${docSnap.id}" data-name="${user.fullName || user.name}" title="Start Private Meeting">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                             <button class="edit-btn text-indigo-600 hover:text-indigo-900" data-id="${docSnap.id}">Edit</button>
+                        </td>
                     `;
                     employeesTableBody.appendChild(tr);
                 });
@@ -543,13 +563,32 @@
                     const user = docSnap.data();
                     allMemberEmails.push(user.email);
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-medium text-slate-900">${user.fullName}</div></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">${user.email}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">-</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-center"><button class="message-user-btn text-blue-600 hover:text-blue-900" data-id="${docSnap.id}" data-name="${user.fullName}"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-auto" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg></button></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-center"><a href="https://meet.google.com/new?add=${encodeURIComponent(user.email)}" target="_blank" class="inline-block text-green-600 hover:text-green-900"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17 10.5V7c0-1.66-1.34-3-3-3H7c-1.66 0-3 1.34-3 3v10c0 1.66 1.34 3 3 3h7c1.66 0 3-1.34 3-3v-3.5l4 4v-11l-4 4z"/></svg></a></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"><button class="edit-btn text-indigo-600 hover:text-indigo-900" data-id="${docSnap.id}" data-role="member">Edit</button></td>
+                   tr.innerHTML = `
+                        <td class="px-6 py-4">
+                            <div class="font-medium text-slate-900">${user.name}</div>
+                            <div class="text-xs text-slate-500">${user.email}</div>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-slate-600">${user.contact || '-'}</td>
+                        <td class="px-6 py-4 text-center">
+                            <button class="message-user-btn text-blue-600 hover:text-blue-900" data-id="${user.id}" data-name="${user.name}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                </svg>
+                            </button>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-2">
+                                <input type="text" id="meet-input-${user.id}" placeholder="Private Link..." class="text-xs border border-slate-300 rounded px-2 py-1 w-32 focus:w-48 transition-all focus:ring-2 focus:ring-green-500 focus:outline-none">
+                                <button class="private-meet-btn text-green-600 hover:text-green-800 bg-green-50 hover:bg-green-100 p-1.5 rounded-full transition-colors" data-id="${user.id}" data-name="${user.name}" title="Start Private Meeting">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                             <button class="edit-btn text-indigo-600 hover:text-indigo-900 text-sm font-medium" data-id="${user.id}">Edit</button>
+                        </td>
                     `;
                     membersTableBody.appendChild(tr);
                 });
@@ -1046,8 +1085,8 @@
                 }
             });
 
-            // --- Event Delegation for Dynamic Buttons in Tables & Idea Cards ---
-            document.body.addEventListener('click', (e) => {
+            // --- Event Delegation for Dynamic Buttons in Tables & Idea Cards --
+                document.body.addEventListener('click', async (e) => {
                 const button = e.target.closest('button'); // Find the nearest button ancestor
                 if (!button) return; // Exit if the click wasn't on or inside a button
 
@@ -1067,6 +1106,54 @@
                      }
                 }
                 // --- Buttons within the Employee/Member Tables ---
+                // --- NEW: Handle Private Video Call (Row Specific) ---
+                else if (button.classList.contains('private-meet-btn') || button.closest('.private-meet-btn')) {
+                    // Handle button icon click vs button click
+                    const btn = button.classList.contains('private-meet-btn') ? button : button.closest('.private-meet-btn');
+                    const targetId = btn.dataset.id;
+                    const name = btn.dataset.name;
+                    
+                    if (!targetId) return;
+
+                    // 1. Get the link from the SPECIFIC input in this row
+                    const inputField = document.getElementById(`meet-input-${targetId}`);
+                    const link = inputField.value.trim();
+
+                    if (!link || !link.startsWith('http')) {
+                        alert("Please paste a valid Google Meet link in the box next to the button.");
+                        inputField.focus();
+                        return;
+                    }
+
+                    // 2. Send Signal
+                    if (confirm(`Start PRIVATE meeting with ${name}?`)) {
+                        const originalContent = btn.innerHTML;
+                        btn.innerHTML = `<svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+                        
+                        try {
+                            await setDoc(doc(db, "meetingSignals", targetId), {
+                                link: link,
+                                sender: "CEO",
+                                type: "private_call",
+                                timestamp: serverTimestamp()
+                            });
+                            
+                            // Visual success feedback
+                            setTimeout(() => {
+                                btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`;
+                                alert(`Invitation sent to ${name}!`);
+                                // Reset icon after 2 seconds
+                                setTimeout(() => { btn.innerHTML = originalContent; }, 2000);
+                                window.open(link, '_blank'); // Open for you
+                            }, 500);
+                            
+                        } catch (error) {
+                            console.error("Error:", error);
+                            alert("Failed to send.");
+                            btn.innerHTML = originalContent;
+                        }
+                    }
+                }
                 else if (button.classList.contains('message-user-btn')) {
                      if (userId) openMessageModal(userId, button.dataset.name); // Check userId exists
                 } else if (button.classList.contains('edit-btn')) {
