@@ -124,7 +124,7 @@
 
                     <div class="flex items-center">
                         <input type="text" id="member-master-link" placeholder="https://meet.google.com/..." 
-                               class="text-xs border border-slate-300 rounded-l px-2 py-1 w-48 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500">
+                               class="text-xs border border-slate-300 rounded-l px-2 py-1 w-64 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500">
                         
                         <button id="member-update-btn" class="bg-slate-800 hover:bg-slate-700 text-white text-[10px] font-bold px-3 py-1.5 rounded-r transition-colors">
                             UPDATE
@@ -1271,23 +1271,46 @@
                 });
             }
 
-            // 4. THE UPDATE BUTTON (Saves to Database)
+            // 4. THE UPDATE BUTTON (With Validation Guard)
             const memUpdateBtn = document.getElementById('member-update-btn');
+            
             if (memUpdateBtn) {
                 memUpdateBtn.addEventListener('click', async () => {
                     // Get values
-                    const link = document.getElementById('member-master-link').value;
+                    const linkInput = document.getElementById('member-master-link');
+                    const link = linkInput.value.trim(); // .trim() removes accidental spaces
                     const isLive = document.getElementById('member-meet-toggle').checked;
 
-                    // Show "Saving..."
+                    // --- 🛑 SECURITY GUARD 🛑 ---
+                    // If you are trying to go LIVE (ON) but the link is EMPTY:
+                    if (isLive && link === "") {
+                        // Show Error Visuals
+                        const originalText = memUpdateBtn.textContent;
+                        memUpdateBtn.textContent = "NO LINK!";
+                        memUpdateBtn.classList.replace('bg-slate-800', 'bg-red-600');
+                        
+                        // Shake the input box (Optional visual clue)
+                        linkInput.classList.add('ring-2', 'ring-red-500');
+
+                        // Reset after 2 seconds
+                        setTimeout(() => {
+                            memUpdateBtn.textContent = originalText;
+                            memUpdateBtn.classList.replace('bg-red-600', 'bg-slate-800');
+                            linkInput.classList.remove('ring-2', 'ring-red-500');
+                        }, 2000);
+
+                        return; // <--- STOP! Do not save to database.
+                    }
+
+                    // --- IF PASSED GUARD, SAVE NORMALLY ---
                     const originalText = memUpdateBtn.textContent;
                     memUpdateBtn.textContent = "SAVING...";
                     
                     try {
-                        // SAVE TO FIRESTORE (system/member_meeting)
+                        // SAVE TO FIRESTORE
                         await setDoc(doc(db, "system", "member_meeting"), {
                             staticLink: link,
-                            active: isLive,
+                            active: isLive, // This will be true or false
                             type: 'member_group',
                             updatedAt: new Date()
                         });
@@ -1296,7 +1319,6 @@
                         memUpdateBtn.textContent = "DONE";
                         memUpdateBtn.classList.replace('bg-slate-800', 'bg-green-600');
                         
-                        // Reset after 2 seconds
                         setTimeout(() => {
                             memUpdateBtn.textContent = originalText;
                             memUpdateBtn.classList.replace('bg-green-600', 'bg-slate-800');
@@ -1306,7 +1328,6 @@
                         console.error("Error saving member meeting:", error);
                         memUpdateBtn.textContent = "ERROR";
                         memUpdateBtn.classList.replace('bg-slate-800', 'bg-red-600');
-                        alert("Database Permission Error: Make sure you added the rule in Firebase!");
                     }
                 });
             }
