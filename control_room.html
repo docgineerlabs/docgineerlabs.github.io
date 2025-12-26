@@ -71,12 +71,12 @@
             <span>Message Group</span>
         </button>
         
-        <button id="start-group-meet-btn" class="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700 transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M17 10.5V7c0-1.66-1.34-3-3-3H7c-1.66 0-3 1.34-3 3v10c0 1.66 1.34 3 3 3h7c1.66 0 3-1.34 3-3v-3.5l4 4v-11l-4 4z"/>
-            </svg>
-            <span>Enter Room</span>
-        </button>
+        <button id="start-employee-meet-btn" class="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition-colors font-medium text-sm">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+    </svg>
+    Start Group Meet
+</button>
     </div>
 </div>
 
@@ -1177,6 +1177,34 @@
         // Initial setup
         setupEventListeners();
     });
+    // --- NEW: EMPLOYEE-ONLY SYNC & INSTANT MEET ---
+
+            // 1. "Magic Sync" - Copies Top Link to EMPLOYEE boxes ONLY
+            const masterInput = document.getElementById('permanent-link-input');
+            
+            if (masterInput) {
+                masterInput.addEventListener('input', function() {
+                    const masterLink = this.value;
+                    
+                    // SELECTOR UPDATE: Only look inside 'employees-table-body'
+                    const employeeInputs = document.querySelectorAll('#employees-table-body input[id^="meet-input-"]');
+                    
+                    employeeInputs.forEach(input => {
+                        input.value = masterLink;
+                    });
+                });
+            }
+
+            // 2. "Instant Meet" - Opens a fresh meeting for Employees
+            const startEmpBtn = document.getElementById('start-employee-meet-btn');
+            
+            if (startEmpBtn) {
+                startEmpBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    // Opens a fresh Google Meet instantly
+                    window.open('https://meet.google.com/new', '_blank');
+                });
+            }
 </script>
 
 </body>
