@@ -110,10 +110,26 @@
              <div class="flex justify-between items-center mb-6">
                 <h2 class="text-3xl font-bold text-slate-800">Members</h2>
                 <div class="flex items-center gap-4">
-                    <div class="relative">
-                        <input type="text" id="member-master-link" placeholder="Paste Member Group Link..." 
-                               class="w-64 border border-slate-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 focus:outline-none shadow-sm">
-                    </div>
+                    <div class="bg-white px-3 py-2 rounded-lg border border-slate-200 shadow-sm flex flex-col justify-center gap-1">
+        <div class="flex items-center justify-between mb-1">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Meeting Room</span>
+            
+            <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="member-meet-toggle" class="sr-only peer">
+                <div class="w-7 h-3.5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-green-500"></div>
+                <span id="member-meet-status" class="ml-1.5 text-[9px] font-bold text-slate-400">OFF</span>
+            </label>
+        </div>
+
+        <div class="flex items-center">
+            <input type="text" id="member-master-link" placeholder="https://meet.google.com/..." 
+                   class="text-xs border border-slate-300 rounded-l px-2 py-1 w-48 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500">
+            
+            <button id="member-update-btn" class="bg-slate-800 hover:bg-slate-700 text-white text-[10px] font-bold px-3 py-1.5 rounded-r transition-colors">
+                UPDATE
+            </button>
+        </div>
+    </div>
                     <button id="message-group-btn-members" class="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-600 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                           <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
@@ -1236,6 +1252,45 @@
                 startMemBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     window.open('https://meet.google.com/new', '_blank');
+                });
+            }
+            // --- NEW: MEMBER UI INTERACTION (Toggle & Update) ---
+            
+            // 1. Handle Toggle Switch Visuals (OFF <-> ON)
+            const memToggle = document.getElementById('member-meet-toggle');
+            const memStatus = document.getElementById('member-meet-status');
+            
+            if (memToggle && memStatus) {
+                memToggle.addEventListener('change', function() {
+                    if (this.checked) {
+                        memStatus.textContent = "ON";
+                        memStatus.classList.remove('text-slate-400');
+                        memStatus.classList.add('text-green-600');
+                    } else {
+                        memStatus.textContent = "OFF";
+                        memStatus.classList.remove('text-green-600');
+                        memStatus.classList.add('text-slate-400');
+                    }
+                });
+            }
+
+            // 2. Handle Update Button Animation
+            const memUpdateBtn = document.getElementById('member-update-btn');
+            
+            if (memUpdateBtn) {
+                memUpdateBtn.addEventListener('click', () => {
+                    // Visual feedback to show it "Updated"
+                    const originalText = memUpdateBtn.textContent;
+                    memUpdateBtn.textContent = "DONE";
+                    memUpdateBtn.classList.replace('bg-slate-800', 'bg-green-600');
+                    
+                    // The "Magic Sync" happens automatically via the input listener you already added!
+                    
+                    // Reset button after 1 second
+                    setTimeout(() => {
+                        memUpdateBtn.textContent = originalText;
+                        memUpdateBtn.classList.replace('bg-green-600', 'bg-slate-800');
+                    }, 1000);
                 });
             }
 </script>
