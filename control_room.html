@@ -1274,23 +1274,43 @@
                 });
             }
 
-            // 2. Handle Update Button Animation
+            // 2. Handle Update Button Animation & DATABASE SAVE
             const memUpdateBtn = document.getElementById('member-update-btn');
             
             if (memUpdateBtn) {
-                memUpdateBtn.addEventListener('click', () => {
-                    // Visual feedback to show it "Updated"
+                memUpdateBtn.addEventListener('click', async () => {
+                    // Get the values
+                    const link = document.getElementById('member-master-link').value;
+                    const isLive = document.getElementById('member-meet-toggle').checked;
+
+                    // Visual Feedback (Loading)
                     const originalText = memUpdateBtn.textContent;
-                    memUpdateBtn.textContent = "DONE";
-                    memUpdateBtn.classList.replace('bg-slate-800', 'bg-green-600');
+                    memUpdateBtn.textContent = "SAVING...";
                     
-                    // The "Magic Sync" happens automatically via the input listener you already added!
-                    
-                    // Reset button after 1 second
-                    setTimeout(() => {
-                        memUpdateBtn.textContent = originalText;
-                        memUpdateBtn.classList.replace('bg-green-600', 'bg-slate-800');
-                    }, 1000);
+                    try {
+                        // --- SAVE TO FIRESTORE (The Critical Part) ---
+                        // We save to a separate document: 'system/member_meeting'
+                        await setDoc(doc(db, "system", "member_meeting"), {
+                            staticLink: link,
+                            active: isLive,
+                            type: 'member_group',
+                            updatedAt: new Date()
+                        });
+
+                        // Success Visuals
+                        memUpdateBtn.textContent = "DONE";
+                        memUpdateBtn.classList.replace('bg-slate-800', 'bg-green-600');
+                        
+                        setTimeout(() => {
+                            memUpdateBtn.textContent = originalText;
+                            memUpdateBtn.classList.replace('bg-green-600', 'bg-slate-800');
+                        }, 2000);
+                        
+                    } catch (error) {
+                        console.error("Error saving member meeting:", error);
+                        memUpdateBtn.textContent = "ERROR";
+                        memUpdateBtn.classList.replace('bg-slate-800', 'bg-red-600');
+                    }
                 });
             }
 </script>
