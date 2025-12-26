@@ -107,45 +107,48 @@
 
         <!-- Members Section -->
         <section id="members-section">
-             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-3xl font-bold text-slate-800">Members</h2>
-               <div class="flex items-center gap-4">
-                    <div class="bg-white px-3 py-2 rounded-lg border border-slate-200 shadow-sm flex flex-col justify-center gap-1">
-                        <div class="flex items-center justify-between mb-1">
-                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Member Room</span>
-                            
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="member-meet-toggle" class="sr-only peer">
-                                <div class="w-7 h-3.5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-green-500"></div>
-                                <span id="member-meet-status" class="ml-1.5 text-[9px] font-bold text-slate-400">OFF</span>
-                            </label>
-                        </div>
-
-                        <div class="flex items-center">
-                            <input type="text" id="member-master-link" placeholder="https://meet.google.com/..." 
-                                   class="text-xs border border-slate-300 rounded-l px-2 py-1 w-48 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500">
-                            
-                            <button id="member-update-btn" class="bg-slate-800 hover:bg-slate-700 text-white text-[10px] font-bold px-3 py-1.5 rounded-r transition-colors">
-                                UPDATE
-                            </button>
-                        </div>
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-3xl font-bold text-slate-800">Members</h2>
+            
+            <div class="flex items-center gap-4">
+                <div class="bg-white px-3 py-2 rounded-lg border border-slate-200 shadow-sm flex flex-col justify-center gap-1">
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Member Room</span>
+                        
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="member-meet-toggle" class="sr-only peer">
+                            <div class="w-7 h-3.5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[1px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-green-500"></div>
+                            <span id="member-meet-status" class="ml-1.5 text-[9px] font-bold text-slate-400">OFF</span>
+                        </label>
                     </div>
 
-                    <button id="message-group-btn-members" class="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors font-medium text-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-                        </svg>
-                        Message Group
-                    </button>
-
-                    <button id="start-member-meet-btn" class="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition-colors font-medium text-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
-                        Start Group Meet
-                    </button>
+                    <div class="flex items-center">
+                        <input type="text" id="member-master-link" placeholder="https://meet.google.com/..." 
+                               class="text-xs border border-slate-300 rounded-l px-2 py-1 w-48 focus:outline-none focus:ring-1 focus:ring-green-500 focus:border-green-500">
+                        
+                        <button id="member-update-btn" class="bg-slate-800 hover:bg-slate-700 text-white text-[10px] font-bold px-3 py-1.5 rounded-r transition-colors">
+                            UPDATE
+                        </button>
+                    </div>
                 </div>
+
+                <button id="message-group-btn-members" class="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md transition-colors font-medium text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                    </svg>
+                    Message Group
+                </button>
+
+                <button id="start-member-meet-btn" class="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md transition-colors font-medium text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    Start Group Meet
+                </button>
+            </div>
+        </div>
+    </section>
 
             <!-- Member User Management -->
             <div id="members-user-management">
