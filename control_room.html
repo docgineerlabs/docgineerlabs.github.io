@@ -473,33 +473,51 @@
         
         async function loadUsers(isPreview = false) {
             employeesTableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-4 text-center text-slate-500">Loading employees...</td></tr>`;
-            if(isPreview) {
-                employeesTableBody.innerHTML = `
-                    <tr>
-                         <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-medium text-slate-900">John Doe (Sample)</div></td>
-                         <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">Computer Science (CSE)</td>
-                         <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">Engineer</td>
-                         <td class="px-6 py-4 whitespace-nowrap text-center"><button class="text-blue-600 hover:text-blue-900"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-auto" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg></button></td>
-                         <td class="px-6 py-4 whitespace-nowrap text-center"><a href="https://meet.google.com/new" target="_blank" class="inline-block text-green-600 hover:text-green-900"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17 10.5V7c0-1.66-1.34-3-3-3H7c-1.66 0-3 1.34-3 3v10c0 1.66 1.34 3 3 3h7c1.66 0 3-1.34 3-3v-3.5l4 4v-11l-4 4z"/></svg></a></td>
-                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"><button class="text-indigo-600 hover:text-indigo-900">Edit</button></td>
-                    </tr>
-                `;
-                return;
+            
+            // Preview Mode (Login bypassed) Logic
+            if(isPreview) { 
+                 employeesTableBody.innerHTML = `
+                     <tr>
+                          <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-medium text-slate-900">John Doe (Sample)</div></td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">Computer Science (CSE)</td>
+                          <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">Engineer</td>
+                          <td class="px-6 py-4 whitespace-nowrap text-center"><button class="text-blue-600 hover:text-blue-900"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mx-auto" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg></button></td>
+                          <td class="px-6 py-4 whitespace-nowrap text-center">
+                             <div class="flex items-center gap-3">
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" class="sr-only peer" disabled>
+                                    <div class="w-9 h-5 bg-gray-200 rounded-full peer peer-checked:bg-green-600"></div>
+                                </label>
+                                <input type="text" placeholder="Private Link..." class="text-xs border border-slate-300 rounded px-2 py-1 w-32" disabled>
+                             </div>
+                          </td>
+                          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"><button class="text-indigo-600 hover:text-indigo-900">Edit</button></td>
+                     </tr>
+                 `;
+                 return;
             }
+
+            // Real Data Logic
             try {
                 const q = query(collection(db, "users"), where("role", "==", "employee"), where("status", "==", "active"));
                 const querySnapshot = await getDocs(q);
                 employeesTableBody.innerHTML = '';
                 allEmployeeEmails = [];
+
                 if (querySnapshot.empty) {
                     employeesTableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-4 text-center text-slate-500">No active employees found.</td></tr>`;
                     return;
                 }
+
                 querySnapshot.forEach((docSnap) => {
                     const user = docSnap.data();
                     allEmployeeEmails.push(user.email);
+                    
+                    // Generate Unique ID for the toggle
+                    const toggleId = `toggle-${docSnap.id}`;
+
                     const tr = document.createElement('tr');
-                   tr.innerHTML = `
+                    tr.innerHTML = `
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="text-sm font-medium text-slate-900">${user.fullName || user.name}</div>
                             <div class="text-xs text-slate-500">${user.email}</div>
@@ -514,9 +532,15 @@
                             </button>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-3">
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="${toggleId}" class="sr-only peer employee-meet-toggle" data-id="${docSnap.id}">
+                                    <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-600"></div>
+                                </label>
+
                                 <input type="text" id="meet-input-${docSnap.id}" placeholder="Private Link..." class="text-xs border border-slate-300 rounded px-2 py-1 w-32 focus:w-48 transition-all focus:ring-2 focus:ring-green-500 focus:outline-none">
-                                <button class="private-meet-btn text-green-600 hover:text-green-800 bg-green-50 hover:bg-green-100 p-1.5 rounded-full transition-colors" data-id="${docSnap.id}" data-name="${user.fullName || user.name}" title="Start Private Meeting">
+                                
+                                <button class="private-meet-btn text-green-600 hover:text-green-800 bg-green-50 hover:bg-green-100 p-1.5 rounded-full transition-colors" data-id="${docSnap.id}" data-name="${user.fullName || user.name}" title="Send Invite">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                     </svg>
@@ -528,6 +552,16 @@
                         </td>
                     `;
                     employeesTableBody.appendChild(tr);
+                    
+                    // Fetch existing status for this user to set toggle ON/OFF visually on load
+                    getDoc(doc(db, "meetingSignals", docSnap.id)).then(snap => {
+                        if(snap.exists() && snap.data().status === 'active') {
+                             const toggleEl = document.getElementById(toggleId);
+                             const inputEl = document.getElementById(`meet-input-${docSnap.id}`);
+                             if(toggleEl) toggleEl.checked = true;
+                             if(inputEl) inputEl.value = snap.data().link || '';
+                        }
+                    });
                 });
             } catch(error) {
                 console.error("Error loading users: ", error);
@@ -1084,7 +1118,49 @@
                     newBtn.addEventListener('click', handleEnterRoom);
                 }
             });
+            // --- NEW: Handle INDIVIDUAL Employee Toggles ---
+            // using event delegation since rows are dynamic
+            document.body.addEventListener('change', async (e) => {
+                if (e.target.classList.contains('employee-meet-toggle')) {
+                    const toggle = e.target;
+                    const userId = toggle.dataset.id;
+                    const inputField = document.getElementById(`meet-input-${userId}`);
+                    const linkVal = inputField.value.trim();
+                    const isTurningOn = toggle.checked;
 
+                    // 1. SAFETY CHECK: PREVENT ON IF EMPTY
+                    if (isTurningOn) {
+                        if (!linkVal || !linkVal.startsWith('http')) {
+                            alert("Cannot turn ON: Please enter a valid Link first!");
+                            toggle.checked = false; // Snap back to OFF
+                            return;
+                        }
+                    }
+
+                    toggle.disabled = true; // Temporary disable while processing
+
+                    try {
+                        // 2. Update Firestore
+                        // We use the 'meetingSignals' collection to store the persistent state per user
+                        await setDoc(doc(db, "meetingSignals", userId), {
+                            status: isTurningOn ? 'active' : 'inactive',
+                            link: linkVal,
+                            type: 'private_channel', // Tagging this as a channel, not just a call
+                            updatedAt: serverTimestamp()
+                        }, { merge: true });
+
+                        console.log(`User ${userId} meeting channel is now ${isTurningOn ? 'ON' : 'OFF'}`);
+
+                    } catch (error) {
+                        console.error("Error updating toggle:", error);
+                        alert("Database error. Check console.");
+                        toggle.checked = !isTurningOn; // Revert visually on error
+                    } finally {
+                        toggle.disabled = false;
+                    }
+                }
+            });
+            
             // --- Event Delegation for Dynamic Buttons in Tables & Idea Cards --
                 document.body.addEventListener('click', async (e) => {
                 const button = e.target.closest('button'); // Find the nearest button ancestor
