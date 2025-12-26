@@ -1188,6 +1188,7 @@ if (sendReplyBtn) {
         const memberMeetBtn = document.getElementById('member-meet-btn');
 
         // --- NEW SMART MEETING LOGIC ---
+       // --- FINAL "STRICT MODE" MEETING LOGIC ---
         const openMeetModal = async (e) => {
             e.preventDefault();
             meetModal.classList.remove('hidden');
@@ -1199,61 +1200,54 @@ if (sendReplyBtn) {
             const currentUser = auth.currentUser;
 
             try {
-                // 1. CHECK FOR PRIVATE CALLS FIRST (The "Phone Ringing")
-                // We look in the 'meetingSignals' box for a message meant for THIS user
+                // We ONLY check the Individual Signal now. 
+                // We ignore the Global System link entirely.
                 const signalRef = doc(db, "meetingSignals", currentUser.uid);
                 const signalSnap = await getDoc(signalRef);
 
                 if (signalSnap.exists()) {
-                    // --- FOUND PRIVATE CALL! ---
                     const data = signalSnap.data();
-                    
-                    meetStatusContent.innerHTML = `
-                        <div class="flex flex-col items-center animate-pulse py-2">
-                            <span class="bg-red-100 text-red-800 text-xs font-bold px-2 py-1 rounded mb-2">URGENT</span>
-                            <p class="text-slate-800 font-bold text-xl mb-1">Incoming Private Call</p>
-                            <p class="text-sm text-slate-500 text-center">The CEO has invited you to a private session.</p>
-                        </div>
-                    `;
-                    
-                    joinMeetBtn.href = data.link;
-                    joinMeetBtn.classList.remove('hidden');
-                    
-                    // Style: RED Button for Urgency
-                    joinMeetBtn.className = "w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500";
-                    joinMeetBtn.textContent = "JOIN PRIVATE CALL";
-                    
-                    // IMPORTANT: Delete the signal after they click join (Stops the ringing)
-                    joinMeetBtn.onclick = async () => {
-                         await deleteDoc(signalRef);
-                    };
-                    return; // STOP HERE! Do not show the public room if a private call is waiting.
+
+                    // CASE 1: URGENT PRIVATE CALL
+                    if (data.type === 'private_call') {
+                         meetStatusContent.innerHTML = `
+                            <div class="flex flex-col items-center animate-pulse py-2">
+                                <span class="bg-red-100 text-red-800 text-xs font-bold px-2 py-1 rounded mb-2">URGENT</span>
+                                <p class="text-slate-800 font-bold text-xl mb-1">Incoming Private Call</p>
+                                <p class="text-sm text-slate-500 text-center">The CEO has invited you to a private session.</p>
+                            </div>
+                        `;
+                        joinMeetBtn.href = data.link;
+                        joinMeetBtn.className = "w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500";
+                        joinMeetBtn.textContent = "JOIN PRIVATE CALL";
+                        joinMeetBtn.classList.remove('hidden');
+                        joinMeetBtn.onclick = async () => { await deleteDoc(signalRef); };
+                        return;
+                    }
+
+                    // CASE 2: ACCESS GRANTED (Individual Switch is ON)
+                    if (data.status === 'active' && data.link) {
+                        meetStatusContent.innerHTML = `
+                            <p class="text-slate-800 font-medium text-lg mb-1">Meeting Room Open</p>
+                            <p class="text-sm text-slate-500">You have been granted access.</p>
+                        `;
+                        joinMeetBtn.href = data.link;
+                        // Green button for normal access
+                        joinMeetBtn.className = "w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500";
+                        joinMeetBtn.textContent = "Join Now";
+                        joinMeetBtn.classList.remove('hidden');
+                        joinMeetBtn.onclick = null; 
+                        return;
+                    }
                 }
 
-                // 2. CHECK PUBLIC CONFERENCE ROOM (Only if no private call)
-                const docRef = doc(db, "system", "meeting");
-                const docSnap = await getDoc(docRef);
+                // CASE 3: NO ACCESS (Switch is OFF)
+                // Even if Main Group has a link, we deny access because the Individual Switch is OFF.
+                meetStatusContent.innerHTML = `
+                    <p class="text-slate-800 font-medium text-center py-4">No Active Meeting</p>
+                    <p class="text-xs text-slate-400 text-center">Ask Admin to enable your access.</p>
+                `;
 
-                if (docSnap.exists() && docSnap.data().staticLink) {
-                    // --- FOUND PUBLIC ROOM ---
-                    meetStatusContent.innerHTML = `
-                        <p class="text-slate-800 font-medium text-lg mb-1">Docgineer Labs Conference Room</p>
-                        <p class="text-sm text-slate-500">Public Team Meeting</p>
-                    `;
-                    joinMeetBtn.href = docSnap.data().staticLink;
-                    joinMeetBtn.classList.remove('hidden');
-                    
-                    // Style: GREEN Button for Normal
-                    joinMeetBtn.className = "w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500";
-                    joinMeetBtn.textContent = "Join Now";
-                    
-                    joinMeetBtn.onclick = null; // Clear the delete logic
-                } else {
-                    // --- ROOM CLOSED ---
-                    meetStatusContent.innerHTML = `
-                        <p class="text-slate-800 font-medium text-center py-4">No Active Meeting</p>
-                    `;
-                }
             } catch (error) {
                 console.error("Error fetching meeting:", error);
                 meetStatusContent.innerHTML = '<p class="text-red-500 text-center">Connection Error.</p>';
