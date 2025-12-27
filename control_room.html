@@ -1112,20 +1112,39 @@
                 }
             });
 
-            // 4. "Enter Room" Button - Always opens the text in the box
-            const handleEnterRoom = () => {
-                const link = permanentLinkInput.value.trim();
-                if (link) window.open(link, '_blank');
-                else alert("No link found.");
+            // 4. "Enter Room" Button Logic (Smart Version)
+            const handleEnterRoom = (e) => {
+                // Determine which button was clicked
+                const isMemberBtn = e.currentTarget.id === 'start-group-meet-btn-members';
+                
+                // Select the correct input field based on the button
+                // If Member button -> Use Member Input. Otherwise -> Use Employee Input.
+                const inputField = isMemberBtn 
+                    ? document.getElementById('member-permanent-link-input') 
+                    : document.getElementById('permanent-link-input');
+
+                const link = inputField ? inputField.value.trim() : '';
+
+                if (link && link.startsWith('http')) {
+                    window.open(link, '_blank');
+                } else {
+                    alert("No valid link found in the box!");
+                }
             };
-            
-            // Re-attach listeners to existing buttons
-            const enterBtns = [document.getElementById('start-group-meet-btn'), document.getElementById('start-group-meet-btn-members')];
+
+            // Re-attach Listeners to existing buttons
+            const enterBtns = [
+                document.getElementById('start-group-meet-btn'), 
+                document.getElementById('start-group-meet-btn-members')
+            ];
+
             enterBtns.forEach(btn => {
                 if(btn) { 
-                    // Remove old listeners to avoid duplicates (optional but safe)
+                    // Remove old listeners to avoid duplicates
                     const newBtn = btn.cloneNode(true);
                     btn.parentNode.replaceChild(newBtn, btn);
+                    
+                    // Attach the new smart function
                     newBtn.addEventListener('click', handleEnterRoom);
                 }
             });
@@ -1265,7 +1284,7 @@
                 } catch (e) { console.error(e); } 
                 finally { memberUpdateLinkBtn.textContent = "UPDATE"; }
             });
-            
+
             // --- Event Delegation for Dynamic Buttons in Tables & Idea Cards --
                 document.body.addEventListener('click', async (e) => {
                 const button = e.target.closest('button'); // Find the nearest button ancestor
