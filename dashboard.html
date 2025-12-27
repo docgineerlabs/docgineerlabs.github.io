@@ -1187,8 +1187,7 @@ if (sendReplyBtn) {
         const employeeMeetBtn = document.getElementById('employee-meet-btn');
         const memberMeetBtn = document.getElementById('member-meet-btn');
 
-        // --- FINAL LOGIC: ROLE-AWARE MEETING ROOMS ---
-        // This handles BOTH Employees and Members intelligently
+       // --- FINAL LOGIC: ROLE-AWARE + VETO POWER ---
         const openMeetModal = async (e) => {
             e.preventDefault();
             meetModal.classList.remove('hidden');
@@ -1200,9 +1199,7 @@ if (sendReplyBtn) {
             const currentUser = auth.currentUser;
 
             try {
-                // 1. DETERMINE WHICH GROUP ROOM TO CHECK
-                // This line protects the Employee logic! 
-                // It only switches to 'member_meeting' if the role is explicitly 'member'.
+                // 1. DETERMINE WHICH GROUP ROOM TO CHECK (Role-Aware)
                 const systemDocId = (currentUserRole === 'member') ? "member_meeting" : "meeting";
 
                 // 2. FETCH SIGNALS
@@ -1213,6 +1210,16 @@ if (sendReplyBtn) {
 
                 const signalData = signalSnap.exists() ? signalSnap.data() : null;
                 const systemData = systemSnap.exists() ? systemSnap.data() : null;
+
+                // --- NEW: THE "VETO" CHECK ---
+                // If the Individual Switch is explicitly OFF (inactive), BLOCK EVERYTHING.
+                if (signalData && signalData.status === 'inactive') {
+                    meetStatusContent.innerHTML = `
+                        <p class="text-slate-800 font-medium text-center py-4">Access Restricted</p>
+                        <p class="text-xs text-slate-400 text-center">Your individual access is turned off.</p>
+                    `;
+                    return; // Stop here. Do not show the Global Meeting.
+                }
 
                 // --- PRIORITY 1: URGENT PRIVATE CALL (Red Button) ---
                 if (signalData && signalData.type === 'private_call') {
