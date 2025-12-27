@@ -1112,8 +1112,10 @@
                 }
             });
 
-            // 4. "Enter Room" Button Logic (Smart Version)
+           // 4. "Enter Room" Button Logic (Smart Version)
             const handleEnterRoom = (e) => {
+                e.preventDefault(); 
+                
                 // Determine which button was clicked
                 const isMemberBtn = e.currentTarget.id === 'start-group-meet-btn-members';
                 
@@ -1128,26 +1130,27 @@
                 if (link && link.startsWith('http')) {
                     window.open(link, '_blank');
                 } else {
-                    alert("No valid link found in the box!");
+                    alert("No valid link found in the box! Please paste a URL and click Update.");
                 }
             };
 
-            // Re-attach Listeners to existing buttons
-            const enterBtns = [
-                document.getElementById('start-group-meet-btn'), 
-                document.getElementById('start-group-meet-btn-members')
-            ];
+            // Re-attach Listeners (FIXED IDs)
+            const empBtn = document.getElementById('start-employee-meet-btn'); // Matches Line 106 in HTML
+            const memBtn = document.getElementById('start-group-meet-btn-members'); // Matches Line 183 in HTML
 
-            enterBtns.forEach(btn => {
-                if(btn) { 
-                    // Remove old listeners to avoid duplicates
-                    const newBtn = btn.cloneNode(true);
-                    btn.parentNode.replaceChild(newBtn, btn);
-                    
-                    // Attach the new smart function
-                    newBtn.addEventListener('click', handleEnterRoom);
-                }
-            });
+            if (empBtn) {
+                // Remove old listeners to avoid duplicates
+                const newBtn = empBtn.cloneNode(true);
+                empBtn.parentNode.replaceChild(newBtn, empBtn);
+                newBtn.addEventListener('click', handleEnterRoom);
+            }
+
+            if (memBtn) {
+                // Remove old listeners to avoid duplicates
+                const newBtn = memBtn.cloneNode(true);
+                memBtn.parentNode.replaceChild(newBtn, memBtn);
+                newBtn.addEventListener('click', handleEnterRoom);
+            }
             // --- NEW: Handle INDIVIDUAL Employee Toggles ---
             // using event delegation since rows are dynamic
             document.body.addEventListener('change', async (e) => {
