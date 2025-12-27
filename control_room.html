@@ -1112,44 +1112,30 @@
                 }
             });
 
-           // 4. "Enter Room" Button Logic (Smart Version)
-            const handleEnterRoom = (e) => {
-                e.preventDefault(); 
-                
-                // Determine which button was clicked
-                const isMemberBtn = e.currentTarget.id === 'start-group-meet-btn-members';
-                
-                // Select the correct input field based on the button
-                // If Member button -> Use Member Input. Otherwise -> Use Employee Input.
-                const inputField = isMemberBtn 
-                    ? document.getElementById('member-permanent-link-input') 
-                    : document.getElementById('permanent-link-input');
+           // 4. "Start Meeting" Button Logic (CREATE NEW MEETING)
+            // This restores the function to OPEN A NEW MEETING TAB for both sections.
+            
+            const empBtn = document.getElementById('start-employee-meet-btn');
+            const memBtn = document.getElementById('start-group-meet-btn-members');
 
-                const link = inputField ? inputField.value.trim() : '';
-
-                if (link && link.startsWith('http')) {
-                    window.open(link, '_blank');
-                } else {
-                    alert("No valid link found in the box! Please paste a URL and click Update.");
-                }
+            const startNewMeeting = (e) => {
+                e.preventDefault();
+                // Opens a fresh Google Meet where YOU are the Host
+                window.open('https://meet.google.com/new', '_blank');
             };
 
-            // Re-attach Listeners (FIXED IDs)
-            const empBtn = document.getElementById('start-employee-meet-btn'); // Matches Line 106 in HTML
-            const memBtn = document.getElementById('start-group-meet-btn-members'); // Matches Line 183 in HTML
-
+            // Fix Employee Button
             if (empBtn) {
-                // Remove old listeners to avoid duplicates
-                const newBtn = empBtn.cloneNode(true);
-                empBtn.parentNode.replaceChild(newBtn, empBtn);
-                newBtn.addEventListener('click', handleEnterRoom);
+                const newEmpBtn = empBtn.cloneNode(true);
+                empBtn.parentNode.replaceChild(newEmpBtn, empBtn);
+                newEmpBtn.addEventListener('click', startNewMeeting);
             }
 
+            // Fix Member Button
             if (memBtn) {
-                // Remove old listeners to avoid duplicates
-                const newBtn = memBtn.cloneNode(true);
-                memBtn.parentNode.replaceChild(newBtn, memBtn);
-                newBtn.addEventListener('click', handleEnterRoom);
+                const newMemBtn = memBtn.cloneNode(true);
+                memBtn.parentNode.replaceChild(newMemBtn, memBtn);
+                newMemBtn.addEventListener('click', startNewMeeting);
             }
             // --- NEW: Handle INDIVIDUAL Employee Toggles ---
             // using event delegation since rows are dynamic
